@@ -1,2 +1,2 @@
 # moebius
-There is an endless way to earn money, perfectly.
+Moebius just makes money whenever, wherever.
