@@ -8,5 +8,6 @@ public class MoebiusBatchApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MoebiusBatchApplication.class, args);
+
 	}
 }
