@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: develop
+
+tracker:
+  upbit:
+    apiAccessKey: ndknvxKapgtNMs4NOwQGNfydeI0hgWrc0oWhxHne
+    apiSecretKey: VBuwWX1GinvbrWhXMiQotZKmVZdoTNn3e6R4rDbL
