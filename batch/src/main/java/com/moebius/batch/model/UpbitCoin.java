@@ -1,4 +1,4 @@
 package com.moebius.batch.model;
 
-public class UpbitCoin {
+public class UpbitCoin extends Coin {
 }

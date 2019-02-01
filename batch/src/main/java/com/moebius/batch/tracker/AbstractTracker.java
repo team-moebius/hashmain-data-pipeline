@@ -1,4 +1,4 @@
-package com.moebius.batch.service.tracker;
+package com.moebius.batch.tracker;
 
 public abstract class AbstractTracker {
 
