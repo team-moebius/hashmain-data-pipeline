@@ -1,7 +1,3 @@
 spring:
   profiles:
     active: local
-
-upbit: # It will be replaced with db data ...
-  apiAccessKey: ndknvxKapgtNMs4NOwQGNfydeI0hgWrc0oWhxHne
-  apiSecretKey: VBuwWX1GinvbrWhXMiQotZKmVZdoTNn3e6R4rDbL
