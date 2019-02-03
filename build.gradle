@@ -32,8 +32,10 @@ subprojects {
 	sourceCompatibility = 1.8
 
 	dependencies {
+		implementation("org.hsqldb:hsqldb")
 		implementation('org.springframework.boot:spring-boot-starter-webflux')
 		implementation('org.springframework.boot:spring-boot-starter-actuator')
+		implementation('com.auth0:java-jwt:3.7.0')
 		runtimeOnly('mysql:mysql-connector-java')
 		compileOnly('org.projectlombok:lombok')
 		testImplementation('org.springframework.boot:spring-boot-starter-test')

@@ -1,26 +1,34 @@
 package com.moebius.batch.tracker.configuration;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.batch.model.Coin;
-import com.moebius.batch.tracker.dto.Price;
+import com.moebius.batch.tracker.dto.Asset;
 import com.moebius.batch.tracker.job.TrackerJobs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Date;
+
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
+@EnableBatchProcessing
+@EnableConfigurationProperties(UpbitProperties.class)
 @ComponentScan(basePackageClasses = TrackerJobs.class)
 public class TrackerConfiguration {
     private static final String JOB_NAME = "trackingPriceJob";
@@ -40,14 +48,22 @@ public class TrackerConfiguration {
     }
 
     @Bean
-    public Step trackingPriceStep(ItemReader<Price> priceReader,
-                                  ItemProcessor<Price, Coin> priceToCoinProcessor,
+    public Step trackingPriceStep(ItemReader<Asset> priceReader,
+                                  ItemProcessor<Asset, Coin> assetToCoinProcessor,
                                   ItemWriter<Coin> coinWriter) {
         return stepBuilderFactory.get(STEP_NAME)
-                .<Price, Coin>chunk(CHUNK_SIZE)
+                .<Asset, Coin>chunk(CHUNK_SIZE)
                 .reader(priceReader)
-                .processor(priceToCoinProcessor)
+                .processor(assetToCoinProcessor)
                 .writer(coinWriter)
                 .build();
+    }
+
+    @Bean
+    public String upbitJwtAuthToken(UpbitProperties upbitProperties) {
+        return JWT.create()
+            .withClaim("access_key", upbitProperties.getAccessKey())
+            .withClaim("nonce", new Date().getTime())
+            .sign(Algorithm.HMAC256(upbitProperties.getSecretKey()));
     }
 }
