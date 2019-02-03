@@ -24,8 +24,6 @@ public class TrackerReader extends AbstractItemCountingItemStreamItemReader<Asse
 
 	@Override
 	protected Asset doRead() {
-		log.info("TrackerReader start to read data from exchanges ...");
-
 		Mono<Asset> assetMono = webClient.get()
 			.uri(upbitProperties.getUriInfo().getOpenedHost() + upbitProperties.getUriInfo().getAsset())
 			.headers(HttpHeaders -> HttpHeaders.setBearerAuth(upbitJwtAuthToken))
