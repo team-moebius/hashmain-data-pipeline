@@ -34,4 +34,5 @@ public class MoebiusBatchApplication {
 
 		return WebClient.builder().clientConnector(connector).build();
 	}
+
 }

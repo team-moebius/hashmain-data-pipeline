@@ -1,39 +1,34 @@
-package com.moebius.batch.tracker.job.step;
+package com.moebius.batch.tracker.job.account;
 
 import com.moebius.batch.tracker.configuration.UpbitProperties;
-import com.moebius.batch.tracker.dto.Asset;
+import com.moebius.batch.tracker.dto.Assets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-public class TrackerReader extends AbstractItemCountingItemStreamItemReader<Asset> {
+public class AssetsReader extends AbstractItemCountingItemStreamItemReader<Assets> {
 	private final WebClient webClient;
 	private final UpbitProperties upbitProperties;
 	private final String upbitJwtAuthToken;
 
-	public TrackerReader(WebClient webClient, UpbitProperties upbitProperties, String upbitJwtAuthToken) {
-		setName("TrackerReader");
+	public AssetsReader(WebClient webClient, UpbitProperties upbitProperties, String upbitJwtAuthToken) {
+		setName("AssetsReader");
 		this.webClient = webClient;
 		this.upbitProperties = upbitProperties;
 		this.upbitJwtAuthToken = upbitJwtAuthToken;
 	}
 
 	@Override
-	protected Asset doRead() {
-		Mono<Asset> assetMono = webClient.get()
+	protected Assets doRead() {
+		return webClient.get()
 			.uri(upbitProperties.getUriInfo().getOpenedHost() + upbitProperties.getUriInfo().getAsset())
 			.headers(HttpHeaders -> HttpHeaders.setBearerAuth(upbitJwtAuthToken))
-			.exchange()
-			.flatMap(clientResponse -> {
-				log.info("Received clientResponse successfully.");
-				return clientResponse.bodyToMono(Asset.class);
-			});
-
-		return assetMono.block();
+			.retrieve()
+			.bodyToMono(Assets.class)
+			.block();
 	}
 
 	@Override

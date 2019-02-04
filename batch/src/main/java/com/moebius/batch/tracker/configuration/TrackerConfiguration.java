@@ -2,8 +2,7 @@ package com.moebius.batch.tracker.configuration;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.moebius.batch.model.Coin;
-import com.moebius.batch.tracker.dto.Asset;
+import com.moebius.batch.tracker.dto.Assets;
 import com.moebius.batch.tracker.job.TrackerJobs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
+import java.util.Map;
 
 @Slf4j
 @Configuration
@@ -31,15 +31,15 @@ import java.util.Date;
 @EnableConfigurationProperties(UpbitProperties.class)
 @ComponentScan(basePackageClasses = TrackerJobs.class)
 public class TrackerConfiguration {
-    private static final String JOB_NAME = "trackingPriceJob";
-    private static final String STEP_NAME = "trackingPriceStep";
+    private static final String JOB_NAME = "trackingAssetsJob";
+    private static final String STEP_NAME = "trackingAssetsStep";
     private static final int CHUNK_SIZE = 1;
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job trackingPriceJob(JobExecutionListener jobExecutionListener, Step trackingPriceStep) {
+    public Job trackingAssetsJob(JobExecutionListener jobExecutionListener, Step trackingPriceStep) {
         return jobBuilderFactory.get(JOB_NAME)
                 .incrementer(new RunIdIncrementer())
                 .listener(jobExecutionListener)
@@ -48,13 +48,13 @@ public class TrackerConfiguration {
     }
 
     @Bean
-    public Step trackingPriceStep(ItemReader<Asset> priceReader,
-                                  ItemProcessor<Asset, Coin> assetToCoinProcessor,
-                                  ItemWriter<Coin> coinWriter) {
+    public Step trackingAssetsStep(ItemReader<Assets> assetsReader,
+                                  ItemProcessor<Assets, Map<String, Assets>> assetsToCoinProcessor,
+                                  ItemWriter<Map<String, Assets>> coinWriter) {
         return stepBuilderFactory.get(STEP_NAME)
-                .<Asset, Coin>chunk(CHUNK_SIZE)
-                .reader(priceReader)
-                .processor(assetToCoinProcessor)
+                .<Assets, Map<String, Assets>>chunk(CHUNK_SIZE)
+                .reader(assetsReader)
+                .processor(assetsToCoinProcessor)
                 .writer(coinWriter)
                 .build();
     }
