@@ -13,4 +13,15 @@ public class Asset {
 	@JsonProperty("avg_krw_buy_price")
 	private String avgKrwBuyPrice;
 	private boolean modified;
+
+	@Override
+	public String toString() {
+		return "Asset{" +
+			"currency='" + currency + '\'' +
+			", balance='" + balance + '\'' +
+			", locked='" + locked + '\'' +
+			", avgKrwBuyPrice='" + avgKrwBuyPrice + '\'' +
+			", modified=" + modified +
+			'}';
+	}
 }

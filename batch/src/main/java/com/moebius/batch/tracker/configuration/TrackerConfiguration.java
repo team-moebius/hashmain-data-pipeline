@@ -2,15 +2,17 @@ package com.moebius.batch.tracker.configuration;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.moebius.batch.listener.DefaultJobListener;
 import com.moebius.batch.tracker.dto.Assets;
 import com.moebius.batch.tracker.job.TrackerJobs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
@@ -26,11 +28,11 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
 @EnableBatchProcessing
+@RequiredArgsConstructor
 @EnableConfigurationProperties(UpbitProperties.class)
 @ComponentScan(basePackageClasses = TrackerJobs.class)
-public class TrackerConfiguration {
+public class TrackerConfiguration extends DefaultBatchConfigurer {
     private static final String JOB_NAME = "trackingAssetsJob";
     private static final String STEP_NAME = "trackingAssetsStep";
     private static final int CHUNK_SIZE = 1;
@@ -39,15 +41,16 @@ public class TrackerConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job trackingAssetsJob(JobExecutionListener jobExecutionListener, Step trackingPriceStep) {
+    public Job trackingAssetsJob(DefaultJobListener defaultJobListener, Step trackingPriceStep) {
         return jobBuilderFactory.get(JOB_NAME)
                 .incrementer(new RunIdIncrementer())
-                .listener(jobExecutionListener)
+                .listener(defaultJobListener)
                 .start(trackingPriceStep)
                 .build();
     }
 
     @Bean
+    @JobScope
     public Step trackingAssetsStep(ItemReader<Assets> assetsReader,
                                   ItemProcessor<Assets, Map<String, Assets>> assetsToCoinProcessor,
                                   ItemWriter<Map<String, Assets>> coinWriter) {

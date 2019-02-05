@@ -11,11 +11,19 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Properties;
+
 @SpringBootApplication
 public class MoebiusBatchApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MoebiusBatchApplication.class, args);
+		SpringApplication moebius = new SpringApplication(MoebiusBatchApplication.class);
+
+		Properties properties = new Properties();
+		properties.put("spring.batch.job.enabled", "false");
+		moebius.setDefaultProperties(properties);
+
+		moebius.run(args);
 	}
 
 	@Bean
