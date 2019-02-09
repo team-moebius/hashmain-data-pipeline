@@ -17,4 +17,5 @@ public class User extends Base {
 	private String name;
 	private String email;
 	private String password;
+	private String authToken;
 }
