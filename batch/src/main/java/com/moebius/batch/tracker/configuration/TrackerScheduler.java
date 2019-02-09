@@ -26,7 +26,7 @@ public class TrackerScheduler {
 	private final Job trackingAssetsJob;
 
 	@Scheduled(fixedDelay = TRACKER_DELAY)
-	public void launch()
+	public void launchAssetTracker()
 		throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
 		jobLauncher.run(trackingAssetsJob, new JobParametersBuilder().addDate("executedAt", new Date()).toJobParameters());
 	}
