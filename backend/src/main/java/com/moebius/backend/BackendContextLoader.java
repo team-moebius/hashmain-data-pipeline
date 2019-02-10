@@ -6,22 +6,30 @@ import com.mongodb.reactivestreams.client.MongoClients;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
+import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
+
+import java.net.UnknownHostException;
 
 @Slf4j
 @Configuration
 @EnableReactiveMongoRepositories(basePackageClasses = Repositories.class)
-public class BackendContextLoader extends AbstractReactiveMongoConfiguration {
+public class BackendContextLoader {
 
     @Bean
-    @Override
-    public MongoClient reactiveMongoClient() {
+    public MongoClient mongoClient() throws UnknownHostException {
         return MongoClients.create(); // TODO : change to separated mongo db endpoint later.
     }
 
-    @Override
-    protected String getDatabaseName() {
-        return null;
+    @Bean
+    public SimpleReactiveMongoDatabaseFactory mongoDatabaseFactory(MongoClient mongoClient) {
+        return new SimpleReactiveMongoDatabaseFactory(mongoClient, "moebius");
+    }
+
+    @Bean
+    public ReactiveMongoTemplate mongoTemplate(ReactiveMongoDatabaseFactory mongoDatabaseFactory) {
+        return new ReactiveMongoTemplate(mongoDatabaseFactory);
     }
 }
