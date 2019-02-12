@@ -3,6 +3,7 @@ package com.moebius.backend.database.trades;
 import com.moebius.backend.database.commons.Base;
 import com.moebius.backend.database.commons.Exchange;
 import com.moebius.backend.database.commons.Symbol;
+import com.moebius.backend.database.commons.TradeType;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
@@ -17,7 +18,7 @@ public class Trade extends Base {
 	private ObjectId id;
 	private Exchange exchange;
 	private Symbol symbol;
-	private Type type;
+	private TradeType tradeType;
 	private double price;
 	private double volume;
 }

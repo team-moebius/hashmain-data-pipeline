@@ -3,7 +3,7 @@ package com.moebius.backend.database.stoplosses;
 import com.moebius.backend.database.commons.Base;
 import com.moebius.backend.database.commons.Exchange;
 import com.moebius.backend.database.commons.Symbol;
-import com.moebius.backend.database.trades.Type;
+import com.moebius.backend.database.commons.TradeType;
 import com.moebius.backend.database.users.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ public class Stoploss extends Base {
     private User user;
     private Exchange exchange;
     private Symbol symbol;
-    private Type criteria;
+    private TradeType criteria;
     private double price;
     private double volume;
 }
