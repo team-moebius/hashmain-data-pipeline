@@ -1,4 +1,4 @@
-package com.moebius.backend.database.trades;
+package com.moebius.backend.database.commons;
 
 public enum Exchange {
 	UPBIT,

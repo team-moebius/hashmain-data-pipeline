@@ -1,6 +1,6 @@
 package com.moebius.backend.database.users;
 
-import com.moebius.backend.database.Base;
+import com.moebius.backend.database.commons.Base;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User extends Base {
 	@Id
 	private ObjectId id;
-	private boolean isAdmin;
+	private Level level;
 	private String name;
 	private String email;
 	private String password;

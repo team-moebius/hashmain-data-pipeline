@@ -1,4 +1,4 @@
-package com.moebius.backend.database;
+package com.moebius.backend.database.commons;
 
 import lombok.Getter;
 import lombok.Setter;

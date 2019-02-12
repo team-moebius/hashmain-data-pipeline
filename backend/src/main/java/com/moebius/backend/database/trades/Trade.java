@@ -1,11 +1,23 @@
 package com.moebius.backend.database.trades;
 
-public interface Trade {
-	Exchange getExchange();
+import com.moebius.backend.database.commons.Base;
+import com.moebius.backend.database.commons.Exchange;
+import com.moebius.backend.database.commons.Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-	String getMarketCode();
-
-	double getPrice();
-
-	double getVolume();
+@Document(collection = "trades")
+@Getter
+@Setter
+public class Trade extends Base {
+	@Id
+	private ObjectId id;
+	private Exchange exchange;
+	private Symbol symbol;
+	private Type type;
+	private double price;
+	private double volume;
 }

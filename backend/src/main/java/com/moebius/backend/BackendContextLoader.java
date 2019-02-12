@@ -24,12 +24,12 @@ public class BackendContextLoader {
     }
 
     @Bean
-    public SimpleReactiveMongoDatabaseFactory mongoDatabaseFactory(MongoClient mongoClient) {
+    public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongoClient) {
         return new SimpleReactiveMongoDatabaseFactory(mongoClient, "moebius");
     }
 
     @Bean
-    public ReactiveMongoTemplate mongoTemplate(ReactiveMongoDatabaseFactory mongoDatabaseFactory) {
+    public ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory mongoDatabaseFactory) {
         return new ReactiveMongoTemplate(mongoDatabaseFactory);
     }
 }
