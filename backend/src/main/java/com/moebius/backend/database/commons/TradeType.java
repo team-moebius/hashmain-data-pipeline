@@ -4,3 +4,4 @@ public enum TradeType {
 	ASK,
 	BID
 }
+
