@@ -6,10 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -24,9 +25,9 @@ public class AccountController {
 		this.modelMapper = modelMapper;
 	}
 
-	@GetMapping("/{name}")
-	public Mono<UserDto> findUser(@PathVariable String name) {
-		return accountService.findByName(name)
+	@GetMapping("/")
+	public Mono<UserDto> findUser(Mono<Principal> principalMono) {
+		return principalMono.flatMap(principal -> accountService.findByName(principal.getName()))
 			.map(user -> modelMapper.map(user, UserDto.class));
 	}
 }
