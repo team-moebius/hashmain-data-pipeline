@@ -1,11 +1,13 @@
 package com.moebius.api.controller;
 
+import com.moebius.api.dto.AccountResponseDto;
 import com.moebius.api.dto.UserDto;
 import com.moebius.backend.account.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -29,5 +31,11 @@ public class AccountController {
 	public Mono<UserDto> findUser(Mono<Principal> principalMono) {
 		return principalMono.flatMap(principal -> accountService.findByName(principal.getName()))
 			.map(user -> modelMapper.map(user, UserDto.class));
+	}
+
+	@PostMapping("/")
+	public Mono<AccountResponseDto> createUser(UserDto userDto) {
+		return accountService.createAccount()
+			.map(AccountResponseDto::new);
 	}
 }
