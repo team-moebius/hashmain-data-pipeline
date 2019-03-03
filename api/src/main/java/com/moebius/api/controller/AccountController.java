@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -34,7 +35,12 @@ public class AccountController {
 	}
 
 	@PostMapping("/")
-	public Mono<AccountResponseDto> createUser(UserDto userDto) {
+	public Mono<AccountResponseDto> login() {
+		return null;
+	}
+
+	@PostMapping("/signup")
+	public Mono<AccountResponseDto> createUser(@RequestBody UserDto userDto) {
 		return accountService.createAccount()
 			.map(AccountResponseDto::new);
 	}
