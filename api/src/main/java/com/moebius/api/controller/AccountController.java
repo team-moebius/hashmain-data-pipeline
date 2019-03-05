@@ -5,11 +5,13 @@ import com.moebius.api.dto.UserDto;
 import com.moebius.backend.account.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -35,11 +37,13 @@ public class AccountController {
 	}
 
 	@PostMapping("/")
-	public Mono<AccountResponseDto> login(@RequestBody UserDto userDto) {
+	public Mono<AccountResponseDto> login(@RequestParam String email, @RequestParam String password) {
+
 		return null;
 	}
 
 	@PostMapping("/signup")
+	@PreAuthorize("!hasAuthority('USER')")
 	public Mono<AccountResponseDto> createUser(@RequestBody UserDto userDto) {
 		return accountService.createAccount()
 			.map(AccountResponseDto::new);
