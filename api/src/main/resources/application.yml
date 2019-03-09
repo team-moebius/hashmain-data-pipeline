@@ -3,4 +3,6 @@ spring:
     active: local
   data:
     mongodb:
-      uri: mongodb://${USER}:${PASSWORD}@${IP_ADDRESS}:${PORT}
+      # uri: mongodb://${USER}:${PASSWORD}@${IP_ADDRESS}:${PORT}
+      uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true
+
