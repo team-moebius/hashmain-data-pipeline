@@ -1,6 +1,0 @@
-spring:
-  profiles:
-    active: local
-  data:
-    mongodb:
-      uri: mongodb://${USER}:${PASSWORD}@${IP_ADDRESS}:${PORT}
