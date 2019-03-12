@@ -1,10 +1,9 @@
 package com.moebius.backend.database.users;
 
 import com.moebius.backend.database.commons.Base;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -17,12 +16,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Data
-@Document(collection = "users")
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @Builder
-public class User extends Base implements UserDetails {
+@Document(collection = "members")
+@EqualsAndHashCode(callSuper = true)
+public class Member extends Base implements UserDetails {
 	@Id
 	private ObjectId id;
 	private Level level;
