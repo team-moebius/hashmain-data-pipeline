@@ -1,4 +1,4 @@
-package com.moebius.backend.database.users;
+package com.moebius.backend.database.members;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

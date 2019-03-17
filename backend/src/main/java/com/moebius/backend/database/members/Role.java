@@ -1,4 +1,4 @@
-package com.moebius.backend.database.users;
+package com.moebius.backend.database.members;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

@@ -1,4 +1,4 @@
-package com.moebius.backend.database.users;
+package com.moebius.backend.database.members;
 
 import com.moebius.backend.database.commons.Base;
 import lombok.Builder;
