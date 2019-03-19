@@ -44,7 +44,7 @@ public class AccountController {
 
 	@PostMapping("/signup")
 	@PreAuthorize("!hasAuthority('USER')")
-	public Mono<AccountResponseDto> createUser(@RequestBody UserDto userDto) {
+	public Mono<AccountResponseDto> signup(@RequestBody UserDto userDto) {
 		return accountService.createAccount()
 			.map(AccountResponseDto::new);
 	}
