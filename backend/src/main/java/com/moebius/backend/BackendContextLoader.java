@@ -1,6 +1,6 @@
 package com.moebius.backend;
 
-import com.moebius.backend.database.Repositories;
+import com.moebius.backend.domain.Repositories;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.moebius.backend.database.stoplosses;
+package com.moebius.backend.domain.stoplosses;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

@@ -1,4 +1,4 @@
-package com.moebius.backend.database.commons;
+package com.moebius.backend.domain.commons;
 
 public enum Exchange {
 	UPBIT,

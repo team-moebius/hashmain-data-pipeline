@@ -1,4 +1,4 @@
-package com.moebius.backend.database.sales;
+package com.moebius.backend.domain.sales;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

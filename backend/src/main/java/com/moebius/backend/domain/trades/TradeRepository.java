@@ -1,4 +1,4 @@
-package com.moebius.backend.database.trades;
+package com.moebius.backend.domain.trades;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

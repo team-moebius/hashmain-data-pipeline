@@ -1,6 +1,6 @@
-package com.moebius.backend.database.purchases;
+package com.moebius.backend.domain.purchases;
 
-import com.moebius.backend.database.commons.Base;
+import com.moebius.backend.domain.commons.Base;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
