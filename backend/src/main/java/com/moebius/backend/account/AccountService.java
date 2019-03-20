@@ -3,6 +3,7 @@ package com.moebius.backend.account;
 import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.model.AccountResponse;
+import com.moebius.backend.security.MoebiusPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +33,6 @@ public class AccountService implements ReactiveUserDetailsService {
 	public Mono<UserDetails> findByUsername(String email) {
 		return memberRepository.findByEmail(email).switchIfEmpty(Mono.defer(() ->
 			Mono.error(new UsernameNotFoundException("Email is not valid in moebius."))
-		)).map(member -> member);
+		)).map(MoebiusPrincipal::new);
 	}
 }
