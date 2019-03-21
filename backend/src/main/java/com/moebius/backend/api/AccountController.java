@@ -1,9 +1,9 @@
-package com.moebius.api.controller;
+package com.moebius.backend.api;
 
-import com.moebius.api.dto.AccountResponseDto;
-import com.moebius.api.dto.MemberDto;
-import com.moebius.backend.account.AccountService;
-import com.moebius.backend.security.MoebiusPrincipal;
+import com.moebius.backend.dto.AccountResponseDto;
+import com.moebius.backend.dto.MemberDto;
+import com.moebius.backend.service.account.AccountService;
+import com.moebius.backend.model.MoebiusPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;

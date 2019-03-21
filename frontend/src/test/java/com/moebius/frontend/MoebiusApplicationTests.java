@@ -1,4 +1,4 @@
-package com.moebius.api;
+package com.moebius.frontend;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class MoebiusApiApplicationTests {
+public class MoebiusApplicationTests {
 
 	@Test
 	public void contextLoads() {

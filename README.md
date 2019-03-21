@@ -4,8 +4,8 @@
 Moebius is a platform for supporting crypto currency trades conveniently, safely.
  
 ## Structure
-1. Moebius-backend
-2. Moebius-api
+1. Moebius-backend (api, domain, service ...)
+2. Moebius-frontend (mvc)
 3. Moebius-batch
 
 ## Technical specification

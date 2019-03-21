@@ -1,4 +1,4 @@
 rootProject.name = 'moebius'
 include 'backend'
 include 'batch'
-include 'api'
+include 'frontend'

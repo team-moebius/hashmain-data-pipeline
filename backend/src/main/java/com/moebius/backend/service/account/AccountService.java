@@ -1,9 +1,9 @@
-package com.moebius.backend.account;
+package com.moebius.backend.service.account;
 
 import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.model.AccountResponse;
-import com.moebius.backend.security.MoebiusPrincipal;
+import com.moebius.backend.model.MoebiusPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;

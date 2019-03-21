@@ -1,4 +1,4 @@
-package com.moebius.api.dto;
+package com.moebius.backend.dto;
 
 import com.moebius.backend.model.AccountResponse;
 

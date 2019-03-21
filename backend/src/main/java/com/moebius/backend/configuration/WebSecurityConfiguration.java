@@ -1,4 +1,4 @@
-package com.moebius.api.configuration;
+package com.moebius.backend.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

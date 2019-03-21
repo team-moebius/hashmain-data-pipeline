@@ -1,4 +1,4 @@
-package com.moebius.backend.security;
+package com.moebius.backend.model;
 
 import com.moebius.backend.domain.members.Member;
 import lombok.AccessLevel;
