@@ -2,8 +2,8 @@ package com.moebius.backend.api;
 
 import com.moebius.backend.dto.AccountResponseDto;
 import com.moebius.backend.dto.MemberDto;
-import com.moebius.backend.service.account.AccountService;
 import com.moebius.backend.model.MoebiusPrincipal;
+import com.moebius.backend.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.security.Principal;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/v1/account")
@@ -23,12 +21,6 @@ import java.security.Principal;
 public class AccountController {
     private final AccountService accountService;
     private final ModelMapper modelMapper;
-
-    @GetMapping("/")
-    public Mono<MemberDto> findUser(Mono<Principal> principalMono) {
-        return principalMono.flatMap(principal -> accountService.findByName(principal.getName()))
-                .map(user -> modelMapper.map(user, MemberDto.class));
-    }
 
     @PostMapping("/")
     public Mono<MemberDto> login(ServerWebExchange serverWebExchange) {
