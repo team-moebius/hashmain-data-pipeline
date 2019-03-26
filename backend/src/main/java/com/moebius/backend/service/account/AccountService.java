@@ -39,7 +39,6 @@ public class AccountService implements ReactiveUserDetailsService {
 	}
 
 	public long getExpirationMillis(MultiValueMap<String, String> formData) {
-
 		long expirationMillis = properties.getJwt().getExpirationMillis();
 		String expirationMillisStr = formData.getFirst("expirationMillis");
 		if (StringUtils.isNotBlank(expirationMillisStr))
