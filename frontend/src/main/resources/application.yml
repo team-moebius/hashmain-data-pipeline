@@ -4,3 +4,7 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true&streamType=netty
+
+jwt:
+  expirationMillis: 864000000
+  shortLivedMillis: 120000

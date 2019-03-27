@@ -4,18 +4,21 @@ import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.model.AccountResponse;
 import com.moebius.backend.model.MoebiusPrincipal;
-import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
 public class AccountService implements ReactiveUserDetailsService {
+
+	private static final String AUTH_RESPONSE_HEADER_NAME = "Moebius-Authorization";
 
 	private final MemberRepository memberRepository;
 
@@ -38,13 +41,9 @@ public class AccountService implements ReactiveUserDetailsService {
 		)).map(MoebiusPrincipal::new);
 	}
 
-	public long getExpirationMillis(MultiValueMap<String, String> formData) {
+	public void addAuthHeader(ServerHttpResponse response, Member member) {
+		log.debug("Start to add auth header for " + member.getEmail());
 
-		long expirationMillis = properties.getJwt().getExpirationMillis();
-		String expirationMillisStr = formData.getFirst("expirationMillis");
-		if (StringUtils.isNotBlank(expirationMillisStr))
-			expirationMillis = Long.parseLong(expirationMillisStr);
-
-		return expirationMillis;
+		response.getHeaders().add(AUTH_RESPONSE_HEADER_NAME, UUID.randomUUID().toString());
 	}
 }

@@ -32,8 +32,7 @@ public class AccountController {
                 .map(MoebiusPrincipal::currentMember)
                 .zipWith(serverWebExchange.getFormData()).
                         doOnNext(tuple -> {
-
-                            // TODO : Need to implement service for adding auth header
+                            accountService.addAuthHeader(serverWebExchange.getResponse(), tuple.getT1());
                         })
                 // TODO : Need to check this process well (Member -> MemberDto)
                 .map(tuple -> modelMapper.map(tuple.getT1(), MemberDto.class));
