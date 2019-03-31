@@ -12,11 +12,9 @@ import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
-import org.springframework.web.reactive.config.EnableWebFlux;
 
 @Slf4j
 @Configuration
-@EnableWebFlux
 @EnableReactiveMongoRepositories(basePackageClasses = Repositories.class)
 public class BackendContextLoader {
     @Value("${spring.data.mongodb.uri}")

@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@CrossOrigin
 @RestController
-@RequestMapping("/v1/account")
+@RequestMapping("/v1/member")
 @RequiredArgsConstructor
-public class AccountController {
+public class MemberController {
     private final AccountService accountService;
     private final ModelMapper modelMapper;
 
@@ -31,9 +30,7 @@ public class AccountController {
                 .doOnNext(MoebiusPrincipal::eraseCredentials)
                 .map(MoebiusPrincipal::currentMember)
                 .zipWith(serverWebExchange.getFormData()).
-                        doOnNext(tuple -> {
-                            accountService.addAuthHeader(serverWebExchange.getResponse(), tuple.getT1());
-                        })
+                        doOnNext(tuple -> accountService.addAuthHeader(serverWebExchange.getResponse(), tuple.getT1()))
                 // TODO : Need to check this process well (Member -> MemberDto)
                 .map(tuple -> modelMapper.map(tuple.getT1(), MemberDto.class));
 

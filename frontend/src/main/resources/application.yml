@@ -1,10 +1,16 @@
 spring:
   profiles:
     active: local
+  main:
+    web-application-type: reactive
   data:
     mongodb:
       uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true&streamType=netty
+  thymeleaf:
+    reactive:
+      max-chunk-size: 8192
 
-jwt:
-  expirationMillis: 864000000
-  shortLivedMillis: 120000
+logging:
+  level:
+    root: INFO
+    com.moebius: DEBUG
