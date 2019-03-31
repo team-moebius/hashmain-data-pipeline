@@ -15,17 +15,13 @@ public class WebSecurityConfiguration {
 
 	@Bean
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
-		log.debug("Start to initialize webFilterChain ...");
 		return http
 			.csrf().disable()
             .formLogin().disable()
 			.authorizeExchange()
 			.pathMatchers("/",
 					"/login",
-					"/css/**",
-					"/images/**",
-					"/js/**",
-					"/lib/**").permitAll()
+					"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
 			.anyExchange().authenticated()
 			.and().build();

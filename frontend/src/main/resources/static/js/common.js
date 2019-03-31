@@ -1,10 +1,10 @@
 $(document).ready(function(){
 	//	 input placeholder 
 	var forms;
-	forms = $('.l-input_text');
+	forms = $('.l-input-text');
 	forms.placeholder();
 	
-	// popup ´Ý±â
+	// popup ï¿½Ý±ï¿½
 	$('.l-popup_close').on('click', function(){
 		$('.l-popup').removeClass('l-popup--active');
 	});
@@ -29,14 +29,14 @@ $(document).ready(function(){
 	});
 
 	// phone
-	$('.l-phone .l-input_text').on('focus', function(){
+	$('.l-phone .l-input-text').on('focus', function(){
 		$('.l-phone').addClass('l-phone--focus');
-		$('.l-phone .l-input_text').attr('placeholder','');
+		$('.l-phone .l-input-text').attr('placeholder','');
 	});
-	$('.l-phone .l-input_text').on('focusout', function(){
-		if ( $('.l-phone .l-input_text').eq(1).val().length == 0 && $('.l-phone .l-input_text').eq(2).val().length == 0){
+	$('.l-phone .l-input-text').on('focusout', function(){
+		if ( $('.l-phone .l-input-text').eq(1).val().length == 0 && $('.l-phone .l-input-text').eq(2).val().length == 0){
 			$('.l-phone').removeClass('l-phone--focus');
-			$('.l-phone .l-input_text').eq(0).attr('placeholder','Phone number');
+			$('.l-phone .l-input-text').eq(0).attr('placeholder','Phone number');
 		}
 	});
 
