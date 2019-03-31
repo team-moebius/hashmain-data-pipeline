@@ -14,3 +14,10 @@ logging:
   level:
     root: INFO
     com.moebius: DEBUG
+
+logging.group.org.springframework.web.handler-mappings:
+  - 'org.springframework.web.servlet.mvc.method'
+  - 'org.springframework.web.reactive.result.method'
+  - 'org.springframework.web.reactive.function.server.support'
+
+logging.level.org.springframework.web.handler-mappings: TRACE
