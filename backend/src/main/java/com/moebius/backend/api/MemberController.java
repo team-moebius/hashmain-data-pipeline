@@ -10,7 +10,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -41,5 +44,17 @@ public class MemberController {
     public Mono<AccountResponseDto> signup(@RequestBody MemberDto memberDto) {
         return accountService.createAccount()
                 .map(AccountResponseDto::new);
+    }
+
+    @PostMapping("/find/password")
+    @PreAuthorize("!hasAuthority('USER')")
+    public Mono<AccountResponseDto> findPassword(@RequestBody MemberDto memberDto) {
+        return null;
+    }
+
+    @PostMapping("/verify/member")
+    @PreAuthorize("!hasAuthority('USER')")
+    public Mono<AccountResponseDto> verifyMember(@RequestBody MemberDto memberDto) {
+        return null;
     }
 }
