@@ -34,7 +34,6 @@ public class MemberController {
                 .map(MoebiusPrincipal::currentMember)
                 .zipWith(serverWebExchange.getFormData()).
                         doOnNext(tuple -> accountService.addAuthHeader(serverWebExchange.getResponse(), tuple.getT1()))
-                // TODO : Need to check this process well (Member -> MemberDto)
                 .map(tuple -> modelMapper.map(tuple.getT1(), MemberDto.class));
 
     }
