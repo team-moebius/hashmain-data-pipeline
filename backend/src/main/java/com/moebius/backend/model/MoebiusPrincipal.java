@@ -57,7 +57,7 @@ public class MoebiusPrincipal implements UserDetails, CredentialsContainer {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return false;
     }
 
     @Override
