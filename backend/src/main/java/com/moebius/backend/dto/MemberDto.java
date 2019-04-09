@@ -13,5 +13,4 @@ public class MemberDto {
 	@Email
 	private String email;
 	private String password;
-
 }

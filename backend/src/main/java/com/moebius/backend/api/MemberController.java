@@ -56,4 +56,6 @@ public class MemberController {
     public Mono<AccountResponseDto> verifyMember(@RequestBody MemberDto memberDto) {
         return null;
     }
+
+
 }
