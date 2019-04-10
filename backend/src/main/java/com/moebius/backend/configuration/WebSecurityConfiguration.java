@@ -20,6 +20,8 @@ public class WebSecurityConfiguration {
 			.formLogin().disable()
 			.authorizeExchange()
 			.pathMatchers("/",
+				"/swagger-ui.html",
+				"/v2/api-docs",
 				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")

@@ -2,8 +2,7 @@ package com.moebius.backend.service.member;
 
 import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
-import com.moebius.backend.dto.MemberDto;
-import com.moebius.backend.model.AccountResponse;
+import com.moebius.backend.dto.LoginDto;
 import com.moebius.backend.model.MoebiusPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +31,8 @@ public class MemberService implements ReactiveUserDetailsService {
 		return memberRepository.findByName(name);
 	}
 
-	public Mono<AccountResponse> createAccount() {
-		return Mono.just(new AccountResponse());
+	public Mono<ResponseEntity<?>> createAccount() {
+		return Mono.just(ResponseEntity.ok().build());
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class MemberService implements ReactiveUserDetailsService {
 		response.getHeaders().add(AUTH_RESPONSE_HEADER_NAME, UUID.randomUUID().toString());
 	}
 
-	public Mono<ResponseEntity<?>> login(MemberDto memberDto) {
+	public Mono<ResponseEntity<?>> login(LoginDto loginDto) {
 //		ReactiveSecurityContextHolder.getContext()
 //				.map(SecurityContext::getAuthentication)
 //				.map(Authentication::getPrincipal)

@@ -23,6 +23,10 @@ public class FrontendContextLoader implements WebFluxConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/swagger-ui.html**")
+            .addResourceLocations("classpath:/resources/swagger-ui.html");
+        registry.addResourceHandler("/webjars/**")
+            .addResourceLocations("classpath:/resources/webjars/");
         registry.addResourceHandler("/static/**")
             .addResourceLocations("classpath:/static/");
     }
