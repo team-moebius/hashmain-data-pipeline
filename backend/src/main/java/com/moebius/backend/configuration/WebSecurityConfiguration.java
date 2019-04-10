@@ -17,11 +17,11 @@ public class WebSecurityConfiguration {
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
 		return http
 			.csrf().disable()
-            .formLogin().disable()
+			.formLogin().disable()
 			.authorizeExchange()
 			.pathMatchers("/",
-					"/login",
-					"/static/**").permitAll()
+				"/login",
+				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
 			.anyExchange().authenticated()
 			.and().build();
