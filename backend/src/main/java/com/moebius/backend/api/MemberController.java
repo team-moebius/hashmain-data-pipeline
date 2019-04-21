@@ -22,7 +22,7 @@ public class MemberController {
 	private final MemberService memberService;
 	private final ModelMapper modelMapper;
 
-	@ApiOperation("로그인, 성공할 경우 Bearer token이 body에 담겨져 전달된다.")
+	@ApiOperation("로그인, 성공할 경우 Json web token이 body에 담겨져 전달된다.")
 	@PostMapping("/member")
 	public Mono<ResponseEntity<?>> login(@RequestBody @Valid LoginDto loginDto) {
 		return memberService.login(loginDto);
@@ -31,7 +31,7 @@ public class MemberController {
 	@ApiOperation("회원가입")
 	@PostMapping("/member/signup")
 	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid SignupDto signupDto) {
-		return memberService.createAccount();
+		return memberService.createAccount(signupDto);
 	}
 
 	@ApiOperation("비밀번호 초기화")

@@ -5,7 +5,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.security.Key;
@@ -14,14 +13,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class JwtUtil implements Serializable {
 	private static final long serialVersionUID = 7286015171049934299L;
 
 	private static final Key secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 	private static final long expirationTime = 28800L;
 
-	public String generateToken(MoebiusPrincipal principal) {
+	public static String generateToken(MoebiusPrincipal principal) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("role", principal.getAuthorities());
 
@@ -35,19 +33,15 @@ public class JwtUtil implements Serializable {
 			.compact();
 	}
 
-	Claims getAllClaimsFromToken(String token) {
+	static Claims getAllClaimsFromToken(String token) {
 		return Jwts.parser().setSigningKey(Base64.getEncoder().encodeToString(secret.getEncoded())).parseClaimsJws(token).getBody();
 	}
 
-	String getUsernameFromToken(String token) {
+	static String getUsernameFromToken(String token) {
 		return getAllClaimsFromToken(token).getSubject();
 	}
 
-	Boolean isTokenExpired(String token) {
-		return getExpirationDateFromToken(token).before(new Date());
-	}
-
-	private Date getExpirationDateFromToken(String token) {
-		return getAllClaimsFromToken(token).getExpiration();
+	static Boolean isTokenExpired(String token) {
+		return getAllClaimsFromToken(token).getExpiration().before(new Date());
 	}
 }
