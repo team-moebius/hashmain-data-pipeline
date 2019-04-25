@@ -17,7 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+
+import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
+import static com.moebius.backend.utils.ThreadScheduler.IO;
 
 @Slf4j
 @Service
@@ -47,8 +49,8 @@ public class MemberService implements ReactiveUserDetailsService {
 		Hooks.onOperatorDebug();
 
 		return memberRepository.findByEmail(loginDto.getEmail())
-			.subscribeOn(Schedulers.elastic())
-			.publishOn(Schedulers.parallel())
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
 			.map(member -> {
 				if (passwordEncoder.encode(loginDto.getPassword()).equals(member.getPassword())) {
 					return ResponseEntity.ok(JwtUtil.generateToken(new MoebiusPrincipal(member)));
