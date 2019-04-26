@@ -1,5 +1,8 @@
 package com.moebius.backend.configuration;
 
+import com.moebius.backend.configuration.security.AuthenticationManager;
+import com.moebius.backend.configuration.security.SecurityContextRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -10,15 +13,21 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class WebSecurityConfiguration {
+	private final AuthenticationManager authenticationManager;
+	private final SecurityContextRepository securityContextRepository;
 
 	@Bean
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
 		return http
 			.csrf().disable()
 			.formLogin().disable()
+			.httpBasic().disable()
+			.authenticationManager(authenticationManager)
+			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
 			.pathMatchers("/",
 				"/swagger-ui.html",
@@ -26,6 +35,7 @@ public class WebSecurityConfiguration {
 				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
+			.pathMatchers("/member").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and().build();
 	}

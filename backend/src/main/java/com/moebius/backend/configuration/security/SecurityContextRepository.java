@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
+
 @Repository
 @RequiredArgsConstructor
 public class SecurityContextRepository implements ServerSecurityContextRepository {
@@ -34,7 +36,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         if (authHeader != null && authHeader.startsWith(AUTH_PREFIX)) {
             String authToken = authHeader.substring(TOKEN_STARTING_INDEX);
             // TODO : Need to check out parameters in constructor (maybe need to be refactored)
-            Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
+            Authentication auth = new UsernamePasswordAuthenticationToken(exchange.getPrincipal().map(Principal::getName), authToken);
             return authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
         }
         return Mono.empty();

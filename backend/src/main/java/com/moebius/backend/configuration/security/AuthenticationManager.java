@@ -19,6 +19,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     // FIXME : Need to refactor these code as chained one
     public Mono<Authentication> authenticate(Authentication authentication) {
+
         String authToken = authentication.getCredentials().toString();
 
         String username;
@@ -32,7 +33,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
             Set<String> roles = claims.get("role", Set.class);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 username,
-                null,
+                authToken,
                 roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet())
             );
             return Mono.just(auth);

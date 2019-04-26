@@ -34,7 +34,10 @@ public class JwtUtil implements Serializable {
 	}
 
 	static Claims getAllClaimsFromToken(String token) {
-		return Jwts.parser().setSigningKey(Base64.getEncoder().encodeToString(secret.getEncoded())).parseClaimsJws(token).getBody();
+		return Jwts.parser()
+			.setSigningKey(Base64.getEncoder().encodeToString(secret.getEncoded()))
+			.parseClaimsJws(token)
+			.getBody();
 	}
 
 	static String getUsernameFromToken(String token) {
