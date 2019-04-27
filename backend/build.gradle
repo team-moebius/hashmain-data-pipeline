@@ -13,3 +13,7 @@ dependencies {
 			'io.jsonwebtoken:jjwt-jackson:0.10.5'
 	testImplementation('org.springframework.security:spring-security-test')
 }
+
+bootJar {
+	mainClassName = 'com.moebius.frontend.MoebiusApplication'
+}
