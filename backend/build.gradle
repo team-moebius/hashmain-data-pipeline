@@ -14,6 +14,8 @@ dependencies {
 	testImplementation('org.springframework.security:spring-security-test')
 }
 
-bootJar {
-	mainClassName = 'com.moebius.frontend.MoebiusApplication'
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+	}
 }
