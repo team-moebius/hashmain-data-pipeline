@@ -1,7 +1,6 @@
 package com.moebius.backend.domain.members;
 
 import com.moebius.backend.domain.commons.Base;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,13 +29,10 @@ public class Member extends Base {
 	private String password;
 	private Set<ApiKey> apiKeys;
 
-	@Builder.Default()
 	private boolean isActive = false;
 
-	@Builder.Default()
 	private String authCode = "";
 
-	@Builder.Default()
 	@DBRef
 	private Set<Role> roles = new HashSet<>();
 }

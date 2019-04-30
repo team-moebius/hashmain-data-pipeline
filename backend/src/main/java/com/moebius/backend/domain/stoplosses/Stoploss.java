@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Stoploss extends Base {
     @Id
     private ObjectId id;
-    private Member user;
+    private Member member;
     private Exchange exchange;
     private Symbol symbol;
     private TradeType criteria;
