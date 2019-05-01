@@ -33,6 +33,8 @@ public class MemberService implements ReactiveUserDetailsService {
 		Hooks.onOperatorDebug();
 
 		return memberRepository.save(memberAssembler.toMember(signupDto))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
 			.map(member -> member != null ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build());
 	}
 
@@ -40,9 +42,11 @@ public class MemberService implements ReactiveUserDetailsService {
 	public Mono<UserDetails> findByUsername(String email) {
 		Hooks.onOperatorDebug();
 
-		return memberRepository.findByEmail(email).switchIfEmpty(Mono.defer(() ->
-			Mono.error(new UsernameNotFoundException("Email is not valid in moebius."))
-		)).map(MoebiusPrincipal::new);
+		return memberRepository.findByEmail(email)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new UsernameNotFoundException("Email is not valid in moebius."))))
+			.map(MoebiusPrincipal::new);
 	}
 
 	public Mono<ResponseEntity<?>> login(LoginDto loginDto) {

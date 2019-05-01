@@ -7,7 +7,6 @@ import com.moebius.backend.service.member.MemberService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,6 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class MemberController {
 	private final MemberService memberService;
-	private final ModelMapper modelMapper;
 
 	@ApiOperation("로그인, 성공할 경우 Json web token이 body에 담겨져 전달된다.")
 	@PostMapping("/member")
@@ -58,6 +56,5 @@ public class MemberController {
 	public Mono<ResponseEntity<MemberDto>> getMember(@PathVariable String id) {
 		return null;
 	}
-
 
 }
