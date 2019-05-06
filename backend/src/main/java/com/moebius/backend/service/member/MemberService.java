@@ -6,6 +6,7 @@ import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.dto.LoginDto;
 import com.moebius.backend.dto.SignupDto;
 import com.moebius.backend.model.MoebiusPrincipal;
+import com.moebius.backend.service.common.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ public class MemberService implements ReactiveUserDetailsService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MemberAssembler memberAssembler;
+	private final EmailService emailService;
 
 	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
 		Hooks.onOperatorDebug();
@@ -64,6 +66,11 @@ public class MemberService implements ReactiveUserDetailsService {
 			.log();
 	}
 
+	public Mono<ResponseEntity<?>> findPassword(String email) {
+		Hooks.onOperatorDebug();
+
+		return emailService.findPassword(email);
+	}
 	// Reference
 //	public Mono<ResponseEntity<?>> login(LoginDto loginDto) {
 //		ReactiveSecurityContextHolder.getContext()
