@@ -4,10 +4,9 @@ import com.moebius.backend.domain.commons.Base;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
@@ -17,7 +16,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Document(collection = "members")
-@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 public class Member extends Base {
 	@Id
@@ -25,14 +23,12 @@ public class Member extends Base {
 	private Level level;
 	private String name;
 	@Email
+	@Indexed(unique = true)
 	private String email;
 	private String password;
-	private Set<ApiKey> apiKeys;
 
 	private boolean isActive = false;
 
-	private String authCode = "";
-
-	@DBRef
+	private Set<ApiKey> apiKeys = new HashSet<>();
 	private Set<Role> roles = new HashSet<>();
 }

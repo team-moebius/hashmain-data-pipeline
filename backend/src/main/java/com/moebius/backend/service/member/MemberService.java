@@ -5,10 +5,12 @@ import com.moebius.backend.configuration.security.JwtUtil;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.dto.LoginDto;
 import com.moebius.backend.dto.SignupDto;
+import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.EmailNotFoundException;
 import com.moebius.backend.model.MoebiusPrincipal;
-import com.moebius.backend.service.common.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -29,21 +31,9 @@ public class MemberService implements ReactiveUserDetailsService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MemberAssembler memberAssembler;
-	private final EmailService emailService;
-
-	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
-		Hooks.onOperatorDebug();
-
-		return memberRepository.save(memberAssembler.toMember(signupDto))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
-			.map(member -> member != null ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build());
-	}
 
 	@Override
 	public Mono<UserDetails> findByUsername(String email) {
-		Hooks.onOperatorDebug();
-
 		return memberRepository.findByEmail(email)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
@@ -51,37 +41,32 @@ public class MemberService implements ReactiveUserDetailsService {
 			.map(MoebiusPrincipal::new);
 	}
 
-	public Mono<ResponseEntity<?>> login(LoginDto loginDto) {
+	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
+		return memberRepository.save(memberAssembler.toMember(signupDto))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.doOnError(throwable -> {
+				log.error("An error occurred. - {}", throwable.getMessage());
+				if (throwable instanceof DuplicateKeyException) {
+					throw new DuplicateDataException(signupDto.getEmail() + " already exists.");
+				}
+			})
+			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
+	}
+
+	public Mono<ResponseEntity<String>> login(LoginDto loginDto) {
 		Hooks.onOperatorDebug();
 
 		return memberRepository.findByEmail(loginDto.getEmail())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new EmailNotFoundException(loginDto.getEmail() + " is not found."))))
 			.map(member -> {
-				if (passwordEncoder.encode(loginDto.getPassword()).equals(member.getPassword())) {
+				if (passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
 					return ResponseEntity.ok(JwtUtil.generateToken(new MoebiusPrincipal(member)));
 				}
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password is wrong.");
 			})
 			.log();
 	}
-
-	public Mono<ResponseEntity<?>> findPassword(String email) {
-		Hooks.onOperatorDebug();
-
-		return emailService.findPassword(email);
-	}
-	// Reference
-//	public Mono<ResponseEntity<?>> login(LoginDto loginDto) {
-//		ReactiveSecurityContextHolder.getContext()
-//				.map(SecurityContext::getAuthentication)
-//				.map(Authentication::getPrincipal)
-//				.cast(MoebiusPrincipal.class)
-//				.doOnNext(MoebiusPrincipal::eraseCredentials)
-//				.map(MoebiusPrincipal::currentMember)
-//				.zipWith(serverWebExchange.getFormData()).
-//				doOnNext(tuple -> memberService.addAuthHeader(serverWebExchange.getResponse(), tuple.getT1()))
-//				.map(tuple -> modelMapper.map(tuple.getT1(), MemberDto .class));
-//		return null;
-//	}
 }

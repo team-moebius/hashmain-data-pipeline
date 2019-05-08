@@ -32,6 +32,7 @@ public class WebSecurityConfiguration {
 			.pathMatchers("/",
 				"/swagger-ui.html",
 				"/v2/api-docs",
+				"/api/member/**",
 				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")

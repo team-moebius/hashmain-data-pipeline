@@ -3,6 +3,7 @@ package com.moebius.backend.api;
 import com.moebius.backend.dto.LoginDto;
 import com.moebius.backend.dto.MemberDto;
 import com.moebius.backend.dto.SignupDto;
+import com.moebius.backend.dto.VerificationDto;
 import com.moebius.backend.service.member.MemberService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,7 +23,7 @@ public class MemberController {
 
 	@ApiOperation("로그인, 성공할 경우 Json web token이 body에 담겨져 전달된다.")
 	@PostMapping("/member")
-	public Mono<ResponseEntity<?>> login(@RequestBody @Valid LoginDto loginDto) {
+	public Mono<ResponseEntity<String>> login(@RequestBody @Valid LoginDto loginDto) {
 		return memberService.login(loginDto);
 	}
 
@@ -46,7 +47,7 @@ public class MemberController {
 
 	@ApiOperation("이메일 인증 확인")
 	@PostMapping("/member/email/verification")
-	public Mono<ResponseEntity<?>> verifyEmail(@RequestBody @ApiParam(value = "인증 확인용 코드, 이메일 인증 요청시 해당 이메일로 발송된다.", required = true) String authCode) {
+	public Mono<ResponseEntity<?>> verifyEmail(@RequestBody @Valid VerificationDto verificationDto) {
 		return null;
 	}
 

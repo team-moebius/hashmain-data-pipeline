@@ -2,14 +2,14 @@ package com.moebius.backend.dto;
 
 import com.moebius.backend.domain.members.ApiKey;
 import com.moebius.backend.domain.members.Level;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import java.util.Set;
 
 @Getter
-@Builder
+@Setter
 public class MemberDto {
 	private Level level;
 	private String name;

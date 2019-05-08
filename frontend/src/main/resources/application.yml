@@ -6,6 +6,7 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true&streamType=netty
+      database: moebius
   thymeleaf:
     reactive:
       max-chunk-size: 8192

@@ -1,13 +1,13 @@
 package com.moebius.backend.dto;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@Builder
+@Setter
 public class SignupDto {
 	@NotNull
 	private String name;
