@@ -2,7 +2,6 @@ package com.moebius.backend.assembler;
 
 import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.dto.SignupDto;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 public class MemberAssembler {
 	private final PasswordEncoder passwordEncoder;
 
-	public Member toMember(@NonNull SignupDto signupDto) {
+	public Member toMember(SignupDto signupDto) {
 		Member member = new Member();
 		member.setName(signupDto.getName());
 		member.setEmail(signupDto.getEmail());

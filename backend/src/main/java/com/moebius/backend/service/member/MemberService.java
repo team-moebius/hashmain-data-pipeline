@@ -2,6 +2,7 @@ package com.moebius.backend.service.member;
 
 import com.moebius.backend.assembler.MemberAssembler;
 import com.moebius.backend.configuration.security.JwtUtil;
+import com.moebius.backend.constant.ExceptionMessage;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.dto.LoginDto;
 import com.moebius.backend.dto.SignupDto;
@@ -37,7 +38,7 @@ public class MemberService implements ReactiveUserDetailsService {
 		return memberRepository.findByEmail(email)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new UsernameNotFoundException("Email is not valid in moebius."))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new UsernameNotFoundException(ExceptionMessage.INVALID_EMAIL.getMessage()))))
 			.map(MoebiusPrincipal::new);
 	}
 
