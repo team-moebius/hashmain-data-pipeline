@@ -2,10 +2,8 @@ package com.moebius.backend.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public enum ExceptionMessage {
 	WRONG_PASSWORD("Password is wrong."),
