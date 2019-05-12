@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ExceptionMessage {
+public enum MoebiusException {
 	WRONG_PASSWORD("Password is wrong."),
 	INVALID_EMAIL("Email is not valid in moebius."),
 	DUPLICATED_DATA("The data already exists.") {

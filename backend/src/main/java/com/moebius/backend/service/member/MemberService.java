@@ -7,7 +7,7 @@ import com.moebius.backend.dto.LoginDto;
 import com.moebius.backend.dto.SignupDto;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.EmailNotFoundException;
-import com.moebius.backend.exception.ExceptionMessage;
+import com.moebius.backend.exception.MoebiusException;
 import com.moebius.backend.model.MoebiusPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class MemberService implements ReactiveUserDetailsService {
 		return memberRepository.findByEmail(email)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new UsernameNotFoundException(ExceptionMessage.INVALID_EMAIL.getMessage()))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new UsernameNotFoundException(MoebiusException.INVALID_EMAIL.getMessage()))))
 			.map(MoebiusPrincipal::new);
 	}
 
@@ -49,7 +49,7 @@ public class MemberService implements ReactiveUserDetailsService {
 			.doOnError(throwable -> {
 				log.error("An error occurred. - {}", throwable.getMessage());
 				if (throwable instanceof DuplicateKeyException) {
-					throw new DuplicateDataException(ExceptionMessage.DUPLICATED_DATA.getMessage(signupDto.getEmail()));
+					throw new DuplicateDataException(MoebiusException.DUPLICATED_DATA.getMessage(signupDto.getEmail()));
 				}
 			})
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
@@ -62,12 +62,12 @@ public class MemberService implements ReactiveUserDetailsService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(
-				Mono.defer(() -> Mono.error(new EmailNotFoundException(ExceptionMessage.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
+				Mono.defer(() -> Mono.error(new EmailNotFoundException(MoebiusException.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
 			.map(member -> {
 				if (passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
 					return ResponseEntity.ok(JwtUtil.generateToken(new MoebiusPrincipal(member)));
 				}
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionMessage.WRONG_PASSWORD.getMessage());
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(MoebiusException.WRONG_PASSWORD.getMessage());
 			})
 			.log();
 	}
