@@ -1,5 +1,7 @@
 package com.moebius.batch.tracker;
 
-public abstract class AbstractTracker {
+import com.moebius.batch.model.Coin;
 
+public abstract class AbstractTracker {
+	abstract Coin trackByName();
 }
