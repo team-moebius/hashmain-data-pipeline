@@ -1,0 +1,61 @@
+@charset "utf-8";
+
+/*--------------------------------------------------------------------------------------------------------------
+ ************************ common - layout ************************
+ *--------------------------------------------------------------------------------------------------------------*/
+html,body {height: 100%;}
+body {background-color: #13253f;}
+
+/*--------------------------------------------------------------------------------------------------------------
+ ************************ common - contents ************************
+ *--------------------------------------------------------------------------------------------------------------*/
+/* ==================================================== 로그인, 회원가입 */
+#wrap-member {width: 100%;height: 100%;position: relative;z-index: 0;} 
+.inner-member {background-color: #13253f;display: table;width: 100%;height: 100%;} 
+.ly-member {display: table-cell;vertical-align: middle;} 
+.s-member {width: 310px;margin: 0 auto;padding: 20px 0;position: relative;} 
+.s-member .mb-tab {padding-bottom: 20px;overflow: hidden;}
+.s-member .mb-tab:after {content: '';display: block;clear: both;}
+.s-member .mb-tab-line {display: block;width: 48px;height: 2px;background-color: #218cde;position: absolute;left: 53.5px;top: 54px;transition: all 0.3s;}
+.s-member .mb-tab li {float: left;width: 50%;} 
+.s-member .mb-tab li a {display: block;font-size: 16px;color: #7f7f7f;text-align: center;transition: color 0.3s;} 
+.s-member .mb-tab li a span {display: inline-block;padding-bottom: 10px;} 
+.s-member .mb-tab li a:hover {color: #c9cfe8;} 
+.s-member .mb-tab .on a, .s-member .mb-tab .on a:hover {color: #1e8cde;} 
+/*.s-member .mb-tab .on span {border-bottom: 2px solid #3a7bb5;} */
+.s-member .txt1 {font-size:12px;color: #c9cfe8;} 
+.s-member .txt1 em {color: #1e8cde;} 
+.s-member .txt2 {padding: 10px 0 15px 0;text-align: center;position: relative;} 
+.s-member .txt2:before {content: '';display: block;width: 100%;height: 1px;background-color: #fff;opacity: 0.1;position: absolute;left: 0;top: 22px;}
+.s-member .txt2 span {display: inline-block;font-size:12px;padding: 0 8px;color: #c9cfe8;background-color: #13253f;position: relative;z-index: 1;} 
+.s-member .a-row {margin-bottom: 8px;} 
+.s-member .a-row .btn-base {width: 100%;} 
+.sm-password-reset .pr-tit {font-size:40px;color: #c9cfe8;font-weight: bold;padding-top: 70px;background: url(../images/icon-passwordreset.png) 50% 0 no-repeat;-webkit-background-size: 76px;background-size: 76px;}
+.sm-password-reset .btxtl-st1 li {margin-top: 5px;}
+.sm-password-reset .area-inp {margin-bottom: 0;min-height: 98px;}
+.link-u-state {display: none;}
+.sm-login .isalert-p {top: 73px;}
+
+
+/*--------------------------------------------------------------------------------------------------------------
+ ************************ mobile ************************
+ *--------------------------------------------------------------------------------------------------------------*/
+@media all and (max-width:780px) { 	
+	/* ==================================================== 로그인, 회원가입 */
+	.s-member {width: 250px;} 
+	.s-member .a-mt10 {margin-top: 8px !important;}
+	.s-member .a-mt20 {margin-top: 16px !important;}
+	.s-member .mb-tab li a {font-size: 14px;} 
+	.s-member .mb-tab-line {width: 35px;left: 44px;top: 49px;}
+	.s-member .txt1 {font-size:10px;} 
+	.s-member .txt2 {padding: 10px 0 15px 0;text-align: center;position: relative;} 
+	.s-member .txt2:before {top: 22px;}
+	.s-member .txt2 span {font-size:10px;padding: 0 8px;} 
+	.sm-password-reset .pr-tit {font-size:30px;padding-top: 60px;-webkit-background-size: 60px;background-size: 60px;}
+	.sm-password-reset .btxtl-st1 li {margin-top: 5px;}
+	.sm-password-reset .area-inp {margin-bottom: 0;min-height: 78px;}
+	.link-u-state {display: block;width: 20px;height: 20px;background: url(../images/icon-arrow.png) 50% 50% no-repeat;-webkit-background-size: 19px;background-size: 19px;position: fixed;right: 14px;top: 14px;}
+	.sm-login .isalert-p {top: 64px;}
+	.sm-login .txt1 {letter-spacing: 0.5px;}
+	.sm-join .btxtl-st1 > li {letter-spacing: 0.5px;}
+}
