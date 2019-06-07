@@ -30,12 +30,12 @@ public class WebSecurityConfiguration {
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
 			.pathMatchers("/",
-				"/swagger-ui.html",
 				"/api/member/**",
 				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/member", "/v2/api-docs").hasAuthority("MEMBER")
+			.pathMatchers("/member",
+				"/v2/api-docs").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and().build();
 	}

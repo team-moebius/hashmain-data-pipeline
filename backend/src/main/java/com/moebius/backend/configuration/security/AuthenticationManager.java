@@ -3,6 +3,7 @@ package com.moebius.backend.configuration.security;
 import com.moebius.backend.domain.members.Role;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthenticationManager implements ReactiveAuthenticationManager {
@@ -21,13 +23,13 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 	@Override
 	// FIXME : Need to refactor these code as chained one
 	public Mono<Authentication> authenticate(Authentication authentication) {
-
 		String authToken = authentication.getCredentials().toString();
-
 		Claims claims;
+
 		try {
 			claims = JwtUtil.getAllClaimsFromToken(authToken);
 		} catch (Exception e) {
+			log.warn("There is an exception on getAllClaimsFromToken.", e);
 			claims = null;
 		}
 		if (claims != null && !JwtUtil.isTokenExpired(claims)) {
