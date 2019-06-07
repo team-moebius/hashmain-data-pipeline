@@ -16,8 +16,9 @@ import java.util.Map;
 public class JwtUtil implements Serializable {
 	private static final long serialVersionUID = 7286015171049934299L;
 
+	private static final String ISSUER = "MOEBIUS";
 	private static final Key secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-	private static final long expirationTime = 28800L;
+	private static final long expirationTime = 300000L;
 
 	public static String generateToken(MoebiusPrincipal principal) {
 		Map<String, Object> claims = new HashMap<>();
@@ -26,8 +27,9 @@ public class JwtUtil implements Serializable {
 		Date createdAt = new Date();
 		return Jwts.builder()
 			.setClaims(claims)
-			.setSubject(principal.getName())
+			.setSubject(principal.getUsername())
 			.setIssuedAt(createdAt)
+			.setIssuer(ISSUER)
 			.setExpiration(new Date(createdAt.getTime() + expirationTime))
 			.signWith(secret)
 			.compact();
@@ -40,11 +42,7 @@ public class JwtUtil implements Serializable {
 			.getBody();
 	}
 
-	static String getUsernameFromToken(String token) {
-		return getAllClaimsFromToken(token).getSubject();
-	}
-
-	static Boolean isTokenExpired(String token) {
-		return getAllClaimsFromToken(token).getExpiration().before(new Date());
+	static Boolean isTokenExpired(Claims claims) {
+		return claims.getExpiration().before(new Date());
 	}
 }

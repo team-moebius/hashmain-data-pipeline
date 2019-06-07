@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,17 +22,17 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
         String authToken = authentication.getCredentials().toString();
 
-        String username;
+        Claims claims;
         try {
-            username = JwtUtil.getUsernameFromToken(authToken);
+            claims = JwtUtil.getAllClaimsFromToken(authToken);
         } catch (Exception e) {
-            username = null;
+            claims = null;
         }
-        if (username != null && JwtUtil.isTokenExpired(authToken)) {
-            Claims claims = JwtUtil.getAllClaimsFromToken(authToken);
-            Set<String> roles = claims.get("role", Set.class);
+        if (claims != null && !JwtUtil.isTokenExpired(claims)) {
+            String userName = claims.getSubject();
+            List<String> roles = claims.get("roles", List.class);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                username,
+                userName,
                 authToken,
                 roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet())
             );
