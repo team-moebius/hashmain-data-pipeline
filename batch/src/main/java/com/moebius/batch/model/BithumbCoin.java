@@ -8,6 +8,6 @@ public class BithumbCoin extends Coin {
 
 	@Override
 	Class<?> getConcreteClass() {
-		return null;
+		return BithumbCoin.class;
 	}
 }

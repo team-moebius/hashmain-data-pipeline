@@ -23,11 +23,6 @@ public class MoebiusPrincipal implements UserDetails, CredentialsContainer {
     private final Member member;
 
     private Map<String, Object> attributes;
-    private String name;
-
-    public Member currentMember() {
-        return member;
-    }
 
     @Override
     public void eraseCredentials() {

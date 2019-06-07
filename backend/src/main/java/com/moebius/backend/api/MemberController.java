@@ -13,8 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -23,13 +21,13 @@ public class MemberController {
 
 	@ApiOperation("로그인, 성공할 경우 Json web token이 body에 담겨져 전달된다.")
 	@PostMapping("/member")
-	public Mono<ResponseEntity<String>> login(@RequestBody @Valid LoginDto loginDto) {
+	public Mono<ResponseEntity<String>> login(@RequestBody LoginDto loginDto) {
 		return memberService.login(loginDto);
 	}
 
 	@ApiOperation("회원가입")
 	@PostMapping("/member/signup")
-	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid SignupDto signupDto) {
+	public Mono<ResponseEntity<?>> signup(@RequestBody SignupDto signupDto) {
 		return memberService.createAccount(signupDto);
 	}
 
@@ -47,7 +45,7 @@ public class MemberController {
 
 	@ApiOperation("이메일 인증 확인")
 	@PostMapping("/member/email/verification")
-	public Mono<ResponseEntity<?>> verifyEmail(@RequestBody @Valid VerificationDto verificationDto) {
+	public Mono<ResponseEntity<?>> verifyEmail(@RequestBody VerificationDto verificationDto) {
 		return null;
 	}
 
