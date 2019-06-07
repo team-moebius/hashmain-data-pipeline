@@ -1,17 +1,20 @@
 import React from 'react';
 
-class InputBox extends React.Component {
+class Button extends React.Component {
     static defaultProps = {
+        classType: "",
         buttonType: "btn-st0",
         buttonName: "Input the Button Name"
     }
     render(){
         return  (
-            <span class={`btn-base ${this.props.buttonType}`}>
-                <input type="text" class="input-base inp-st2" placeholder={this.props.buttonName}></input>
-            </span>
+            <div className={`a-row ${this.props.classType}`}>
+                <span class={`btn-base ${this.props.buttonType}`}>
+                    <button>{this.props.buttonName}</button>
+                </span>
+            </div>
         );
     }
 }
 
-export default InputBox;
+export default Button;

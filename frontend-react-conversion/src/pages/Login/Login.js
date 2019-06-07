@@ -9,41 +9,55 @@ class Login extends React.Component {
     constructor() {
         super();
         this.state = {
-            // 0 to login, 1 to join
-            clicked : "#mb-login",
-            href_list : {"#mb-login" : "로그인", "#mb-join" : "회원가입"}
+            mode: 'login',
+            mode_list: [
+                {id:0, title: "login", desc: "로그인"},
+                {id:1, title: "join", desc: "회원가입"}
+            ]
         };
     }
+    
     handleClick(key) {
-        // e.preventDefault;
         this.setState({
-            clicked : key
+            mode : key
         });
         console.log("state changed to ", key);
     }
-    mbtab() {
+
+    tabRender() {
         var lis = []
-        for (var key in this.state.href_list) {
-            var isOn  = "";
-            if (this.state.clicked === key) {
-                isOn = "on"
-            }
-            lis.push(<li class={isOn}><a href={key} onClick={this.handleClick(key).bind(this)}><span>{this.state.href_list[key]}</span></a></li>)
+        for (var i = 0; i < this.state.mode_list.length; i++) {
+            var title = this.state.mode_list[i].title;
+            var desc =  this.state.mode_list[i].desc;
+            console.log(title);
+            lis.push(
+                <li key={i.toString()} className={this.state.mode === title ? "on" : ""}>
+                    <a href={"#mb-" + this.state.mode_list[i].title} onClick={this.handleClick.bind(this, title)}>
+                        <span>{desc}</span>
+                    </a>
+                    {/*
+                    <a href={"#mb-" + this.state.mode_list[i]} onClick={()=>this.handleClick(title)}>
+                    https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
+                    */}
+                </li>
+            )
         }
         return (
-            <ul class="ui-tab-menu mb-tab">
+            <ul className="ui-tab-menu mb-tab">
                 {lis}
             </ul>
         );
     }
+
     render(){
         return  (
-            <div class="inner-member">
-                <div class="ly-member">
-                    <div class="o-tab-menu">
-                        {this.mbtab()}
-                        <LoginForm isTabOn={true}/>
-                        <JoinForm />
+            <div className="inner-member">
+                <div className="ly-member">
+                    <div className="s-member o-tab-menu">
+                        <span className="mb-tab-line"></span>
+                        {this.tabRender()}
+                        <LoginForm isTabOn={this.state.mode === "login"}/>
+                        <JoinForm isTabOn={this.state.mode === "join"}/>
                     </div>
                 </div>
             </div>

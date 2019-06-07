@@ -2,13 +2,16 @@ import React from 'react';
 
 class InputBox extends React.Component {
     static defaultProps = {
-        inputType : "inp-st0",
-        placeholder: "Input the info"
+        classType: "",
+        inputType: "text",
+        inputClassType: "inp-st0",
+        placeholder: "Input the info",
+        isPhone: false
     }
     render(){
         return  (
-            <div class="a-row">
-                <input type="text" class={`input-base ${this.props.inputType}`} placeholder={this.props.placeholder}></input>
+            <div className={`a-row ${this.props.classType}`}>
+                <input type={this.props.inputType} className={`input-base ${this.props.inputClassType} ${this.props.isPhone ? "u-phone" : ""}`} placeholder={this.props.placeholder}></input>
             </div>
         );
     }

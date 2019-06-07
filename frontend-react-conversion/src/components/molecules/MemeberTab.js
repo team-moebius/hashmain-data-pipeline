@@ -13,18 +13,18 @@ class MemberTab extends React.Component {
             if (this.props.href_list[this.props.clicked] === key) {
                 isOn = "on"
             }
-            lis.push(<li class={isOn}><a href={key} onClick={this.handleClick(key).bind(this)}><span>{this.props.href_list[key]}</span></a></li>)
+            lis.push(<li className={isOn}><a href={key} onClick={this.handleClick(key).bind(this)}><span>{this.props.href_list[key]}</span></a></li>)
         }
         return (
-            <ul class="ui-tab-menu mb-tab">
+            <ul className="ui-tab-menu mb-tab">
                 {lis}
             </ul>
         );
     }
     render(){
         return  (
-            <div class="a-row">
-                <input type="text" class={`input-base ${this.props.inputType}`} placeholder={this.props.placeholder}></input>
+            <div className="a-row">
+                <input type="text" className={`input-base ${this.props.inputType}`} placeholder={this.props.placeholder}></input>
             </div>
         );
     }
