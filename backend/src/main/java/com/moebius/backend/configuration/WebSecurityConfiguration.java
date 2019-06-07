@@ -31,12 +31,11 @@ public class WebSecurityConfiguration {
 			.authorizeExchange()
 			.pathMatchers("/",
 				"/swagger-ui.html",
-				"/v2/api-docs",
 				"/api/member/**",
 				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/member").hasAuthority("MEMBER")
+			.pathMatchers("/member", "/v2/api-docs").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and().build();
 	}

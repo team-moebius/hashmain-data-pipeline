@@ -15,14 +15,12 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class MemberAssembler {
+	private static final String ROLE = "MEMBER";
 	private final PasswordEncoder passwordEncoder;
 
 	public Member toMember(@NonNull SignupDto signupDto) {
-		Role role = new Role();
-		role.setId("MEMBER");
-
 		Set<Role> roles = new HashSet<>();
-		roles.add(role);
+		roles.add(new Role(ROLE));
 
 		Member member = new Member();
 		member.setName(signupDto.getName());
