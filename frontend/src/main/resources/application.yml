@@ -21,8 +21,7 @@ logging:
   level:
     root: INFO
     com.moebius: DEBUG
-  file: moebius.log
-  path: /var/log/moebius
+  file: /var/log/moebius/app.log
 
 logging.group.org.springframework.web.handler-mappings:
   - 'org.springframework.web.servlet.mvc.method'
