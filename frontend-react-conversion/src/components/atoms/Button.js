@@ -9,7 +9,7 @@ class Button extends React.Component {
     render(){
         return  (
             <div className={`a-row ${this.props.classType}`}>
-                <span class={`btn-base ${this.props.buttonType}`}>
+                <span className={`btn-base ${this.props.buttonType}`}>
                     <button>{this.props.buttonName}</button>
                 </span>
             </div>

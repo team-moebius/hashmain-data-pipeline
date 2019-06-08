@@ -21,10 +21,10 @@ class JoinForm extends React.Component {
                 </div>
                 <InputBox placeholder="Passsword(영문 숫자포함 8자 이상)" inputType="password" inputClassType="inp-st2" classType="a-mt20 isalert"/>
                 <InputBox placeholder="Passsword confirm(영문 숫자 포함 8자 이상)" inputType="password" inputClassType="inp-st2" classType="isalert"/>
-                <div class="a-row a-mt20">
-                    <label for="agree" class="chk-base chk-st1">
-                    <input type="checkbox" id="agree" class="a11y"/>
-                        <span class="label"><em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.</span> 
+                <div className="a-row a-mt20">
+                    <label htmlFor="agree" className="chk-base chk-st1">
+                    <input type="checkbox" id="agree" className="a11y"/>
+                        <span className="label"><em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.</span> 
                     </label>
                 </div>
                 <Button classType="a-mt20" buttonType="btn-st2" buttonName="회원가입"/>
