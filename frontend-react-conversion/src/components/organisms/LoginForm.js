@@ -3,13 +3,26 @@ import InputBox from '../atoms/InputBox'
 import Button from '../atoms/Button'
 
 class LoginForm extends React.Component {
-    static defaultProps = {
-        isTabOn: false,
-        email_id: "",
-        password: "",
+    constructor(props) {
+        super(props);
+        this.state =  {
+            email_id: "",
+            password: ""
+        }
     }
 
+    static defaultProps = {
+        isTabOn: false,
 
+    }
+
+    handleChange(someparam, event) {
+        console.log(event.target.value);
+        this.setState({
+            value: event.target.value,
+        });
+    }
+    
     handleInputChange(data_name, event) {
         console.log(event.target.value);
 
@@ -29,8 +42,8 @@ class LoginForm extends React.Component {
                     <span className="input-base inp-st2-alert">이메일 또는 패스워드 입력 오류입니다.</span>
                 </div> */}
                 <p className="txt2"><span>or</span></p>
-                <InputBox placeholder="E-Mail" inputClassType="inp-st2"/>
-                <InputBox placeholder="Password" inputClassType="inp-st2"/>
+                <InputBox placeholder="E-Mail" inputClassType="inp-st2" value={this.state.email_id} changeHandler={this.handleInputChange.bind(this, "email_id")}/>
+                <InputBox placeholder="Password" inputClassType="inp-st2" value={this.state.password} changeHandler={this.handleInputChange.bind(this, "password")}/>
                 <div className="a-row a-mt20">
 						<ul className="btxtl-st1">
 							<li>CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.</li>

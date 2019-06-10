@@ -16,17 +16,24 @@ class Login extends React.Component {
                 {id:0, title: "login", desc: "로그인"},
                 {id:1, title: "join", desc: "회원가입"}
             ],
-            // tab: {
-            //     width: 0,
-            //     pos: 0
-            // }
+            tab: {
+                width: "",
+                left: ""
+            }
         };
+
     }
 
-    handleTabClick(key, pos) {
+    handleTabClick(key, event) {
+        var child_span = event.currentTarget.childNodes[0];
         this.setState({
             mode : key,
+            tab : {
+                width: child_span.offsetWidth,
+                left: child_span.offsetLeft
+            }
         });
+        console.log(event.currentTarget);
     }
 
     tabRender() {
@@ -47,9 +54,13 @@ class Login extends React.Component {
                 </li>
             )
         }
-        // lis.push(
-        //     <span key="tab_line" className="mb-tab-line"></span>
-        // )
+        var tab_style = {
+            width: this.state.tab.width.toString() + 'px',
+            left: this.state.tab.left.toString() + 'px'
+        }
+        lis.push(
+            <span key="tab_line" className="mb-tab-line" style={tab_style}></span>
+        )
         return (
             <ul className="ui-tab-menu mb-tab">
                 {lis}
