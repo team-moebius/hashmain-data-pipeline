@@ -5,7 +5,20 @@ import Button from '../atoms/Button'
 class LoginForm extends React.Component {
     static defaultProps = {
         isTabOn: false,
+        email_id: "",
+        password: "",
     }
+
+
+    handleInputChange(data_name, event) {
+        console.log(event.target.value);
+
+        this.setState({
+            [data_name]: event.target.value,
+        });
+    }
+
+
     render(){
         var tabOnClassName = this.props.isTabOn ? "tab-on" : "";
         return  (
@@ -16,7 +29,7 @@ class LoginForm extends React.Component {
                     <span className="input-base inp-st2-alert">이메일 또는 패스워드 입력 오류입니다.</span>
                 </div> */}
                 <p className="txt2"><span>or</span></p>
-                <InputBox placeholder="Email" inputClassType="inp-st2"/>
+                <InputBox placeholder="E-Mail" inputClassType="inp-st2"/>
                 <InputBox placeholder="Password" inputClassType="inp-st2"/>
                 <div className="a-row a-mt20">
 						<ul className="btxtl-st1">

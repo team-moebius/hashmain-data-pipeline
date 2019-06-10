@@ -4,7 +4,7 @@ import "../../asset/css/common.css"
 import "../../asset/css/member.css"
 import LoginForm from '../../components/organisms/LoginForm';
 import JoinForm from '../../components/organisms/JoinForm';
-import TabBar from './TabBar';
+// import TabBar from './TabBar';
 
 
 class Login extends React.Component {
@@ -16,24 +16,28 @@ class Login extends React.Component {
                 {id:0, title: "login", desc: "로그인"},
                 {id:1, title: "join", desc: "회원가입"}
             ],
+            // tab: {
+            //     width: 0,
+            //     pos: 0
+            // }
         };
     }
 
-    handleClick(key) {
+    handleTabClick(key, pos) {
         this.setState({
             mode : key,
         });
     }
 
     tabRender() {
-        var lis = []
+        const lis = []
 
-        for (var i = 0; i < this.state.mode_list.length; i++) {
-            var title = this.state.mode_list[i].title;
-            var desc =  this.state.mode_list[i].desc;
+        for (let i = 0; i < this.state.mode_list.length; i++) {
+            let title = this.state.mode_list[i].title;
+            let desc =  this.state.mode_list[i].desc;
             lis.push(
                 <li key={(i).toString()} className={this.state.mode === title ? "on" : ""}>
-                    <a href={"#mb-" + this.state.mode_list[i].title} onClick={this.handleClick.bind(this, title)}>
+                    <a href={"#mb-" + this.state.mode_list[i].title} ref={this.state.mode_list[i].pos} onClick={this.handleTabClick.bind(this, title)}>
                         <span>{desc}</span>
                     </a>
                     {/*
@@ -59,7 +63,6 @@ class Login extends React.Component {
                 <div className="ly-member">
                     <div className="s-member o-tab-menu">
                         {this.tabRender()}
-                        <TabBar/>
                         <LoginForm isTabOn={this.state.mode === "login"}/>
                         <JoinForm isTabOn={this.state.mode === "join"}/>
                     </div>
