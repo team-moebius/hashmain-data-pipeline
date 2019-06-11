@@ -2,8 +2,8 @@ import React from 'react';
 // import ReactDOM from 'react-dom';
 import "../../asset/css/common.css"
 import "../../asset/css/member.css"
-import LoginForm from '../../components/organisms/LoginForm';
-import JoinForm from '../../components/organisms/JoinForm';
+import LoginForm from '../../components/templates/LoginForm';
+import JoinForm from '../../components/templates/JoinForm';
 // import TabBar from './TabBar';
 
 
