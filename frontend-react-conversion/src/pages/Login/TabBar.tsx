@@ -6,7 +6,8 @@ import "../../asset/css/member.css"
 //WIP
 class TabBar extends React.Component {
     static defaultProps = {
-    }
+    };
+
     render(){
         return  (
                 <span className="mb-tab-line"></span>
