@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 interface Props {
   children: string,
   buttonStyle?: string,
@@ -12,8 +11,8 @@ class Button extends React.Component<Props> {
     children: 'Input button name as children',
   }
 
-  render(){
-    return  (
+  render() {
+    return (
       <div className={`a-row btn-st${this.props.buttonStyle} btn-base`}>
         <button>{this.props.children}</button>
       </div>

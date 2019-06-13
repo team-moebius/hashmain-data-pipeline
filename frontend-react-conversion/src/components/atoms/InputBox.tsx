@@ -22,19 +22,19 @@ class InputBox extends React.Component<Props> {
     isPhone: false,
   };
 
-  render(){
-    return  (
+  render() {
+    return (
       <div className={classNames(
         'a-row',
         this.props.className,
-        {'isalert' : this.props.isAlert},
+        {'isalert': this.props.isAlert},
       )}>
         <input
           type={this.props.inputType}
           className={classNames(
-          'input-base',
-          'inp-st' + this.props.inputStyle,
-          {'u-phone': this.props.isPhone}
+            'input-base',
+            'inp-st' + this.props.inputStyle,
+            {'u-phone': this.props.isPhone}
           )}
           value={this.props.value}
           placeholder={this.props.placeholder}

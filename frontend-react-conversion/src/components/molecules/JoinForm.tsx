@@ -33,6 +33,7 @@ class JoinForm extends React.Component<Props, State> {
       }
     };
   }
+
   public static defaultProps = {
     isTabOn: false,
   };
@@ -50,30 +51,30 @@ class JoinForm extends React.Component<Props, State> {
       })
     }
     this.setState({
-        [data_name] : input_value,
+      [data_name]: input_value,
     } as Pick<State, keyof State>);
   }
 
-  autoHypenPhone(str: string){
+  autoHypenPhone(str: string) {
     let input_str = str.replace(/[^0-9]/g, '');
-    if(input_str.length < 4){
-        return input_str;
-    }else if(str.length < 7){
-        return `${input_str.substr(0, 3)}-${input_str.substr(3)}`;
-    }else if(str.length < 11){
-        return `${input_str.substr(0, 3)}-${input_str.substr(3, 3)}-${input_str.substr(6)}`;
-    }else{
-        return `${input_str.substr(0, 3)}-${input_str.substr(3, 4)}-${input_str.substr(7)}`;
+    if (input_str.length < 4) {
+      return input_str;
+    } else if (str.length < 7) {
+      return `${input_str.substr(0, 3)}-${input_str.substr(3)}`;
+    } else if (str.length < 11) {
+      return `${input_str.substr(0, 3)}-${input_str.substr(3, 3)}-${input_str.substr(6)}`;
+    } else {
+      return `${input_str.substr(0, 3)}-${input_str.substr(3, 4)}-${input_str.substr(7)}`;
     }
   }
 
-  isValidPassword(str: string){
-      return (str.length > 7 && /\d/.test(str) && /[a-z]/.test(str.toLowerCase()));
+  isValidPassword(str: string) {
+    return (str.length > 7 && /\d/.test(str) && /[a-z]/.test(str.toLowerCase()));
   }
 
-  render(){
+  render() {
     let tabOnClassName = this.props.isTabOn ? "tab-on" : "";
-    return  (
+    return (
       <div id="mb-join" className={`ui-tab-cont sm-join ${tabOnClassName}`}>
         <InputBox
           placeholder="User name"
@@ -92,10 +93,10 @@ class JoinForm extends React.Component<Props, State> {
           changeHandler={this.handleInputChange.bind(this, "email_id")}
         />
         <div className="a-row a-mt20">
-        <ul className="btxtl-st1">
-          <li><em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. <br /> 회원가입 절차에 <em>계정 인증용 메일</em>이 전송됩니다.</li>
-          <li>메일 전송은 60초 정도 소요될 수 있으며, 메일이 <br /> <em>누락 될 경우에 스팸 메일 함을 확인</em> 하시기 바랍니다.</li>
-        </ul>
+          <ul className="btxtl-st1">
+            <li><em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. <br/> 회원가입 절차에 <em>계정 인증용 메일</em>이 전송됩니다.</li>
+            <li>메일 전송은 60초 정도 소요될 수 있으며, 메일이 <br/> <em>누락 될 경우에 스팸 메일 함을 확인</em> 하시기 바랍니다.</li>
+          </ul>
         </div>
         <InputBox
           placeholder="Passsword(영문 숫자포함 8자 이상)"
@@ -108,13 +109,13 @@ class JoinForm extends React.Component<Props, State> {
         <InputBox
           placeholder="Passsword confirm(영문 숫자 포함 8자 이상)"
           inputType="password"
-          isAlert={ !this.state.is_valid_password["password_confirm"]}
+          isAlert={!this.state.is_valid_password["password_confirm"]}
           value={this.state.password_confirm}
           changeHandler={this.handleInputChange.bind(this, "password_confirm")}
         />
         <div className="a-row a-mt20">
           <label htmlFor="agree" className="chk-base chk-st1">
-          <input type="checkbox" id="agree" className="a11y"/>
+            <input type="checkbox" id="agree" className="a11y"/>
             <span className="label">
               <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
             </span>
