@@ -73,7 +73,7 @@ body,input,select,textarea,button{font:14px/1.5 "Malgun Gothic","맑은 고딕",
 
 /*--------------------------------------------------------------------------------------------------------------
  ************************ common ************************
- *  scss naming : s- for Section, b- for Button, ly- for Layout, u- for UI, c- for Components, o- for Object
+ *  css naming : s- for Section, b- for Button, ly- for Layout, u- for UI, c- for Components, o- for Object
  *--------------------------------------------------------------------------------------------------------------*/
 /* hidden read */
 .a11y {overflow:hidden;position:absolute;clip:rect(0 0 0 0);/*IE6,7*/clip:rect(0,0,0,0);width:1px;height:1px;margin:-1px;border:0;padding:0;}
