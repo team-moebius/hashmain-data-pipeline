@@ -1,7 +1,7 @@
 import React from 'react';
 import LoginForm from '../molecules/LoginForm';
 import JoinForm from '../molecules/JoinForm';
-import Tab from '../atoms/Tab';
+import TabTmp from "../atoms/TabTmp";
 
 interface State {
   mode: string,
@@ -16,21 +16,9 @@ interface State {
   },
 }
 
-class EntryTab extends React.Component<{}, State> {
+class EntryTabTmp extends React.Component<{}, State> {
   constructor(props: {}) {
     super(props);
-    this.state = {
-      mode: 'login',
-      modeList: [
-        {id: 0, title: "login", desc: "로그인"},
-        {id: 1, title: "join", desc: "회원가입"}
-      ],
-      tab: {
-        width: "",
-        left: ""
-      },
-    };
-
   }
 
   handleTabClick(key: string, event: any) {
@@ -57,13 +45,15 @@ class EntryTab extends React.Component<{}, State> {
           <a href={"#mb-" + this.state.mode_list[i]} onClick={()=>this.handleClick(title)}>
           https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
         */}
-        </li>)
+      </li>)
     });
 
     const tabStyle = {
       width: this.state.tab.width.toString() + 'px',
       left: this.state.tab.left.toString() + 'px'
     };
+
+
 
     return (
       <ul className="ui-tab-menu mb-tab">
@@ -74,14 +64,21 @@ class EntryTab extends React.Component<{}, State> {
   }
 
   render() {
+    const tabProps = {
+      mode: 'login',
+      modeList: [
+        {id: 0, title: "login", desc: "로그인", link: '#mb-login'},
+        {id: 1, title: "join", desc: "회원가입", link: '#mb-join'},
+      ],
+    }
     return (
-      <Tab>
+      <TabTmp defaultMode={tabProps.mode} modeList={tabProps.modeList}>
         {this.tabRender()}
         <LoginForm isTabOn={this.state.mode === "login"}/>
         <JoinForm isTabOn={this.state.mode === "join"}/>
-      </Tab>
+      </TabTmp>
     );
   }
 }
 
-export default EntryTab;
+export default EntryTabTmp;

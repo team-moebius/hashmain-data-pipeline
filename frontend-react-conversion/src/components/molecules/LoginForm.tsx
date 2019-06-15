@@ -3,11 +3,11 @@ import InputBox from '../atoms/InputBox'
 import Button from '../atoms/Button'
 
 interface Props {
-  isTabOn: boolean;
+  isTabOn: boolean,
 }
 
 interface State {
-  email_id: string,
+  emailId: string,
   password: string,
 }
 
@@ -15,7 +15,7 @@ class LoginForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      email_id: "",
+      emailId: "",
       password: "",
     };
   }
@@ -24,9 +24,9 @@ class LoginForm extends React.Component<Props, State> {
     isTabOn: false,
   };
 
-  handleInputChange(data_name: string, event: any) {
+  handleInputChange(dataName: string, event: any) {
     this.setState({
-      [data_name]: event.target.value,
+      [dataName]: event.target.value,
     } as Pick<State, keyof State>);
   }
 
@@ -46,8 +46,8 @@ class LoginForm extends React.Component<Props, State> {
         </p>
         <InputBox
           placeholder="E-Mail"
-          value={this.state.email_id}
-          changeHandler={this.handleInputChange.bind(this, "email_id")}
+          value={this.state.emailId}
+          changeHandler={this.handleInputChange.bind(this, "emailId")}
         />
         <InputBox
           placeholder="Password"

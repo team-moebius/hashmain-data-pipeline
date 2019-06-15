@@ -7,7 +7,7 @@ interface Props {
 class Tab extends React.Component<Props> {
   public static defaultProps = {
     tabStyle: 's-member o-tab-menu',
-  }
+  };
 
   render() {
     return (

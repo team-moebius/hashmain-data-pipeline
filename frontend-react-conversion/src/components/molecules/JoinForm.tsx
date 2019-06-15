@@ -7,12 +7,12 @@ interface Props {
 }
 
 interface State {
-  user_name: string,
-  phone_number: string,
-  email_id: string,
+  userName: string,
+  phoneNumber: string,
+  emailId: string,
   password: string,
   password_confirm: string,
-  is_valid_password: {
+  isValidPassword: {
     password: boolean,
     password_confirm: boolean,
   },
@@ -22,12 +22,12 @@ class JoinForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      user_name: '',
-      phone_number: '',
-      email_id: '',
+      userName: '',
+      phoneNumber: '',
+      emailId: '',
       password: '',
       password_confirm: '',
-      is_valid_password: {
+      isValidPassword: {
         password: false,
         password_confirm: false,
       }
@@ -38,33 +38,33 @@ class JoinForm extends React.Component<Props, State> {
     isTabOn: false,
   };
 
-  handleInputChange(data_name: string, event: any) {
-    let input_value = event.target.value;
-    if (data_name === "phone_number") {
-      input_value = this.autoHypenPhone(input_value);
+  handleInputChange(dataName: string, event: any) {
+    let inputValue = event.target.value;
+    if (dataName === "phoneNumber") {
+      inputValue = this.autoHypenPhone(inputValue);
     }
-    if (data_name === "password" || data_name === "password_confirm") {
-      let valid_set = this.state.is_valid_password;
-      valid_set[data_name] = this.isValidPassword(input_value);
+    if (dataName === "password" || dataName === "password_confirm") {
+      let validSet = this.state.isValidPassword;
+      validSet[dataName] = this.isValidPassword(inputValue);
       this.setState({
-        is_valid_password: valid_set,
+        isValidPassword: validSet,
       })
     }
     this.setState({
-      [data_name]: input_value,
+      [dataName]: inputValue,
     } as Pick<State, keyof State>);
   }
 
   autoHypenPhone(str: string) {
-    let input_str = str.replace(/[^0-9]/g, '');
-    if (input_str.length < 4) {
-      return input_str;
+    let inputStr = str.replace(/[^0-9]/g, '');
+    if (inputStr.length < 4) {
+      return inputStr;
     } else if (str.length < 7) {
-      return `${input_str.substr(0, 3)}-${input_str.substr(3)}`;
+      return `${inputStr.substr(0, 3)}-${inputStr.substr(3)}`;
     } else if (str.length < 11) {
-      return `${input_str.substr(0, 3)}-${input_str.substr(3, 3)}-${input_str.substr(6)}`;
+      return `${inputStr.substr(0, 3)}-${inputStr.substr(3, 3)}-${inputStr.substr(6)}`;
     } else {
-      return `${input_str.substr(0, 3)}-${input_str.substr(3, 4)}-${input_str.substr(7)}`;
+      return `${inputStr.substr(0, 3)}-${inputStr.substr(3, 4)}-${inputStr.substr(7)}`;
     }
   }
 
@@ -78,19 +78,19 @@ class JoinForm extends React.Component<Props, State> {
       <div id="mb-join" className={`ui-tab-cont sm-join ${tabOnClassName}`}>
         <InputBox
           placeholder="User name"
-          value={this.state.user_name}
-          changeHandler={this.handleInputChange.bind(this, "user_name")}
+          value={this.state.userName}
+          changeHandler={this.handleInputChange.bind(this, "userName")}
         />
         <InputBox
           placeholder="Phone number"
-          value={this.state.phone_number}
+          value={this.state.phoneNumber}
           isPhone={true}
-          changeHandler={this.handleInputChange.bind(this, "phone_number")}
+          changeHandler={this.handleInputChange.bind(this, "phoneNumber")}
         />
         <InputBox
           placeholder="Email(User ID)"
-          value={this.state.email_id}
-          changeHandler={this.handleInputChange.bind(this, "email_id")}
+          value={this.state.emailId}
+          changeHandler={this.handleInputChange.bind(this, "emailId")}
         />
         <div className="a-row a-mt20">
           <ul className="btxtl-st1">
@@ -102,14 +102,14 @@ class JoinForm extends React.Component<Props, State> {
           placeholder="Passsword(영문 숫자포함 8자 이상)"
           inputType="password"
           className="a-mt20"
-          isAlert={!this.state.is_valid_password["password"]}
+          isAlert={!this.state.isValidPassword["password"]}
           value={this.state.password}
           changeHandler={this.handleInputChange.bind(this, "password")}
         />
         <InputBox
           placeholder="Passsword confirm(영문 숫자 포함 8자 이상)"
           inputType="password"
-          isAlert={!this.state.is_valid_password["password_confirm"]}
+          isAlert={!this.state.isValidPassword["password_confirm"]}
           value={this.state.password_confirm}
           changeHandler={this.handleInputChange.bind(this, "password_confirm")}
         />
