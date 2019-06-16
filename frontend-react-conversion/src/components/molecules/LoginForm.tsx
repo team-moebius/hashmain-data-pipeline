@@ -32,6 +32,7 @@ class LoginForm extends React.Component<Props, State> {
 
   render() {
     const tabOnClassName = this.props.isTabOn ? "tab-on" : "";
+    console.log('login form');
     return (
       <div id="mb-login" className={`ui-tab-cont sm-login ${tabOnClassName}`}>
         <p className="txt1">

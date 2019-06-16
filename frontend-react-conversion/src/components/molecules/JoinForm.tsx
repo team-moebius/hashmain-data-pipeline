@@ -74,6 +74,7 @@ class JoinForm extends React.Component<Props, State> {
 
   render() {
     let tabOnClassName = this.props.isTabOn ? "tab-on" : "";
+    console.log('join form');
     return (
       <div id="mb-join" className={`ui-tab-cont sm-join ${tabOnClassName}`}>
         <InputBox
