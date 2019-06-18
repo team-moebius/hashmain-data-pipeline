@@ -2,11 +2,11 @@ import React from 'react';
 import InputBox from '../atoms/InputBox'
 import Button from '../atoms/Button'
 
-interface Props {
+interface JoinFormProps {
   isTabOn: boolean,
 }
 
-interface State {
+interface JoinFormState {
   userName: string,
   phoneNumber: string,
   emailId: string,
@@ -18,8 +18,8 @@ interface State {
   },
 }
 
-class JoinForm extends React.Component<Props, State> {
-  constructor(props: Props) {
+class JoinForm extends React.Component<JoinFormProps, JoinFormState> {
+  constructor(props: JoinFormProps) {
     super(props);
     this.state = {
       userName: '',
@@ -52,7 +52,7 @@ class JoinForm extends React.Component<Props, State> {
     }
     this.setState({
       [dataName]: inputValue,
-    } as Pick<State, keyof State>);
+    } as Pick<JoinFormState, keyof JoinFormState>);
   }
 
   autoHypenPhone(str: string) {
@@ -74,7 +74,6 @@ class JoinForm extends React.Component<Props, State> {
 
   render() {
     let tabOnClassName = this.props.isTabOn ? "tab-on" : "";
-    console.log('join form');
     return (
       <div id="mb-join" className={`ui-tab-cont sm-join ${tabOnClassName}`}>
         <InputBox

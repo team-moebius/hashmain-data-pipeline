@@ -2,17 +2,17 @@ import React from 'react';
 import InputBox from '../atoms/InputBox'
 import Button from '../atoms/Button'
 
-interface Props {
+interface LoginFormProps {
   isTabOn: boolean,
 }
 
-interface State {
+interface LoginFormState {
   emailId: string,
   password: string,
 }
 
-class LoginForm extends React.Component<Props, State> {
-  constructor(props: Props) {
+class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
+  constructor(props: LoginFormProps) {
     super(props);
     this.state = {
       emailId: "",
@@ -27,12 +27,11 @@ class LoginForm extends React.Component<Props, State> {
   handleInputChange(dataName: string, event: any) {
     this.setState({
       [dataName]: event.target.value,
-    } as Pick<State, keyof State>);
+    } as Pick<LoginFormState, keyof LoginFormState>);
   }
 
   render() {
     const tabOnClassName = this.props.isTabOn ? "tab-on" : "";
-    console.log('login form');
     return (
       <div id="mb-login" className={`ui-tab-cont sm-login ${tabOnClassName}`}>
         <p className="txt1">

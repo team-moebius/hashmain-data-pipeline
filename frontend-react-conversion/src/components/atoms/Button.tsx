@@ -1,11 +1,11 @@
 import React from 'react';
 
-interface Props {
+interface ButtonProps {
   children: string,
   buttonStyle?: string,
 }
 
-class Button extends React.Component<Props> {
+class Button extends React.Component<ButtonProps> {
   public static defaultProps = {
     buttonStyle: '2',
     children: 'Input button name as children',

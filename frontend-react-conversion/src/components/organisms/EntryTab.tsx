@@ -3,7 +3,7 @@ import LoginForm from '../molecules/LoginForm';
 import JoinForm from '../molecules/JoinForm';
 import Tab from "../atoms/Tab";
 
-interface State {
+interface EntryTabState {
   entryMode: string,
   navPos: {
     width: string,
@@ -11,7 +11,7 @@ interface State {
   },
 }
 
-class EntryTab extends React.Component<{}, State> {
+class EntryTab extends React.Component<{}, EntryTabState> {
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -46,8 +46,9 @@ class EntryTab extends React.Component<{}, State> {
         left: '',
       }
     };
+    const {entryMode, navPos} = this.state;
     return (
-      <Tab entryMode={this.state.entryMode} entryModeList={data.modeList} onClickTab={this.onClickTabChange} navPos={this.state.navPos}>
+      <Tab entryMode={entryMode} entryModeList={data.modeList} onClickTab={this.onClickTabChange} navPos={navPos}>
         <LoginForm isTabOn={this.state.entryMode === "login"}/>
         <JoinForm isTabOn={this.state.entryMode === "join"}/>
       </Tab>

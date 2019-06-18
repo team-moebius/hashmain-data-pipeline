@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-interface Props {
+interface InputBoxProps {
   className?: string,
   inputStyle?: string,
   inputType?: string,
@@ -12,7 +12,7 @@ interface Props {
   changeHandler: any,
 }
 
-class InputBox extends React.Component<Props> {
+class InputBox extends React.Component<InputBoxProps> {
   static defaultProps = {
     isAlert: false,
     className: '',
