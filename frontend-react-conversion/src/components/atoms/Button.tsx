@@ -5,19 +5,17 @@ interface ButtonProps {
   buttonStyle?: string,
 }
 
-class Button extends React.Component<ButtonProps> {
-  public static defaultProps = {
-    buttonStyle: '2',
-    children: 'Input button name as children',
-  }
-
-  render() {
-    return (
-      <div className={`a-row btn-st${this.props.buttonStyle} btn-base`}>
-        <button>{this.props.children}</button>
-      </div>
-    );
-  }
+const defaultProps = {
+  buttonStyle: '2',
+  children: 'Input button name as children',
 }
+
+const Button : React.FunctionComponent<ButtonProps> = ({children, buttonStyle}) => (
+  <div className={`a-row btn-st${buttonStyle} btn-base`}>
+    <button>{children}</button>
+  </div>
+);
+
+Button.defaultProps = defaultProps;
 
 export default Button;
