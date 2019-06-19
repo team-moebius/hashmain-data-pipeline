@@ -22,6 +22,10 @@ class InputBox extends React.Component<InputBoxProps> {
     isPhone: false,
   };
 
+  shouldComponentUpdate(nextProps: Readonly<InputBoxProps>, nextState: Readonly<{}>, nextContext: any): boolean {
+    return !(nextProps.value === this.props.value);
+  }
+
   render() {
     return (
       <div className={classNames(
