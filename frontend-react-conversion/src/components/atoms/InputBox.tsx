@@ -12,15 +12,6 @@ interface InputBoxProps {
   changeHandler: any,
 }
 
-const defaultProps = {
-  isAlert: false,
-  className: '',
-  inputType: 'text',
-  inputStyle: '2',
-  placeholder: 'Input the info',
-  isPhone: false,
-};
-
 const InputBox: React.FunctionComponent<InputBoxProps> =
   ({className, inputStyle, inputType, placeholder, isPhone, isAlert, value, changeHandler}) => (
     <div className={classNames(
@@ -42,43 +33,13 @@ const InputBox: React.FunctionComponent<InputBoxProps> =
     </div>
 )
 
-InputBox.defaultProps = defaultProps;
-
-// class InputBox extends React.Component<InputBoxProps> {
-//   static defaultProps = {
-//     isAlert: false,
-//     className: '',
-//     inputType: 'text',
-//     inputStyle: '2',
-//     placeholder: 'Input the info',
-//     isPhone: false,
-//   };
-//
-//   shouldComponentUpdate(nextProps: Readonly<InputBoxProps>, nextState: Readonly<{}>, nextContext: any): boolean {
-//     return !(nextProps.value === this.props.value);
-//   }
-//
-//   render() {
-//     return (
-//       <div className={classNames(
-//         'a-row',
-//         this.props.className,
-//         {'isalert': this.props.isAlert},
-//       )}>
-//         <input
-//           type={this.props.inputType}
-//           className={classNames(
-//             'input-base',
-//             'inp-st' + this.props.inputStyle,
-//             {'u-phone': this.props.isPhone}
-//           )}
-//           value={this.props.value}
-//           placeholder={this.props.placeholder}
-//           onChange={this.props.changeHandler}
-//         />
-//       </div>
-//     );
-//   }
-// }
+InputBox.defaultProps = {
+  isAlert: false,
+  className: '',
+  inputType: 'text',
+  inputStyle: '2',
+  placeholder: 'Input the info',
+  isPhone: false,
+};
 
 export default InputBox;

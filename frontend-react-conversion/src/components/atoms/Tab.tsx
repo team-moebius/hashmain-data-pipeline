@@ -16,11 +16,6 @@ interface TabProps {
   onClickTab(key: string, event:any): void,
 }
 
-
-const defaultProps = {
-  tabStyle: 's-member o-tab-menu',
-};
-
 const Tab: React.FunctionComponent<TabProps> = ({tabStyle, entryMode, entryModeList, navPos, onClickTab, children}) => {
   const liElement = entryModeList.map((modeElement) => {
     const {id, title, desc, link} = modeElement;
@@ -50,6 +45,8 @@ const Tab: React.FunctionComponent<TabProps> = ({tabStyle, entryMode, entryModeL
   )
 };
 
-Tab.defaultProps = defaultProps;
+Tab.defaultProps = {
+  tabStyle: 's-member o-tab-menu',
+};;
 
 export default Tab;
