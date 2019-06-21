@@ -1,11 +1,11 @@
 import React from 'react';
+import "./assets/scss/layout.scss"
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './pages/App';
 import * as serviceWorker from './serviceWorker';
+import EntryPage from "./components/templates/EntryPage";
 
-ReactDOM.render(<App />, document.getElementById('root'));
 
+ReactDOM.render(<EntryPage />, document.getElementById('wrap-member'));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

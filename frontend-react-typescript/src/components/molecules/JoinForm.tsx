@@ -3,34 +3,34 @@ import InputBox from '../atoms/InputBox'
 import Button from '../atoms/Button'
 
 interface JoinFormProps {
-  isTabOn: boolean,
+  isTabOn: boolean;
 }
 
 interface JoinFormState {
-  userName: string,
-  phoneNumber: string,
-  emailId: string,
-  password: string,
-  password_confirm: string,
+  userName: string;
+  phoneNumber: string;
+  emailId: string;
+  password: string;
+  passwordConfirm: string;
   isValidPassword: {
-    password: boolean,
-    password_confirm: boolean,
-  },
+    password: boolean;
+    passwordConfirm: boolean;
+  };
 }
 
 class JoinForm extends React.Component<JoinFormProps, JoinFormState> {
-  constructor(props: JoinFormProps) {
+  public constructor(props: JoinFormProps) {
     super(props);
     this.state = {
       userName: '',
       phoneNumber: '',
       emailId: '',
       password: '',
-      password_confirm: '',
+      passwordConfirm: '',
       isValidPassword: {
         password: false,
-        password_confirm: false,
-      }
+        passwordConfirm: false,
+      },
     };
   }
 
@@ -38,12 +38,12 @@ class JoinForm extends React.Component<JoinFormProps, JoinFormState> {
     isTabOn: false,
   };
 
-  handleInputChange(dataName: string, event: any) {
+  public handleInputChange(dataName: string, event: any) {
     let inputValue = event.target.value;
     if (dataName === "phoneNumber") {
       inputValue = this.autoHypenPhone(inputValue);
     }
-    if (dataName === "password" || dataName === "password_confirm") {
+    if (dataName === "password" || dataName === "passwordConfirm") {
       let validSet = this.state.isValidPassword;
       validSet[dataName] = this.isValidPassword(inputValue);
       this.setState({
@@ -55,7 +55,7 @@ class JoinForm extends React.Component<JoinFormProps, JoinFormState> {
     } as Pick<JoinFormState, keyof JoinFormState>);
   }
 
-  autoHypenPhone(str: string) {
+  public autoHypenPhone(str: string) {
     let inputStr = str.replace(/[^0-9]/g, '');
     if (inputStr.length < 4) {
       return inputStr;
@@ -68,18 +68,18 @@ class JoinForm extends React.Component<JoinFormProps, JoinFormState> {
     }
   }
 
-  isValidPassword(str: string) {
+  public isValidPassword(str: string) {
     return (str.length > 7 && /\d/.test(str) && /[a-z]/.test(str.toLowerCase()));
   }
 
-  render() {
+  public render() {
     let tabOnClassName = this.props.isTabOn ? "tab-on" : "";
     return (
       <div id="mb-join" className={`ui-tab-cont sm-join ${tabOnClassName}`}>
         <InputBox
           placeholder="User name"
           value={this.state.userName}
-          changeHandler={this.handleInputChange.bind(this, "userName")}
+          changeHandler={this.handleInputChange.bind(this,'userName')}
         />
         <InputBox
           placeholder="Phone number"
@@ -94,7 +94,8 @@ class JoinForm extends React.Component<JoinFormProps, JoinFormState> {
         />
         <div className="a-row a-mt20">
           <ul className="btxtl-st1">
-            <li><em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. <br/> 회원가입 절차에 <em>계정 인증용 메일</em>이 전송됩니다.</li>
+            <li>
+              <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. <br/> 회원가입 절차에 <em>계정 인증용 메일</em>이 전송됩니다.</li>
             <li>메일 전송은 60초 정도 소요될 수 있으며, 메일이 <br/> <em>누락 될 경우에 스팸 메일 함을 확인</em> 하시기 바랍니다.</li>
           </ul>
         </div>
@@ -109,9 +110,9 @@ class JoinForm extends React.Component<JoinFormProps, JoinFormState> {
         <InputBox
           placeholder="Passsword confirm(영문 숫자 포함 8자 이상)"
           inputType="password"
-          isAlert={!this.state.isValidPassword["password_confirm"]}
-          value={this.state.password_confirm}
-          changeHandler={this.handleInputChange.bind(this, "password_confirm")}
+          isAlert={!this.state.isValidPassword["passwordConfirm"]}
+          value={this.state.passwordConfirm}
+          changeHandler={this.handleInputChange.bind(this, "passwordConfirm")}
         />
         <div className="a-row a-mt20">
           <label htmlFor="agree" className="chk-base chk-st1">

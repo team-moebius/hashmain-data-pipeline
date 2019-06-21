@@ -3,7 +3,7 @@ import EntryTab from '../organisms/EntryTab';
 
 
 class EntryPage extends React.Component {
-  render() {
+  public render() {
     return (
       <div className="inner-member">
         <div className="ly-member">

@@ -1,11 +1,11 @@
 import React from 'react';
 
 interface ButtonProps {
-  children: string,
-  buttonStyle?: string,
+  children: string;
+  buttonStyle?: string;
 }
 
-const Button : React.FunctionComponent<ButtonProps> = ({children, buttonStyle}) => (
+const Button: React.FC<ButtonProps> = ({children, buttonStyle}: ButtonProps) => (
   <div className={`a-row btn-st${buttonStyle} btn-base`}>
     <button>{children}</button>
   </div>

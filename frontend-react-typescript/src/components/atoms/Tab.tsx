@@ -1,22 +1,23 @@
 import React from 'react';
 
 interface TabProps {
-  tabStyle?: string,
-  entryMode: string,
+  tabStyle?: string;
+  entryMode: string;
   entryModeList: {
-    id: number,
-    title: string,
-    desc: string,
-    link: string,
-  }[],
+    id: number;
+    title: string;
+    desc: string;
+    link: string;
+  }[];
   navPos: {
-    width: string,
-    left: string,
-  },
-  onClickTab(key: string, event:any): void,
+    width: string;
+    left: string;
+  };
+  onClickTab(key: string, event: any): void;
+  children: any;
 }
 
-const Tab: React.FunctionComponent<TabProps> = ({tabStyle, entryMode, entryModeList, navPos, onClickTab, children}) => {
+const Tab: React.FC<TabProps> = ({tabStyle, entryMode, entryModeList, navPos, onClickTab, children}: TabProps) => {
   const liElement = entryModeList.map((modeElement) => {
     const {id, title, desc, link} = modeElement;
     return (
@@ -27,10 +28,10 @@ const Tab: React.FunctionComponent<TabProps> = ({tabStyle, entryMode, entryModeL
         <a href={link} onClick={(event) => onClickTab(title, event)}>
           <span>{desc}</span>
         </a>
-      {/*
-        <a href={"#mb-" + this.state.mode_list[i]} onClick={()=>this.handleClick(title)}>
-        https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
-      */}
+        {/*
+          <a href={"#mb-" + this.state.mode_list[i]} onClick={()=>this.handleClick(title)}>
+          https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
+        */}
       </li>
     )
   });
@@ -47,6 +48,6 @@ const Tab: React.FunctionComponent<TabProps> = ({tabStyle, entryMode, entryModeL
 
 Tab.defaultProps = {
   tabStyle: 's-member o-tab-menu',
-};;
+};
 
 export default Tab;

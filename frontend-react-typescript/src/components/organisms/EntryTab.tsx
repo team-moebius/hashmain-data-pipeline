@@ -4,15 +4,15 @@ import JoinForm from '../molecules/JoinForm';
 import Tab from "../atoms/Tab";
 
 interface EntryTabState {
-  entryMode: string,
+  entryMode: string;
   navPos: {
-    width: string,
-    left: string,
-  },
+    width: string;
+    left: string;
+  };
 }
 
 class EntryTab extends React.Component<{}, EntryTabState> {
-  constructor(props: {}) {
+  public constructor(props: {}) {
     super(props);
     this.state = {
       entryMode: 'login',
@@ -24,18 +24,18 @@ class EntryTab extends React.Component<{}, EntryTabState> {
     this.onClickTabChange = this.onClickTabChange.bind(this);
   }
 
-  onClickTabChange(key: string, event: any) {
-    const child_span = event.currentTarget.childNodes[0];
+  public onClickTabChange(key: string, event: any) {
+    const childSpan = event.currentTarget.childNodes[0];
     this.setState({
       navPos: {
-        width: child_span.offsetWidth,
-        left: child_span.offsetLeft
+        width: childSpan.offsetWidth,
+        left: childSpan.offsetLeft,
       },
       entryMode: key,
     });
   }
 
-  render() {
+  public render() {
     const data = {
       modeList: [
         {id: 0, title: "login", desc: "로그인", link: '#mb-login'},
@@ -44,7 +44,7 @@ class EntryTab extends React.Component<{}, EntryTabState> {
       tab: {
         width: '',
         left: '',
-      }
+      },
     };
     const {entryMode, navPos} = this.state;
     return (

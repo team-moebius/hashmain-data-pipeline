@@ -3,16 +3,16 @@ import InputBox from '../atoms/InputBox'
 import Button from '../atoms/Button'
 
 interface LoginFormProps {
-  isTabOn: boolean,
+  isTabOn: boolean;
 }
 
 interface LoginFormState {
-  emailId: string,
-  password: string,
+  emailId: string;
+  password: string;
 }
 
 class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
-  constructor(props: LoginFormProps) {
+  public constructor(props: LoginFormProps) {
     super(props);
     this.state = {
       emailId: "",
@@ -20,17 +20,17 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
     };
   }
 
-  static defaultProps = {
+  public static defaultProps = {
     isTabOn: false,
   };
 
-  handleInputChange(dataName: string, event: any) {
+  public handleInputChange(dataName: string, event: any) {
     this.setState({
       [dataName]: event.target.value,
     } as Pick<LoginFormState, keyof LoginFormState>);
   }
 
-  render() {
+  public render() {
     const tabOnClassName = this.props.isTabOn ? "tab-on" : "";
     return (
       <div id="mb-login" className={`ui-tab-cont sm-login ${tabOnClassName}`}>
