@@ -2,5 +2,4 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
 	implementation(project(":backend"))
-	implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
 }

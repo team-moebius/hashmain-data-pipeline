@@ -1,6 +1,7 @@
 package com.moebius.backend.domain.members;
 
 import com.moebius.backend.domain.commons.Base;
+import com.mongodb.lang.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,8 @@ public class Member extends Base {
 	private String password;
 
 	private boolean isActive = false;
+	@Nullable
+	private String verificationCode;
 
 	private Set<ApiKey> apiKeys = new HashSet<>();
 	private Set<Role> roles = new HashSet<>();
