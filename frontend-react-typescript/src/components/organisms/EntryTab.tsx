@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import LoginForm from '../molecules/LoginForm';
-import JoinForm from '../molecules/JoinForm';
-import Tab from '../atoms/Tab';
+import Tab from 'components/atoms/Tab';
+import LoginForm from 'components/molecules/LoginForm';
+import JoinForm from 'components/molecules/JoinForm';
 
 interface EntryTabState {
   entryMode: string;

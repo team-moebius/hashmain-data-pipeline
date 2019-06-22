@@ -1,8 +1,8 @@
 import React from 'react';
 
-import EntryPage from './components/templates/EntryPage';
+import EntryPage from 'components/templates/EntryPage';
 
-import './assets/scss/layout.scss';
+import 'assets/scss/layout.scss';
 
 const App: React.FC = () => <EntryPage />;
 

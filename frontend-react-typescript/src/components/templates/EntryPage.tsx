@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import EntryTab from '../organisms/EntryTab';
+import EntryTab from 'components/organisms/EntryTab';
 
 interface EntryPageProps {}
 

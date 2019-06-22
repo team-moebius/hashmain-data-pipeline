@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import InputBox from '../atoms/InputBox';
-import Button from '../atoms/Button';
+import InputBox from 'components/atoms/InputBox';
+import Button from 'components/atoms/Button';
 
 interface LoginFormProps {
   isTabOn: boolean;
