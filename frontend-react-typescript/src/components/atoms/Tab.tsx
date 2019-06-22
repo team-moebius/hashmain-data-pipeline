@@ -17,15 +17,19 @@ interface TabProps {
   children: any;
 }
 
-const Tab: React.FC<TabProps> = ({tabStyle, entryMode, entryModeList, navPos, onClickTab, children}: TabProps) => {
-  const liElement = entryModeList.map((modeElement) => {
-    const {id, title, desc, link} = modeElement;
+const Tab: React.FC<TabProps> = ({
+  tabStyle,
+  entryMode,
+  entryModeList,
+  navPos,
+  onClickTab,
+  children,
+}: TabProps) => {
+  const liElement = entryModeList.map(modeElement => {
+    const { id, title, desc, link } = modeElement;
     return (
-      <li
-        key={id}
-        className={entryMode === title ? "on" : ""}
-      >
-        <a href={link} onClick={(event) => onClickTab(title, event)}>
+      <li key={id} className={entryMode === title ? 'on' : ''}>
+        <a href={link} onClick={event => onClickTab(title, event)}>
           <span>{desc}</span>
         </a>
         {/*
@@ -33,17 +37,17 @@ const Tab: React.FC<TabProps> = ({tabStyle, entryMode, entryModeList, navPos, on
           https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
         */}
       </li>
-    )
+    );
   });
   return (
     <div className={tabStyle}>
-      <ul className='ui-tab-menu mb-tab'>
+      <ul className="ui-tab-menu mb-tab">
         {liElement}
-        <span className='mb-tab-line' style={navPos}></span>
+        <span className="mb-tab-line" style={navPos} />
       </ul>
       {children}
     </div>
-  )
+  );
 };
 
 Tab.defaultProps = {

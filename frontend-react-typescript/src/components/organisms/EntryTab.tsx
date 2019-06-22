@@ -1,6 +1,6 @@
-import React from 'react';
-import LoginForm from '../molecules/LoginForm';
-import JoinForm from '../molecules/JoinForm';
+import React from "react";
+import LoginForm from "../molecules/LoginForm";
+import JoinForm from "../molecules/JoinForm";
 import Tab from "../atoms/Tab";
 
 interface EntryTabState {
@@ -15,11 +15,11 @@ class EntryTab extends React.Component<{}, EntryTabState> {
   public constructor(props: {}) {
     super(props);
     this.state = {
-      entryMode: 'login',
+      entryMode: "login",
       navPos: {
-        width: '',
-        left: '',
-      },
+        width: "",
+        left: ""
+      }
     };
     this.onClickTabChange = this.onClickTabChange.bind(this);
   }
@@ -29,28 +29,33 @@ class EntryTab extends React.Component<{}, EntryTabState> {
     this.setState({
       navPos: {
         width: childSpan.offsetWidth,
-        left: childSpan.offsetLeft,
+        left: childSpan.offsetLeft
       },
-      entryMode: key,
+      entryMode: key
     });
   }
 
   public render() {
     const data = {
       modeList: [
-        {id: 0, title: "login", desc: "로그인", link: '#mb-login'},
-        {id: 1, title: "join", desc: "회원가입", link: '#mb-join'},
+        { id: 0, title: "login", desc: "로그인", link: "#mb-login" },
+        { id: 1, title: "join", desc: "회원가입", link: "#mb-join" }
       ],
       tab: {
-        width: '',
-        left: '',
-      },
+        width: "",
+        left: ""
+      }
     };
-    const {entryMode, navPos} = this.state;
+    const { entryMode, navPos } = this.state;
     return (
-      <Tab entryMode={entryMode} entryModeList={data.modeList} onClickTab={this.onClickTabChange} navPos={navPos}>
-        <LoginForm isTabOn={this.state.entryMode === "login"}/>
-        <JoinForm isTabOn={this.state.entryMode === "join"}/>
+      <Tab
+        entryMode={entryMode}
+        entryModeList={data.modeList}
+        onClickTab={this.onClickTabChange}
+        navPos={navPos}
+      >
+        <LoginForm isTabOn={this.state.entryMode === "login"} />
+        <JoinForm isTabOn={this.state.entryMode === "join"} />
       </Tab>
     );
   }

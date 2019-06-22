@@ -1,6 +1,6 @@
 import React from 'react';
-import InputBox from '../atoms/InputBox'
-import Button from '../atoms/Button'
+import InputBox from '../atoms/InputBox';
+import Button from '../atoms/Button';
 
 interface LoginFormProps {
   isTabOn: boolean;
@@ -15,8 +15,8 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
   public constructor(props: LoginFormProps) {
     super(props);
     this.state = {
-      emailId: "",
-      password: "",
+      emailId: '',
+      password: '',
     };
   }
 
@@ -31,11 +31,12 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
   }
 
   public render() {
-    const tabOnClassName = this.props.isTabOn ? "tab-on" : "";
+    const tabOnClassName = this.props.isTabOn ? 'tab-on' : '';
     return (
       <div id="mb-login" className={`ui-tab-cont sm-login ${tabOnClassName}`}>
         <p className="txt1">
-          로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및<br/><em>개인 정보 정책</em>에 동의하는 것으로 간주합니다.
+          로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및<br />
+          <em>개인 정보 정책</em>에 동의하는 것으로 간주합니다.
         </p>
         {/* 오류 케이스 1 */}
         {/* <div className="isalert-p">
@@ -47,12 +48,12 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
         <InputBox
           placeholder="E-Mail"
           value={this.state.emailId}
-          changeHandler={this.handleInputChange.bind(this, "emailId")}
+          changeHandler={this.handleInputChange.bind(this, 'emailId')}
         />
         <InputBox
           placeholder="Password"
           value={this.state.password}
-          changeHandler={this.handleInputChange.bind(this, "password")}
+          changeHandler={this.handleInputChange.bind(this, 'password')}
           inputType="password"
         />
         <div className="a-row a-mt20">
@@ -65,7 +66,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
         <Button>로그인</Button>
         <div className="a-row">
           <label htmlFor="idsave" className="chk-base chk-st1">
-            <input type="checkbox" id="idsave" className="a11y"/>
+            <input type="checkbox" id="idsave" className="a11y" />
             <span className="label">아이디 저장하기</span>
           </label>
         </div>

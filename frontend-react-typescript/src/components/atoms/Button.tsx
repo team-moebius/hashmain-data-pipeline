@@ -5,7 +5,7 @@ interface ButtonProps {
   buttonStyle?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({children, buttonStyle}: ButtonProps) => (
+const Button: React.FC<ButtonProps> = ({ children, buttonStyle }: ButtonProps) => (
   <div className={`a-row btn-st${buttonStyle} btn-base`}>
     <button>{children}</button>
   </div>

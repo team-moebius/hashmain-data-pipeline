@@ -1,9 +1,8 @@
 import React from 'react';
-import "./assets/scss/layout.scss"
+import './assets/scss/layout.scss';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import EntryPage from "./components/templates/EntryPage";
-
+import EntryPage from './components/templates/EntryPage';
 
 ReactDOM.render(<EntryPage />, document.getElementById('wrap-member'));
 // If you want your app to work offline and load faster, you can change

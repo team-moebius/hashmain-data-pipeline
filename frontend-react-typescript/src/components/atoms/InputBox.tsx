@@ -12,22 +12,23 @@ interface InputBoxProps {
   changeHandler(event: any): void;
 }
 
-const InputBox: React.FC<InputBoxProps> = ({className, inputStyle, inputType, placeholder, isPhone, isAlert, value, changeHandler}: InputBoxProps) => (
-  <div className={classNames(
-    'a-row',
-    className,
-    {'isalert': isAlert},
-  )}>
+const InputBox: React.FC<InputBoxProps> = ({
+  className,
+  inputStyle,
+  inputType,
+  placeholder,
+  isPhone,
+  isAlert,
+  value,
+  changeHandler,
+}: InputBoxProps) => (
+  <div className={classNames('a-row', className, { isalert: isAlert })}>
     <input
       type={inputType}
-      className={classNames(
-        'input-base',
-        'inp-st' + inputStyle,
-        {'u-phone': isPhone}
-      )}
+      className={classNames('input-base', 'inp-st' + inputStyle, { 'u-phone': isPhone })}
       value={value}
       placeholder={placeholder}
-      onChange={(event) => changeHandler(event)}
+      onChange={event => changeHandler(event)}
     />
   </div>
 );
