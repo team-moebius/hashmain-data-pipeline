@@ -10,21 +10,19 @@ spring:
   thymeleaf:
     reactive:
       max-chunk-size: 8192
-
-server:
-  port: 80
-  tomcat:
-    accesslog:
-      enabled: true
-      directory: /var/log/moebius/tomcat
-logging:
-  level:
-    root: INFO
-    com.moebius: DEBUG
-  file: /var/log/moebius/app.log
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: cryptobox.master@gmail.com
+    password: highbal1!
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging.group.org.springframework.web.handler-mappings:
-  - 'org.springframework.web.servlet.mvc.method'
   - 'org.springframework.web.reactive.result.method'
   - 'org.springframework.web.reactive.function.server.support'
 
