@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import EntryTab from 'components/organisms/EntryTab';
 
-interface EntryPageProps {}
+interface SignPageProps {}
 
-const EntryPage: React.FC<EntryPageProps> = props => (
+const SignPage: React.FC<SignPageProps> = props => (
   <div className="inner-member">
     <div className="ly-member">
       <EntryTab />
@@ -12,4 +12,4 @@ const EntryPage: React.FC<EntryPageProps> = props => (
   </div>
 );
 
-export default EntryPage;
+export default SignPage;
