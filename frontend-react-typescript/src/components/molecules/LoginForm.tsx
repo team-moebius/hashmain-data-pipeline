@@ -36,8 +36,8 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
     return (
       <div id="mb-login" className={`ui-tab-cont sm-login ${tabOnClassName}`}>
         <p className="txt1">
-          로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및<br />
-          <em>개인 정보 정책</em>에 동의하는 것으로 간주합니다.
+          로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및<em>개인 정보 정책</em>에
+          동의하는 것으로 간주합니다.
         </p>
         {/* 오류 케이스 1 */}
         {/* <div className="isalert-p">

@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import Tab from 'components/atoms/Tab';
 import LoginForm from 'components/molecules/LoginForm';
-import JoinForm from 'components/molecules/JoinForm';
+// import JoinForm from 'components/molecules/JoinForm';
+import SignInForm from 'components/organisms/SignInForm';
 
 interface EntryTabState {
   entryMode: string;
@@ -56,7 +57,7 @@ class EntryTab extends React.Component<{}, EntryTabState> {
         navPos={navPos}
       >
         <LoginForm isTabOn={this.state.entryMode === 'login'} />
-        <JoinForm isTabOn={this.state.entryMode === 'join'} />
+        <SignInForm />
       </Tab>
     );
   }

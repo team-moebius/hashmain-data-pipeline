@@ -1,0 +1,9 @@
+@import 'assets/scss/Color.scss';
+
+.input {
+  background-color: $input-bg-color !important;
+  border-radius: 4px;
+  & fieldset {
+    border-color: $input-bg-color !important;
+  }
+}
