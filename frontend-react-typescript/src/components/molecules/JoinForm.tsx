@@ -1,4 +1,5 @@
-import React from 'react';
+import * as React from 'react';
+
 import InputBox from '../atoms/InputBox';
 import Button from '../atoms/Button';
 
