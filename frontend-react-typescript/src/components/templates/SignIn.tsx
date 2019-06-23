@@ -24,8 +24,8 @@ class SignIn extends React.Component<SignInProps, SignInState> {
   }
 
   validate = (id: string, password: string) => {
-    let idErrorText = undefined;
-    let passwordErrorText = undefined;
+    let idErrorText = '';
+    let passwordErrorText = '';
     // Check required value of form
     if (!FormValidator.isExistInput(id)) idErrorText = '아이디를 입력 해주세요.';
     else if (!FormValidator.validateEmail(id)) idErrorText = 'ID는 E-mail 형태로 입력하세요.';
@@ -34,7 +34,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
 
     this.setState({ errors: { id: idErrorText, password: passwordErrorText } });
 
-    return idErrorText && passwordErrorText ? false : true;
+    return idErrorText.length > 0 || passwordErrorText.length > 0 ? false : true;
   };
 
   onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,6 +52,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
       <>
         <form onSubmit={this.onSubmit}>
           <Input
+            autoComplete="off"
             error={this.state.errors.id ? true : false}
             helperText={this.state.errors.id}
             inputRef={this.idRef}

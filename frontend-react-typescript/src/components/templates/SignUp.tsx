@@ -17,6 +17,8 @@ interface SignUpState {
 }
 
 // TODO: Refactoring input validation code
+// Add 'division' prop to molecules/Input, Move validating logic
+// Or, split EmailInput, PasswordInput.etc
 class SignUp extends React.Component<SignUpProps, SignUpState> {
   private idRef = React.createRef<any>();
   private nameRef = React.createRef<any>();
@@ -104,6 +106,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
       <>
         <form onSubmit={this.onSubmit}>
           <Input
+            autoComplete="off"
             error={this.state.errors.id ? true : false}
             helperText={this.state.errors.id}
             inputRef={this.idRef}
@@ -112,6 +115,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             placeholder="E-Mail(User ID)"
           />
           <Input
+            autoComplete="off"
             error={this.state.errors.userName ? true : false}
             helperText={this.state.errors.userName}
             inputRef={this.nameRef}
@@ -120,6 +124,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             placeholder="User Name"
           />
           <Input
+            autoComplete="off"
             error={this.state.errors.phoneNumber ? true : false}
             helperText={this.state.errors.phoneNumber}
             inputRef={this.phoneNumberRef}
