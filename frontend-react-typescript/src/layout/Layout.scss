@@ -35,13 +35,14 @@ $item-margin: 8px;
     margin-top: 74px;
     width: 100%;
     .layout-contents__menu {
+      overflow: unset;
       background-color: $primary-bg-color;
       height: 100%;
     }
     .layout-contents__item-wrapper {
       width: 100%;
       margin-left: $item-margin;
-      background-color: $primary-bg-color;
+      // background-color: $primary-bg-color;
     }
   }
 }

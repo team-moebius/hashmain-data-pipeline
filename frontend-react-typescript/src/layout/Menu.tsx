@@ -19,8 +19,8 @@ const Menu: React.FC<MenuProps> = props => (
     value={props.index}
     onChange={props.onChange}
   >
-    {props.items.map(item => (
-      <Tabs.VerticalTab label={<MuiTypography variant="h6">{item}</MuiTypography>} />
+    {props.items.map((item, index) => (
+      <Tabs.VerticalTab key={index} label={<MuiTypography variant="h6">{item}</MuiTypography>} />
     ))}
   </Tabs.VerticalTabs>
 );
