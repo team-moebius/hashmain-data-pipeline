@@ -24,11 +24,12 @@ const defaultTheme = createMuiTheme({
   },
 });
 
+//TODO: connect with redux or mobx(signing props)
 const AppEntry = () => (
   <Router>
     <Switch>
       <Route component={SignPage} path="/sign" />
-      <PrivateRoute component={MainPage} path="/" redirectPath="/sign" signing={false} />
+      <PrivateRoute component={MainPage} path="/" redirectPath="/sign" signing={true} />
     </Switch>
   </Router>
 );

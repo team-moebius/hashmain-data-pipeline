@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Redirect } from 'react-router-dom';
 
 import MuiTabs from '@material-ui/core/Tabs';
 import MuiTab from '@material-ui/core/Tab';
@@ -13,20 +14,24 @@ import 'assets/scss/pages/SignPage.scss';
 interface SignPageProps {}
 interface SignPageState {
   index: 0 | 1;
+  signing: boolean;
 }
 
 //TODO: Connect with backend
 class SignPage extends React.Component<SignPageProps, SignPageState> {
   constructor(props: SignPageProps) {
     super(props);
-    this.state = { index: 0 };
+    this.state = { index: 0, signing: false };
   }
 
   isDuplicatedId = (id: string) => {
     return false;
   };
 
-  onSubmitSignIn = (e: React.FormEvent<HTMLFormElement>) => {};
+  onSubmitSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+    // Temporary code
+    this.setState({ signing: true });
+  };
 
   onSubmitSignUp = (e: React.FormEvent<HTMLFormElement>) => {};
 
@@ -35,6 +40,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
   };
 
   render() {
+    if (this.state.signing) return <Redirect to="/" />;
     return (
       <Paper className="sign-page">
         <Paper className="sign-page__wrapper" square>
