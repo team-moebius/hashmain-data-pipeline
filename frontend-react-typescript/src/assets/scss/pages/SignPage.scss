@@ -6,7 +6,10 @@
   justify-content: center;
 }
 
-.sign-page__contents {
+.sign-page__wrapper {
   width: 430px;
-  padding: 77px 55px 33px 55px;
+  padding: 33px 55px 33px 55px;
+  .sign-page__contents {
+    padding-top: 10px;
+  }
 }

@@ -5,38 +5,39 @@ import MuiTab from '@material-ui/core/Tab';
 import MuiTypography from '@material-ui/core/Typography';
 
 import Paper from 'components/atoms/Paper';
-import EntryTab from 'components/organisms/EntryTab';
 import SignIn from 'components/templates/SignIn';
+import SignUp from 'components/templates/SignUp';
 
 import 'assets/scss/pages/SignPage.scss';
 
 interface SignPageProps {}
 interface SignPageState {
-  index: number;
+  index: 0 | 1;
 }
 
-// const SignPage: React.FC<SignPageProps> = props => (
-//   <div className="inner-member">
-//     <div className="ly-member">
-//       <EntryTab />
-//     </div>
-//   </div>
-// );
-
+//TODO: Connect with backend
 class SignPage extends React.Component<SignPageProps, SignPageState> {
   constructor(props: SignPageProps) {
     super(props);
     this.state = { index: 0 };
   }
 
-  onChangeTabs = (event: React.ChangeEvent<{}>, value: any) => {
+  isDuplicatedId = (id: string) => {
+    return false;
+  };
+
+  onSubmitSignIn = (e: React.FormEvent<HTMLFormElement>) => {};
+
+  onSubmitSignUp = (e: React.FormEvent<HTMLFormElement>) => {};
+
+  onChangeTabs = (e: React.ChangeEvent<{}>, value: any) => {
     this.setState({ index: value });
   };
 
   render() {
     return (
-      <Paper className="sign-page" style={{ height: '100vh' }}>
-        <Paper className="sign-page__contents" square>
+      <Paper className="sign-page">
+        <Paper className="sign-page__wrapper" square>
           <MuiTabs
             centered
             indicatorColor="secondary"
@@ -59,7 +60,12 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
               }
             />
           </MuiTabs>
-          {this.state.index === 0 && <SignIn />}
+          <div className="sign-page__contents">
+            {this.state.index === 0 && <SignIn onSubmit={this.onSubmitSignIn} />}
+            {this.state.index === 1 && (
+              <SignUp isDuplicatedId={this.isDuplicatedId} onSubmit={this.onSubmitSignUp} />
+            )}
+          </div>
         </Paper>
       </Paper>
     );

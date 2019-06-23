@@ -7,7 +7,7 @@ import 'assets/scss/atoms/Paper.scss';
 
 interface PaperProps extends MuiPaperProps {}
 
-const Paper: React.FunctionComponent<PaperProps> = props => {
+const Paper: React.FC<PaperProps> = props => {
   const { className, ...rest } = props;
   return <MuiPaper className={classNames('paper', className)} {...rest} />;
 };
