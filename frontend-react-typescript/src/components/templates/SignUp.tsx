@@ -107,6 +107,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         <form onSubmit={this.onSubmit}>
           <Input
             autoComplete="off"
+            autoFocus
             error={this.state.errors.id ? true : false}
             helperText={this.state.errors.id}
             inputRef={this.idRef}
