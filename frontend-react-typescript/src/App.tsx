@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import SignPage from 'pages/SignPage';
-import MainPage from 'pages/MainPage';
+import SignPage from 'pages/entry/SignPage';
+import MainPage from 'pages/entry/MainPage';
 import PrivateRoute from 'utils/PrviateRoute';
 
 /** Material-ui theme setting */

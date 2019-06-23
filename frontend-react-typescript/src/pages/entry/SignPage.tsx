@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
-import MuiTabs from '@material-ui/core/Tabs';
-import MuiTab from '@material-ui/core/Tab';
 import MuiTypography from '@material-ui/core/Typography';
 
 import Paper from 'components/atoms/Paper';
+import Tabs from 'components/molecules/Tabs';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
 
@@ -44,28 +43,28 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
     return (
       <Paper className="sign-page">
         <Paper className="sign-page__wrapper" square>
-          <MuiTabs
+          <Tabs.HorizontalTabs
             centered
             indicatorColor="secondary"
-            textColor="secondary"
+            textColor="sec ondary"
             value={this.state.index}
             onChange={this.onChangeTabs}
           >
-            <MuiTab
+            <Tabs.HorizontalTab
               label={
                 <MuiTypography variant="h6" gutterBottom>
                   로그인
                 </MuiTypography>
               }
             />
-            <MuiTab
+            <Tabs.HorizontalTab
               label={
                 <MuiTypography variant="h6" gutterBottom>
                   회원가입
                 </MuiTypography>
               }
             />
-          </MuiTabs>
+          </Tabs.HorizontalTabs>
           <div className="sign-page__contents">
             {this.state.index === 0 && <SignIn onSubmit={this.onSubmitSignIn} />}
             {this.state.index === 1 && (
