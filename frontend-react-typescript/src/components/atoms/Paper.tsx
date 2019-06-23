@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import MuiPaper, { PaperProps as MuiPaperProps } from '@material-ui/core/Paper';
 
-import 'assets/scss/atoms/Paper.scss';
+import 'assets/scss/Paper.scss';
 
 interface PaperProps extends MuiPaperProps {}
 

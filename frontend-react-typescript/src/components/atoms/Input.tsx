@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import MuiTextField, { OutlinedTextFieldProps } from '@material-ui/core/TextField';
 
-import 'assets/scss/atoms/Input.scss';
+import 'assets/scss/Input.scss';
 
 interface InputProps extends Omit<OutlinedTextFieldProps, 'fullWidth' | 'margin' | 'variant'> {}
 

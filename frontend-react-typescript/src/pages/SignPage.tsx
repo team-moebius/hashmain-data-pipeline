@@ -9,7 +9,7 @@ import Paper from 'components/atoms/Paper';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
 
-import 'assets/scss/pages/SignPage.scss';
+import 'assets/scss/SignPage.scss';
 
 interface SignPageProps {}
 interface SignPageState {
