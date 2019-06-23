@@ -1,6 +1,7 @@
 @import 'assets/scss/Color.scss';
 
 #root {
+  // background-image: 'aseets/images/bg.png';
   background-color: $main-bg-color;
   position: relative;
   overflow: auto;
@@ -11,6 +12,7 @@
 
 em {
   color: $primary-font-accent-color;
+  font-style: normal;
 }
 
 body {

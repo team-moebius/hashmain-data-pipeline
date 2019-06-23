@@ -7,7 +7,6 @@ import SignPage from 'pages/SignPage';
 import MainPage from 'pages/MainPage';
 import PrivateRoute from 'utils/PrviateRoute';
 
-import 'assets/scss/layout.scss';
 /** Material-ui theme setting */
 const defaultTheme = createMuiTheme({
   palette: {

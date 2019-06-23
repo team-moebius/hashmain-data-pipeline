@@ -1,0 +1,28 @@
+@import 'assets/scss/Color.scss';
+
+$responsive-toggle-point: 960px;
+
+.layout {
+  margin: 0 auto;
+  max-width: 1400px;
+
+  .layout-header {
+    .layout-header__logo {
+      width: 55px;
+      margin-right: 20px;
+      @media (max-width: $responsive-toggle-point) {
+        display: none;
+      }
+    }
+
+    .layout-header__button {
+      font-size: 14px !important;
+      margin: 6px;
+      transition: 0.5s;
+
+      &:hover {
+        color: $primary-font-accent-color;
+      }
+    }
+  }
+}
