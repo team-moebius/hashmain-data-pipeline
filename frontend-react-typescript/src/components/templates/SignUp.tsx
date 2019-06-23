@@ -136,13 +136,13 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           <ul>
             <li style={{ marginTop: '10px' }}>
               <MuiTypography variant="body1" gutterBottom>
-                * <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
+                - <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
                 <em>계정 인증용 메일</em>이 전송됩니다.
               </MuiTypography>
             </li>
             <li>
               <MuiTypography variant="body1" gutterBottom>
-                * 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
+                - 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
                 <em>스팸 메일함을 확인</em> 하시기 바랍니다.
               </MuiTypography>
             </li>
