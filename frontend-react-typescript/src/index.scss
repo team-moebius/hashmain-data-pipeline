@@ -1,11 +1,11 @@
 @import 'assets/scss/Color.scss';
 
 #root {
-  width: 100%;
-  height: 100vh;
+  background-color: $main-bg-color;
   position: relative;
   overflow: auto;
   width: 100%;
+  height: 100vh;
   z-index: 0;
 }
 
