@@ -1,17 +1,27 @@
 import * as React from 'react';
-import classNames from 'classnames';
 
+import { withStyles } from '@material-ui/core/styles';
 import MuiTextField, { OutlinedTextFieldProps } from '@material-ui/core/TextField';
 
-import 'assets/scss/Input.scss';
-
 interface InputProps extends Omit<OutlinedTextFieldProps, 'fullWidth' | 'margin' | 'variant'> {}
+
+const MobeiusInput = withStyles(theme => ({
+  root: {
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: theme.palette.primary.main,
+      },
+    },
+    backgroundColor: theme.palette.primary.light,
+    borderRadius: 4,
+  },
+}))(MuiTextField);
 
 const Input: React.FunctionComponent<InputProps> = props => {
   const { className, ...rest } = props;
   return (
-    <MuiTextField
-      className={classNames('input', props.className)}
+    <MobeiusInput
+      // className={classNames('input', props.className)}
       fullWidth
       margin="dense"
       variant="outlined"

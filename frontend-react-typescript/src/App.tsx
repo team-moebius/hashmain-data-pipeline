@@ -13,6 +13,7 @@ const defaultTheme = createMuiTheme({
     type: 'dark',
     primary: {
       main: '#13253F',
+      light: '#173456',
     },
     secondary: {
       main: '#1E8CDE',

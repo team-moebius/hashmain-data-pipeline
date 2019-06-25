@@ -17,9 +17,9 @@ const Header: React.FC<HeaderProps> = props => (
     className="layout-header"
     position="absolute"
     subTitle={
-      <MuiTypography className="appbar__sub-title" noWrap color="inherit">
+      <>
         <em>H</em>ome <em>T</em>rading <em>S</em>ystem
-      </MuiTypography>
+      </>
     }
     title="CRYPTO BOX GLOBAL."
   >
