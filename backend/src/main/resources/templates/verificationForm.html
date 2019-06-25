@@ -16,7 +16,7 @@
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
               <tr>
                 <td width="673" height="69" style="margin:0;padding:0;text-align:center;">
-                  <img th:src="${host} + '/images/mail-header.jpg'" border="0" style="margin:0;padding:0;width:673px;height:69px;"
+                  <img th:src="${protocol} + '://' + ${host} + '/static/images/mail-header.jpg'" border="0" style="margin:0;padding:0;width:673px;height:69px;"
                        alt="Crypto box global">
                 </td>
               </tr>
@@ -90,7 +90,7 @@
                           </tr>
                           <tr>
                             <td>
-                              <a th:href="${host} + '/api/member/email/verification?email=' + ${email} + '&code=' + ${code}"
+                              <a th:href="${protocol} + '://' + ${host} + '/api/member/email/verification?email=' + ${email} + '&code=' + ${code}"
                                  style="text-decoration: none; font-size:18px;font-weight: bold;color:#1b74b9;border-radius: 3px;">
                                 <table cellpadding="0" cellspacing="0" style="border: 1px solid #3390b7;" width="100%">
                                   <tr>
