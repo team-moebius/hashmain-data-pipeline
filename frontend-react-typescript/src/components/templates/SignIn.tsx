@@ -49,7 +49,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
 
   render() {
     return (
-      <>
+      <div>
         <form onSubmit={this.onSubmit}>
           <Input
             autoComplete="off"
@@ -87,7 +87,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
           </li>
         </ul>
         <MuiButton fullWidth>비밀번호 찾기</MuiButton>
-      </>
+      </div>
     );
   }
 }

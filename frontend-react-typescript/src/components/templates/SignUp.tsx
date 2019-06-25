@@ -103,7 +103,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
   render() {
     return (
-      <>
+      <div>
         <form onSubmit={this.onSubmit}>
           <Input
             autoComplete="off"
@@ -176,7 +176,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             <MuiTypography variant="h5">회원가입</MuiTypography>
           </MuiButton>
         </form>
-      </>
+      </div>
     );
   }
 }
