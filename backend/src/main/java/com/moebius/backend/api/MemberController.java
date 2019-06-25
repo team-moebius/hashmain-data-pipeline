@@ -50,7 +50,7 @@ public class MemberController {
 	}
 
 	@ApiOperation("이메일 인증 확인")
-	@PostMapping("/member/email/verification")
+	@GetMapping("/member/email/verification")
 	public Mono<ResponseEntity<?>> verifyEmail(@ModelAttribute VerificationDto verificationDto) {
 		return emailService.verifyEmail(verificationDto);
 	}

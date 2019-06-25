@@ -15,4 +15,5 @@ logging:
   file: /var/log/moebius/app.log
 
 moebius:
+  protocol: http
   host: 52.79.86.26

@@ -7,7 +7,8 @@
   </head>
 
   <body>
-    <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#0d1e34" style="max-width:673px; font-family: Malgun Gothic,맑은 고딕,sans-serif">
+    <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#0d1e34"
+           style="max-width:673px; font-family: Malgun Gothic,맑은 고딕,sans-serif">
       <tbody>
         <tr>
           <td>
@@ -15,7 +16,8 @@
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
               <tr>
                 <td width="673" height="69" style="margin:0;padding:0;text-align:center;">
-                  <img th:src="${host} + '/images/mail-header.jpg'" border="0" style="margin:0;padding:0;width:673px;height:69px;" alt="Crypto box global">
+                  <img th:src="${protocol} + '://' + ${host} + '/static/images/mail-header.jpg'" border="0" style="margin:0;padding:0;width:673px;height:69px;"
+                       alt="Crypto box global">
                 </td>
               </tr>
             </table>
@@ -34,10 +36,14 @@
                         <table border="0" cellspacing="0" cellpadding="0" width="100%">
                           <tr>
                             <td style="vertical-align:top;">
-                              <span style="font-size:30px; font-weight: bold; color:#1b74b9; margin:0; line-height:1;padding-bottom: 10px;border-bottom: 2px solid #1b74b9">회원가입 이메일 주소 인증</span>
+                              <span
+                                style="font-size:30px; font-weight: bold; color:#1b74b9; margin:0; line-height:1;padding-bottom: 10px;border-bottom: 2px solid #1b74b9">회원가입
+                                이메일 주소 인증</span>
                             </td>
                           </tr>
-                          <tr><td height="60"></td></tr>
+                          <tr>
+                            <td height="60"></td>
+                          </tr>
                           <tr>
                             <td style="vertical-align:top;">
                               <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;"><span th:text="${name}"></span>님 안녕하세요.</p>
@@ -48,7 +54,9 @@
                               <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;">아래 내용을 참고하여 이메일 인증을 진행하시기 바랍니다.</p>
                             </td>
                           </tr>
-                          <tr><td height="35"></td></tr>
+                          <tr>
+                            <td height="35"></td>
+                          </tr>
                           <tr>
                             <td style="vertical-align:top;">
                               <p style="font-size:17px; font-weight: bold; color:#cad0e9; margin:0; line-height:26px;">이메일 인증과정</p>
@@ -64,7 +72,9 @@
                               <p style="font-size:14px; color:#cad0e9; margin:0; line-height:26px;">2. 크립토 박스 글로벌 웹 사이트 방문 후 로그인 완료</p>
                             </td>
                           </tr>
-                          <tr><td height="35"></td></tr>
+                          <tr>
+                            <td height="35"></td>
+                          </tr>
                           <tr>
                             <td style="vertical-align:top;">
                               <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;">이메일 인증 후 크립토 박스에서 제공하는 모든 서비스를 이용하실 수 있습니다.</p>
@@ -75,24 +85,23 @@
                               <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;">감사합니다.</p>
                             </td>
                           </tr>
-                          <tr><td height="35"></td></tr>
                           <tr>
-                              <td>
-                                <form action="#" th:action="${host} + '/api/member/email/verification'" th:method="post" th:object="${verificationDto}">
-                                  <input type="hidden" name="email" th:value="${email}" />
-                                  <input type="hidden" name="code" th:value="${code}" />
-                                  <a href="#" onclick="this.parentNode.submit()" style="text-decoration: none; font-size:18px;font-weight: bold;color:#1b74b9;border-radius: 3px;">
-                                    <table cellpadding="0" cellspacing="0" style="border: 1px solid #3390b7;" width="100%">
-                                      <tr>
-                                        <td height="50" align="center" style="text-align: center;">
-                                          <p style="border:none;text-decoration: none;font-size:18px;font-weight: bold;color:#1b74b9;line-height:1;">회원가입 이메일 인증하기</p>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </a>
-                                </form>
-                              </td>
-
+                            <td height="35"></td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <a th:href="${protocol} + '://' + ${host} + '/api/member/email/verification?email=' + ${email} + '&code=' + ${code}"
+                                 style="text-decoration: none; font-size:18px;font-weight: bold;color:#1b74b9;border-radius: 3px;">
+                                <table cellpadding="0" cellspacing="0" style="border: 1px solid #3390b7;" width="100%">
+                                  <tr>
+                                    <td height="50" align="center" style="text-align: center;">
+                                      <p style="border:none;text-decoration: none;font-size:18px;font-weight: bold;color:#1b74b9;line-height:1;">회원가입
+                                        이메일 인증하기</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </a>
+                            </td>
                           </tr>
                         </table>
                       </td>
@@ -101,7 +110,9 @@
                 </td>
                 <td width="80"></td>
               </tr>
-              <tr><td height="100" colspan="3"></td></tr>
+              <tr>
+                <td height="100" colspan="3"></td>
+              </tr>
             </table>
             <!-- // content -->
             <!-- footer -->
@@ -109,15 +120,19 @@
               <tr>
                 <td bgcolor="#091a2e">
                   <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                    <tr><td height="30"></td></tr>
+                    <tr>
+                      <td height="30"></td>
+                    </tr>
                     <tr>
                       <td style="vertical-align:top;text-align:center">
                         <p style="font-size:11px; color:#cad0e9; margin:0; line-height:21px;text-align:center">
-                          ⓒ 2018 - 2019  ICORE Inc.  All rights reserved.<br />
+                          ⓒ 2018 - 2019 ICORE Inc. All rights reserved.<br />
                         </p>
                       </td>
                     </tr>
-                    <tr><td height="20"></td></tr>
+                    <tr>
+                      <td height="20"></td>
+                    </tr>
                     <!--                                    <tr>-->
                     <!--                                        <td style="font-size:12px;color:#cad0e9;text-align:center">-->
                     <!--                                            <a style="color:#cad0e9;text-decoration: none;" href="#" target="_blank">회사소개</a> | -->

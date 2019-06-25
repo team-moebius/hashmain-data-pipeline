@@ -34,6 +34,8 @@ public class EmailService {
 	private final JavaMailSender emailSender;
 	private final MemberRepository memberRepository;
 	private final TemplateEngine templateEngine;
+	@Value("${moebius.protocol}")
+	private String protocol;
 	@Value("${moebius.host}")
 	private String host;
 
@@ -91,6 +93,7 @@ public class EmailService {
 				messageHelper.setSubject("크립토박스 인증 메일입니다.");
 
 				Context context = new Context();
+				context.setVariable("protocol", protocol);
 				context.setVariable("host", host);
 				context.setVariable("code", member.getVerificationCode());
 				context.setVariable("name", member.getName());

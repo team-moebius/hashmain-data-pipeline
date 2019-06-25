@@ -15,4 +15,5 @@ logging:
   file: /var/log/moebius/app.log
 
 moebius:
-  host: localhost
+  protocol: http
+  host: 127.0.0.1
