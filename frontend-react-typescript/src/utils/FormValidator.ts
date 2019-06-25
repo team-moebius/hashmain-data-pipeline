@@ -9,7 +9,7 @@ const validatePassword = (password: string) => {
 };
 
 const validatePhoneNumber = (phoneNumber: string) => {
-  var regex = new RegExp(/^\d{3}\d{3,4}\d{4}$/);
+  const regex: RegExp = /^\d{3}\d{3,4}\d{4}$/;
   return regex.test(phoneNumber);
 };
 
