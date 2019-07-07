@@ -1,11 +1,11 @@
-import * as React from "react";
+import * as React from 'react';
 
-import MuiTypography from "@material-ui/core/Typography";
-import MuiButton from "@material-ui/core/Button";
+import MuiTypography from '@material-ui/core/Typography';
+import MuiButton from '@material-ui/core/Button';
 
-import Input from "components/atoms/Input";
-import Checkbox from "components/atoms/Checkbox";
-import FormValidator from "utils/FormValidator";
+import Input from 'components/atoms/Input';
+import Checkbox from 'components/atoms/Checkbox';
+import FormValidator from 'utils/FormValidator';
 
 interface SignInProps {
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -24,22 +24,17 @@ class SignIn extends React.Component<SignInProps, SignInState> {
   }
 
   validate = (id: string, password: string) => {
-    let idErrorText = "";
-    let passwordErrorText = "";
+    let idErrorText = '';
+    let passwordErrorText = '';
     // Check required value of form
-    if (!FormValidator.isExistInput(id))
-      idErrorText = "아이디를 입력 해주세요.";
-    else if (!FormValidator.validateEmail(id))
-      idErrorText = "ID는 E-mail 형태로 입력하세요.";
+    if (!FormValidator.isExistInput(id)) idErrorText = '아이디를 입력 해주세요.';
+    else if (!FormValidator.validateEmail(id)) idErrorText = 'ID는 E-mail 형태로 입력하세요.';
 
-    if (!FormValidator.isExistInput(password))
-      passwordErrorText = "패스워드를 입력 해주세요.";
+    if (!FormValidator.isExistInput(password)) passwordErrorText = '패스워드를 입력 해주세요.';
 
     this.setState({ errors: { id: idErrorText, password: passwordErrorText } });
 
     return !(idErrorText.length > 0 || passwordErrorText.length > 0);
-      ? false
-      : true;
   };
 
   onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,22 +68,16 @@ class SignIn extends React.Component<SignInProps, SignInState> {
             type="password"
             placeholder="Password"
           />
-          <MuiButton
-            color="secondary"
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-          >
+          <MuiButton color="secondary" fullWidth size="large" type="submit" variant="contained">
             <MuiTypography variant="h5">로그인</MuiTypography>
           </MuiButton>
         </form>
         <Checkbox label="아이디 저장하기" />
         <ul>
-          <li style={{ marginTop: "10px" }}>
+          <li style={{ marginTop: '10px' }}>
             <MuiTypography variant="body1" gutterBottom>
-              - 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및{" "}
-              <em>개인 정보 정책</em>에 동의하는 것으로 간주합니다.
+              - 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>
+              에 동의하는 것으로 간주합니다.
             </MuiTypography>
           </li>
           <li>
