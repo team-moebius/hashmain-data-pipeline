@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import MuiTypography from '@material-ui/core/Typography';
 
 import Paper from 'components/atoms/Paper';
-import Tabs from 'components/molecules/Tabs';
+import Tabs from 'components/atoms/Tabs';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
 
