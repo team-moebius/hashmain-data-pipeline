@@ -37,7 +37,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
 
     this.setState({ errors: { id: idErrorText, password: passwordErrorText } });
 
-    return idErrorText.length > 0 || passwordErrorText.length > 0
+    return !(idErrorText.length > 0 || passwordErrorText.length > 0);
       ? false
       : true;
   };
