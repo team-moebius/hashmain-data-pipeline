@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: develop
+    active: local
 
 server:
   port: 80
@@ -16,4 +16,4 @@ logging:
 
 moebius:
   protocol: http
-  host: 52.79.86.26
+  host: 127.0.0.1
