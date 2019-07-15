@@ -12,9 +12,4 @@ public class UpbitCoin extends Coin {
 	String getOwner() {
 		return authToken;
 	}
-
-	@Override
-	Class<?> getConcreteClass() {
-		return UpbitCoin.class;
-	}
 }

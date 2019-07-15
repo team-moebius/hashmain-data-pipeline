@@ -17,13 +17,13 @@ import java.util.Properties;
 public class MoebiusBatchApplication {
 
 	public static void main(String[] args) {
-		SpringApplication moebius = new SpringApplication(MoebiusBatchApplication.class);
+		SpringApplication moebiusBatch = new SpringApplication(MoebiusBatchApplication.class);
 
 		Properties properties = new Properties();
 		properties.put("spring.batch.job.enabled", "false");
-		moebius.setDefaultProperties(properties);
+		moebiusBatch.setDefaultProperties(properties);
 
-		moebius.run(args);
+		moebiusBatch.run(args);
 	}
 
 	@Bean

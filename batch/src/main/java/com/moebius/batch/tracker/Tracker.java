@@ -2,6 +2,6 @@ package com.moebius.batch.tracker;
 
 import com.moebius.batch.model.Coin;
 
-public abstract class AbstractTracker {
-	abstract Coin trackByName();
+public interface Tracker {
+	Coin trackByName();
 }

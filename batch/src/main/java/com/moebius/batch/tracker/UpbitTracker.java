@@ -4,10 +4,9 @@ import com.moebius.batch.model.Coin;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UpbitTracker extends AbstractTracker {
-
+public class UpbitTracker implements Tracker {
 	@Override
-	Coin trackByName() {
+	public Coin trackByName() {
 		return null;
 	}
 }

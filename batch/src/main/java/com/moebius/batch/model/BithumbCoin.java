@@ -5,9 +5,4 @@ public class BithumbCoin extends Coin {
 	String getOwner() {
 		return null;
 	}
-
-	@Override
-	Class<?> getConcreteClass() {
-		return BithumbCoin.class;
-	}
 }
