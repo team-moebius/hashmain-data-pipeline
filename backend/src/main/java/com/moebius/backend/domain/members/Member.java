@@ -32,6 +32,5 @@ public class Member extends Base {
 	@Nullable
 	private String verificationCode;
 
-	private Set<ApiKey> apiKeys = new HashSet<>();
 	private Set<Role> roles = new HashSet<>();
 }

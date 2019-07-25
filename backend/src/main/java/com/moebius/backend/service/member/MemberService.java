@@ -3,14 +3,12 @@ package com.moebius.backend.service.member;
 import com.moebius.backend.assembler.MemberAssembler;
 import com.moebius.backend.configuration.security.JwtUtil;
 import com.moebius.backend.domain.members.MemberRepository;
-import com.moebius.backend.dto.LoginDto;
-import com.moebius.backend.dto.SignupDto;
+import com.moebius.backend.domain.members.MoebiusPrincipal;
+import com.moebius.backend.dto.frontend.LoginDto;
+import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.EmailNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.model.MoebiusPrincipal;
-import com.moebius.backend.utils.Verifier;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -43,8 +41,7 @@ public class MemberService implements ReactiveUserDetailsService {
 			.map(MoebiusPrincipal::new);
 	}
 
-	public Mono<ResponseEntity<?>> createAccount(@NonNull SignupDto signupDto) {
-		Verifier.checkNullField(signupDto);
+	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
 		return memberRepository.save(memberAssembler.toMember(signupDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
@@ -54,8 +51,7 @@ public class MemberService implements ReactiveUserDetailsService {
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
-	public Mono<ResponseEntity<String>> login(@NonNull LoginDto loginDto) {
-		Verifier.checkNullField(loginDto);
+	public Mono<ResponseEntity<String>> login(LoginDto loginDto) {
 		return memberRepository.findByEmail(loginDto.getEmail())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())

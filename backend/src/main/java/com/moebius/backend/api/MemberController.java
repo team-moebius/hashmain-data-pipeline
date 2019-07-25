@@ -1,9 +1,9 @@
 package com.moebius.backend.api;
 
-import com.moebius.backend.dto.LoginDto;
-import com.moebius.backend.dto.MemberDto;
-import com.moebius.backend.dto.SignupDto;
-import com.moebius.backend.dto.VerificationDto;
+import com.moebius.backend.dto.frontend.LoginDto;
+import com.moebius.backend.dto.frontend.MemberDto;
+import com.moebius.backend.dto.frontend.SignupDto;
+import com.moebius.backend.dto.frontend.VerificationDto;
 import com.moebius.backend.service.member.EmailService;
 import com.moebius.backend.service.member.MemberService;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -27,13 +29,13 @@ public class MemberController {
 		notes = "성공할 경우 Json web token이 body에 담겨져 전달된다. 권한이 필요한 모든 요청의 Header에 'Authorization:Bearer ${JSON_WEB_TOKEN}'의 형태로 발송하면 된다."
 	)
 	@PostMapping("/member")
-	public Mono<ResponseEntity<String>> login(@RequestBody @ApiParam(value = "로그인 시 필요한 정보", required = true) LoginDto loginDto) {
+	public Mono<ResponseEntity<String>> login(@RequestBody @Valid @ApiParam(value = "로그인 시 필요한 정보", required = true) LoginDto loginDto) {
 		return memberService.login(loginDto);
 	}
 
 	@ApiOperation("회원가입")
 	@PostMapping("/member/signup")
-	public Mono<ResponseEntity<?>> signup(@RequestBody @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
+	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
 		return memberService.createAccount(signupDto);
 	}
 
@@ -51,7 +53,7 @@ public class MemberController {
 
 	@ApiOperation("이메일 인증 확인")
 	@GetMapping("/member/email/verification")
-	public Mono<ResponseEntity<?>> verifyEmail(@ModelAttribute VerificationDto verificationDto) {
+	public Mono<ResponseEntity<?>> verifyEmail(@ModelAttribute @Valid VerificationDto verificationDto) {
 		return emailService.verifyEmail(verificationDto);
 	}
 
@@ -61,5 +63,4 @@ public class MemberController {
 	public Mono<ResponseEntity<MemberDto>> getMember(@PathVariable String id) {
 		return null;
 	}
-
 }
