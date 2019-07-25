@@ -1,12 +1,22 @@
 package com.moebius.backend.domain.commons;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum Symbol {
-    BTC,
-    ETH,
-    XRP,
-    EOS,
-    LTC,
-    BCH,
-    TRX,
-    XLM
+    @JsonProperty("KRW-BTC")
+    KRW_BTC,
+    @JsonProperty("KRW-ETH")
+    KRW_ETH,
+    @JsonProperty("KRW-XRP")
+    KRW_XRP,
+    @JsonProperty("KRW-EOS")
+    KRW_EOS,
+    @JsonProperty("KRW-LTC")
+    KRW_LTC,
+    @JsonProperty("KRW-BCH")
+    KRW_BCH,
+    @JsonProperty("KRW-TRX")
+    KRW_TRX,
+    @JsonProperty("KRW-XLM")
+    KRW_XLM;
 }

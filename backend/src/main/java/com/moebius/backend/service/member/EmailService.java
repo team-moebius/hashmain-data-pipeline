@@ -2,7 +2,7 @@ package com.moebius.backend.service.member;
 
 import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
-import com.moebius.backend.dto.VerificationDto;
+import com.moebius.backend.dto.frontend.VerificationDto;
 import com.moebius.backend.exception.EmailNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.VerificationFailedException;

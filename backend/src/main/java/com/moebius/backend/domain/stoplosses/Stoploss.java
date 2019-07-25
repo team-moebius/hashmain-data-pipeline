@@ -1,26 +1,26 @@
 package com.moebius.backend.domain.stoplosses;
 
-import com.moebius.backend.domain.commons.Base;
-import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.domain.commons.Symbol;
-import com.moebius.backend.domain.commons.TradeType;
-import com.moebius.backend.domain.members.Member;
+import com.moebius.backend.domain.commons.*;
+import com.moebius.backend.domain.apikeys.ApiKey;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "stoplosses")
 @Getter
 @Setter
+@Document(collection = "stoplosses")
 public class Stoploss extends Base {
     @Id
     private ObjectId id;
-    private Member member;
+    @DBRef
+    private ApiKey apiKey;
     private Exchange exchange;
     private Symbol symbol;
-    private TradeType criteria;
+    private TradeType tradeType;
+    private OrderType orderType;
     private double price;
     private double volume;
 }

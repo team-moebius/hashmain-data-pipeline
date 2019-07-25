@@ -1,6 +1,6 @@
 package com.moebius.backend.configuration.security;
 
-import com.moebius.backend.model.MoebiusPrincipal;
+import com.moebius.backend.domain.members.MoebiusPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

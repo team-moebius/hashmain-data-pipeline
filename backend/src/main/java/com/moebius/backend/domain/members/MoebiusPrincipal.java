@@ -1,6 +1,5 @@
-package com.moebius.backend.model;
+package com.moebius.backend.domain.members;
 
-import com.moebius.backend.domain.members.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
