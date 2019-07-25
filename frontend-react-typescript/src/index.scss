@@ -1,5 +1,28 @@
+@import 'assets/scss/Color.scss';
+
+#root {
+  // background-image: 'aseets/images/bg.png';
+  background-color: $main-bg-color;
+  position: relative;
+  overflow: auto;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+}
+
+em {
+  color: $primary-font-accent-color;
+  font-style: normal;
+}
+
+ul {
+  list-style: none;
+  padding: 0px;
+}
+
 body {
   margin: 0;
+  font-size: 0.75rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
