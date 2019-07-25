@@ -9,8 +9,6 @@ RUN ./gradlew clean build --exclude-task batch:build
 
 # Run
 FROM openjdk:8-jre-alpine
-VOLUME ["/var/log/moebius"]
 ENV ARTIFACT_PATH=frontend/build/libs/frontend-0.0.1-RELEASE.jar
 COPY --from=build $ARTIFACT_PATH app.jar
-EXPOSE 80
 ENTRYPOINT ["java","-Dspring.profiles.active=develop","-jar","app.jar"]
