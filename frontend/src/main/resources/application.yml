@@ -5,7 +5,7 @@ spring:
     web-application-type: reactive
   data:
     mongodb:
-      uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true&streamType=netty&readPreference=secondary&maxPoolSize=95
+      uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true&streamType=netty&readPreference=secondary
       database: moebius
   thymeleaf:
     reactive:
