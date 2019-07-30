@@ -3,7 +3,7 @@ FROM openjdk:8-jdk-alpine as build
 COPY build.gradle settings.gradle gradlew ./
 COPY gradle gradle
 COPY backend backend
-COPY frontend frontend
+COPY app app
 RUN chmod +x ./gradlew
 RUN ./gradlew clean build --exclude-task batch:build
 

@@ -38,7 +38,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
-		trackTrades();
+//		trackTrades();
 	}
 
 	private void trackTrades() {

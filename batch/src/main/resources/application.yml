@@ -6,7 +6,7 @@ upbit:
   accessKey: 0wtwaQBpORWbd1pjvtM4e47wQxcygDEgIMYNz7DK
   secretKey: xVnuCcZrxayeShHyodcQNWbmNjcl2XuCqTiLLCN0
   uriInfo:
-    openedHost: https://frontend.upbit.com/
-    secretHost: https://crix-frontend-endpoint.upbit.com/v1/crix/
+    openedHost: https://api.upbit.com/
+    secretHost: https://crix-api-endpoint.upbit.com/v1/crix/
     asset: v1/accounts
     order:
