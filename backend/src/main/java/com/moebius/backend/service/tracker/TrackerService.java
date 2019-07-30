@@ -42,6 +42,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 	}
 
 	private void trackTrades() {
+		log.info("[Tracker] Start to track trades. - message : {}", message);
 		webSocketClient.execute(URI.create(uri),
 			session -> session.send(Mono.just(session.textMessage(message)))
 				.thenMany(session.receive().map(webSocketMessage -> {
