@@ -26,6 +26,7 @@ public class MemberController {
 	@ApiOperation(
 		value = "로그인",
 		httpMethod = "POST",
+		response = String.class,
 		notes = "성공할 경우 Json web token이 body에 담겨져 전달된다. 권한이 필요한 모든 요청의 Header에 'Authorization:Bearer ${JSON_WEB_TOKEN}'의 형태로 발송하면 된다."
 	)
 	@PostMapping("/member")
@@ -33,13 +34,21 @@ public class MemberController {
 		return memberService.login(loginDto);
 	}
 
-	@ApiOperation("회원가입")
+	@ApiOperation(
+		value = "회원가입",
+		httpMethod = "POST",
+		response = String.class
+	)
 	@PostMapping("/member/signup")
 	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
 		return memberService.createAccount(signupDto);
 	}
 
-	@ApiOperation("비밀번호 초기화")
+	@ApiOperation(
+		value = "비밀번호 초기화",
+		httpMethod = "POST",
+		response = String.class
+	)
 	@PostMapping("/member/password")
 	public Mono<ResponseEntity<?>> findPassword(@RequestBody @ApiParam(value = "초기화된 비밀번호를 전송할 이메일", required = true) String email) {
 		return null;
