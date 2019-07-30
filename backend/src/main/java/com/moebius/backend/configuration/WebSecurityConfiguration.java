@@ -31,10 +31,10 @@ public class WebSecurityConfiguration {
 			.authorizeExchange()
 			.pathMatchers("/api/member/**",
 				"/login",
-				"/**",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
 			.pathMatchers("/member/**",
+				"/swagger**",
 				"/v2/api-docs").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and().build();
