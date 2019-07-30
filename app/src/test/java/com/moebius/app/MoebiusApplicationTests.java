@@ -1,4 +1,4 @@
-package com.moebius.frontend;
+package com.moebius.app;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -29,12 +29,12 @@ public class WebSecurityConfiguration {
 			.authenticationManager(authenticationManager)
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
-			.pathMatchers("/",
-				"/api/member/**",
+			.pathMatchers("/api/member/**",
 				"/login",
+				"/**",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/member",
+			.pathMatchers("/member/**",
 				"/v2/api-docs").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and().build();
