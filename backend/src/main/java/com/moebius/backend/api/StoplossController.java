@@ -37,10 +37,10 @@ public class StoplossController {
 		httpMethod = "GET",
 		notes = "트레이더가 저장한 스탑로스 정보를 제공한다. 트레이더의 거래소 api key를 기반으로 등록되어 있는 모든 스탑로스 정보가 제공된다."
 	)
-	@GetMapping("/stoplosses/api-key/{apiKey}")
+	@GetMapping("/stoplosses/api-key/{apiKeyId}")
 	public Flux<ResponseEntity<StoplossDto>> getStoplosses(
 		@PathVariable @ApiParam(value = "트레이더 거래소 api key", required = true) ObjectId apiKeyId) {
-		return stoplossService.findStoplossesByApiKey(apiKeyId);
+		return stoplossService.getStoplossesByApiKey(apiKeyId);
 	}
 
 	@ApiOperation(

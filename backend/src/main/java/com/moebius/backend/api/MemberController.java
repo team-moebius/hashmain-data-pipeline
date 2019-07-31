@@ -50,7 +50,7 @@ public class MemberController {
 		response = String.class
 	)
 	@PostMapping("/member/password")
-	public Mono<ResponseEntity<?>> findPassword(@RequestBody @ApiParam(value = "초기화된 비밀번호를 전송할 이메일", required = true) String email) {
+	public Mono<ResponseEntity<?>> resetPassword(@RequestBody @ApiParam(value = "초기화된 비밀번호를 전송할 이메일", required = true) String email) {
 		return null;
 	}
 

@@ -37,7 +37,7 @@ public class StoplossService {
 			.compose(this::saveStoplosses);
 	}
 
-	public Flux<ResponseEntity<StoplossDto>> findStoplossesByApiKey(ObjectId apiKeyId) {
+	public Flux<ResponseEntity<StoplossDto>> getStoplossesByApiKey(ObjectId apiKeyId) {
 		return stoplossRepository.findAllByApiKeyId(apiKeyId)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
