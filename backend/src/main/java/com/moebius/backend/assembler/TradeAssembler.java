@@ -28,7 +28,7 @@ public class TradeAssembler {
 		return trade;
 	}
 
-	public Trade updateTrade(@NotNull Trade trade, @NotNull TradeDto newTradeDto) {
+	public Trade toUpdatedTrade(@NotNull Trade trade, @NotNull TradeDto newTradeDto) {
 		trade.setTradeType(newTradeDto.getAskBid());
 		trade.setChange(newTradeDto.getChange());
 		trade.setPrice(newTradeDto.getTradePrice());

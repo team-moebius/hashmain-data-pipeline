@@ -7,7 +7,7 @@ import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.exception.DuplicateDataException;
-import com.moebius.backend.exception.EmailNotFoundException;
+import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class MemberService implements ReactiveUserDetailsService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(
-				Mono.defer(() -> Mono.error(new EmailNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
+				Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
 			.map(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()) ?
 				ResponseEntity.ok(JwtUtil.generateToken(new MoebiusPrincipal(member))) :
 				ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionTypes.WRONG_PASSWORD.getMessage())

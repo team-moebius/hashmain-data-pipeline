@@ -90,7 +90,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 	}
 
 	private Mono<Trade> updateTrade(Trade trade, TradeDto tradeDto) {
-		return Mono.just(tradeAssembler.updateTrade(trade, tradeDto))
+		return Mono.just(tradeAssembler.toUpdatedTrade(trade, tradeDto))
 			.subscribeOn(COMPUTE.scheduler())
 			.publishOn(IO.scheduler())
 			.flatMap(tradeRepository::save);

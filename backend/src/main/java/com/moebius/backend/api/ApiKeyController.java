@@ -12,34 +12,29 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/api-keys")
 @RequiredArgsConstructor
 public class ApiKeyController {
 	private final ApiKeyService apiKeyService;
 
-	@PostMapping("/api-key")
+	@PostMapping("/")
 	public Mono<ResponseEntity<String>> createApiKey(@RequestBody @Valid ApiKeyDto apiKeyDto) {
 		return apiKeyService.createApiKey(apiKeyDto);
 	}
 
-	@GetMapping("/api-keys/member/{memberId}")
+	@GetMapping("/member/{memberId}")
 	public Flux<ResponseEntity<ApiKeyDto>> getApiKeys(@PathVariable ObjectId memberId) {
 		return apiKeyService.getApiKeysByMemberId(memberId);
 	}
 
-	@PutMapping("/api-keys/{id}")
-	public Mono<ResponseEntity<ApiKeyDto>> updateApiKey(@PathVariable ObjectId apiKeyId, @RequestBody @Valid ApiKeyDto newApiKeyDto) {
-		return apiKeyService.updateApiKey(apiKeyId, newApiKeyDto);
+	@DeleteMapping("/{id}")
+	public Mono<ResponseEntity<String>> deleteApiKey(@PathVariable ObjectId id) {
+		return apiKeyService.deleteApiKeyById(id);
 	}
 
-	@DeleteMapping("/api-keys/{id}")
-	public Mono<ResponseEntity<String>> deleteApiKey(@PathVariable ObjectId apiKeyId) {
-		return apiKeyService.deleteApiKey(apiKeyId);
-	}
-
-	@PostMapping("/api-keys/{id}/verification")
-	public Mono<ResponseEntity<String>> verifyApiKey(@PathVariable ObjectId apiKeyId) {
-		return apiKeyService.verifyApiKey(apiKeyId);
+	@PostMapping("/verification")
+	public Mono<ResponseEntity<String>> verifyApiKey(@RequestBody @Valid ObjectId id) {
+		return apiKeyService.verifyApiKey(id);
 	}
 
 }
