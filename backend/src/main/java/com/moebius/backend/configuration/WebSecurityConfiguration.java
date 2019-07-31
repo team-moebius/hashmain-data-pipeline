@@ -35,7 +35,7 @@ public class WebSecurityConfiguration {
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
 			.pathMatchers("/member/**",
-				"/swagger**",
+				"/swagger**", // FIXME : Change not to check auth
 				"/v2/api-docs").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and().build();

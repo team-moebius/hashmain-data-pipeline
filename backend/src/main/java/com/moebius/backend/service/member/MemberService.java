@@ -2,12 +2,14 @@ package com.moebius.backend.service.member;
 
 import com.moebius.backend.assembler.MemberAssembler;
 import com.moebius.backend.configuration.security.JwtUtil;
+import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
 import com.moebius.backend.dto.frontend.SignupDto;
-import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.DuplicatedDataException;
 import com.moebius.backend.exception.EmailNotFoundException;
+import com.moebius.backend.exception.UnverifiedDataException;
 import com.moebius.backend.exception.ExceptionTypes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +54,7 @@ public class MemberService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
-				new DuplicateDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(signupDto.getEmail())) :
+				new DuplicatedDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(signupDto.getEmail())) :
 				exception)
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
@@ -63,9 +65,12 @@ public class MemberService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(
 				Mono.defer(() -> Mono.error(new EmailNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
+			.filter(Member::isActive)
+			.switchIfEmpty(
+				Mono.defer(() -> Mono.error(new UnverifiedDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
 			.map(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()) ?
 				ResponseEntity.ok(JwtUtil.generateToken(new MoebiusPrincipal(member))) :
-				ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionTypes.WRONG_PASSWORD.getMessage())
+				ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionTypes.WRONG_PASSWORD.getMessage())
 			);
 	}
 }
