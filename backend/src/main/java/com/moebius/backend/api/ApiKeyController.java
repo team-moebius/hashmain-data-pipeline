@@ -38,7 +38,7 @@ public class ApiKeyController {
 	}
 
 	@PostMapping("/api-keys/{id}/verification")
-	public Mono<ResponseEntity<?>> verifyApiKey(@PathVariable ObjectId apiKeyId) {
+	public Mono<ResponseEntity<String>> verifyApiKey(@PathVariable ObjectId apiKeyId) {
 		return apiKeyService.verifyApiKey(apiKeyId);
 	}
 

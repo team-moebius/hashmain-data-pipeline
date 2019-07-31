@@ -1,20 +1,49 @@
 package com.moebius.backend.service.member;
 
+import com.moebius.backend.assembler.ApiKeyAssembler;
+import com.moebius.backend.domain.apikeys.ApiKeyRepository;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
+import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.ExceptionTypes;
+import com.moebius.backend.exception.MemberNotFoundException;
+import com.mongodb.DuplicateKeyException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
+import static com.moebius.backend.utils.ThreadScheduler.IO;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ApiKeyService {
+	private final ApiKeyRepository apiKeyRepository;
+	private final ApiKeyAssembler apiKeyAssembler;
+
 	public Mono<ResponseEntity<String>> createApiKey(ApiKeyDto apiKeyDto) {
-		return null;
+		return apiKeyRepository.save(apiKeyAssembler.toApiKey(apiKeyDto))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
+				new DuplicateDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(apiKeyDto.getName())) :
+				exception)
+			.map(apiKey -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
 	public Flux<ResponseEntity<ApiKeyDto>> getApiKeysByMemberId(ObjectId memberId) {
-		return null;
+		return apiKeyRepository.findAllByMemberId(memberId)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Flux.defer(() -> Flux.error(new MemberNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] apikey based on memberId(" + memberId.toString() + ")")
+			))))
+			.map(apiKey -> ResponseEntity.ok(apiKeyAssembler.toDto(apiKey)));
 	}
 
 	public Mono<ResponseEntity<ApiKeyDto>> updateApiKey(ObjectId apiKeyId, ApiKeyDto newApiKeyDto) {
@@ -25,7 +54,7 @@ public class ApiKeyService {
 		return null;
 	}
 
-	public Mono<ResponseEntity<?>> verifyApiKey(ObjectId apiKeyId) {
+	public Mono<ResponseEntity<String>> verifyApiKey(ObjectId apiKeyId) {
 		return null;
 	}
 }
