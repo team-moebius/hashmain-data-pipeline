@@ -21,7 +21,6 @@ interface SignPageState {
   signing: boolean;
 }
 
-//TODO: Connect with backend
 class SignPage extends React.Component<SignPageProps, SignPageState> {
   constructor(props: SignPageProps) {
     super(props);
