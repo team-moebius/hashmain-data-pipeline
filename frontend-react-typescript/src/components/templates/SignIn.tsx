@@ -5,10 +5,12 @@ import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
+import CircularLoader from 'components/atoms/Loader';
 import FormValidator from 'utils/FormValidator';
 
 interface SignInProps {
   // TODO: change object type to specific type
+  pending?: boolean;
   onSubmit?: (data: object) => void;
 }
 
@@ -52,6 +54,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     return (
       <div>
         <form onSubmit={this.onSubmit}>
+          {this.props.pending && <CircularLoader />}
           <Input
             autoComplete="off"
             autoFocus

@@ -5,10 +5,12 @@ import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
+import CircularLoader from 'components/atoms/Loader';
 import FormValidator from 'utils/FormValidator';
 
 interface SignUpProps {
   // TODO: change object type to specific type
+  pending?: boolean;
   onSubmit?: (data: object) => void;
   isDuplicatedId?: (id: string) => boolean;
 }
@@ -121,7 +123,6 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         name: this.nameRef.current.value,
         password: this.passwordRef.current.value,
       };
-      console.log(data);
       this.props.onSubmit(data);
     }
   };
@@ -130,6 +131,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return (
       <div>
         <form onSubmit={this.onSubmit}>
+          {this.props.pending && <CircularLoader />}
           <Input
             autoComplete="off"
             autoFocus
