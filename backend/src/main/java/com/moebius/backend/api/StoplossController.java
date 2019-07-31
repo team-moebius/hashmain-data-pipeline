@@ -48,7 +48,7 @@ public class StoplossController {
 		httpMethod = "DELETE",
 		notes = "트레이더의 특정 스탑로스 정보 한건을 삭제한다."
 	)
-	@DeleteMapping("/stoplosses/{id}")
+	@DeleteMapping("/stoploss/{id}")
 	public Mono<ResponseEntity<String>> deleteStoploss(
 		@PathVariable @ApiParam(value = "스탑로스 id", required = true) ObjectId stoplossId) {
 		return stoplossService.deleteStoplossById(stoplossId);

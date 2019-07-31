@@ -30,6 +30,7 @@ public class WebSecurityConfiguration {
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
 			.pathMatchers("/api/member/**",
+				"/api/members/**", // TODO : Find out proper way to reduce duplicated patterns
 				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")

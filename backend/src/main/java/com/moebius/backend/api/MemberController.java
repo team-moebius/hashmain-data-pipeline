@@ -1,7 +1,6 @@
 package com.moebius.backend.api;
 
 import com.moebius.backend.dto.frontend.LoginDto;
-import com.moebius.backend.dto.frontend.MemberDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.dto.frontend.VerificationDto;
 import com.moebius.backend.service.member.EmailService;
@@ -10,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -56,21 +54,20 @@ public class MemberController {
 	}
 
 	@ApiOperation("이메일 인증 요청")
-	@PostMapping("/member/email")
-	public Mono<ResponseEntity<?>> requestToVerifyEmail(@RequestBody @ApiParam(value = "인증할 이메일", required = true) String email) {
+	@PostMapping("/member/{email}")
+	public Mono<ResponseEntity<?>> requestToVerifyEmail(@PathVariable @ApiParam(value = "인증할 이메일", required = true) String email) {
 		return emailService.requestToVerifyEmail(email);
 	}
 
 	@ApiOperation("이메일 인증 확인")
-	@GetMapping("/member/email/verification")
+	@GetMapping("/member/verification")
 	public Mono<ResponseEntity<?>> verifyEmail(@ModelAttribute @Valid VerificationDto verificationDto) {
 		return emailService.verifyEmail(verificationDto);
 	}
 
-	@ApiOperation("사용자 정보 조회")
+	@ApiOperation("중복된 이메일 여부 조회")
 	@GetMapping("/members/{email}")
-	@PreAuthorize("hasAuthority('MEMBER')")
-	public Mono<ResponseEntity<MemberDto>> getMember(@PathVariable String email) {
-		return null;
+	public Mono<ResponseEntity<Boolean>> getMember(@PathVariable String email) {
+		return memberService.isDuplicatedMember(email);
 	}
 }
