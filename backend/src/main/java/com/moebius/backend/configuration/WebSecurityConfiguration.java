@@ -30,6 +30,7 @@ public class WebSecurityConfiguration {
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
 			.pathMatchers("/api/member/**",
+				"/api/members/**", // TODO : Find out proper way to reduce duplicated patterns
 				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
@@ -47,4 +48,6 @@ public class WebSecurityConfiguration {
 		passwordEncoder.setAlgorithm(Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
 		return passwordEncoder;
 	}
+
+
 }
