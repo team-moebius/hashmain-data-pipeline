@@ -23,6 +23,7 @@ public class WebSecurityConfiguration {
 	@Bean
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
 		return http
+			.cors().disable()
 			.csrf().disable()
 			.formLogin().disable()
 			.httpBasic().disable()
