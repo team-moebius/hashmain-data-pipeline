@@ -23,7 +23,6 @@ public class WebSecurityConfiguration {
 	@Bean
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
 		return http
-			.cors().disable()
 			.csrf().disable()
 			.formLogin().disable()
 			.httpBasic().disable()
@@ -48,4 +47,6 @@ public class WebSecurityConfiguration {
 		passwordEncoder.setAlgorithm(Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
 		return passwordEncoder;
 	}
+
+
 }

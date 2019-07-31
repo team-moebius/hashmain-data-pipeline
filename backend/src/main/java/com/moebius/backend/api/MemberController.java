@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -69,7 +70,7 @@ public class MemberController {
 	@ApiOperation("사용자 정보 조회")
 	@GetMapping("/members/{email}")
 	@PreAuthorize("hasAuthority('MEMBER')")
-	public Mono<ResponseEntity<MemberDto>> getMember(@PathVariable String id) {
+	public Mono<ResponseEntity<MemberDto>> getMember(@PathVariable String email) {
 		return null;
 	}
 }
