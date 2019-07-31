@@ -1,5 +1,4 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import {
   transitions,
@@ -14,10 +13,8 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import AlertContents from 'components/molecules/AlertContents';
-import SignPage from 'pages/entry/SignPage';
-import MainPage from 'pages/entry/MainPage';
-import PrivateRoute from 'utils/PrviateRoute';
 import setReduxStore, { routeHistory } from 'utils/GlobalStore';
+import AppContainer from 'AppContainer';
 
 /** Material-ui theme setting */
 const defaultTheme = createMuiTheme({
@@ -69,18 +66,9 @@ const AppWrapper: React.SFC<{}> = props => (
   </Provider>
 );
 
-const AppEntry = () => (
-  <Router>
-    <Switch>
-      <Route component={SignPage} path="/sign" />
-      <PrivateRoute component={MainPage} path="/" redirectPath="/sign" signing={false} />
-    </Switch>
-  </Router>
-);
-
 const App: React.FC = () => (
   <AppWrapper>
-    <AppEntry />
+    <AppContainer />
   </AppWrapper>
 );
 
