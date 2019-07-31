@@ -8,7 +8,8 @@ import Checkbox from 'components/atoms/Checkbox';
 import FormValidator from 'utils/FormValidator';
 
 interface SignInProps {
-  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
+  // TODO: change object type to specific type
+  onSubmit?: (data: object) => void;
 }
 
 interface SignInState {
@@ -16,7 +17,7 @@ interface SignInState {
 }
 
 class SignIn extends React.Component<SignInProps, SignInState> {
-  private idRef = React.createRef<any>();
+  private emailRef = React.createRef<any>();
   private passwordRef = React.createRef<any>();
   constructor(props: SignInProps) {
     super(props);
@@ -27,7 +28,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     let idErrorText = '';
     let passwordErrorText = '';
     // Check required value of form
-    if (!FormValidator.isExistInput(id)) idErrorText = '아이디를 입력 해주세요.';
+    if (!FormValidator.isExistInput(id)) idErrorText = '아이디(E-mail)를 입력 해주세요.';
     else if (!FormValidator.validateEmail(id)) idErrorText = 'ID는 E-mail 형태로 입력하세요.';
 
     if (!FormValidator.isExistInput(password)) passwordErrorText = '패스워드를 입력 해주세요.';
@@ -40,11 +41,11 @@ class SignIn extends React.Component<SignInProps, SignInState> {
   onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const id = this.idRef.current.value;
+    const email = this.emailRef.current.value;
     const password = this.passwordRef.current.value;
-    if (this.props.onSubmit && this.validate(id, password)) {
-      this.props.onSubmit(e);
-    }
+
+    if (this.props.onSubmit && this.validate(email, password))
+      this.props.onSubmit({ email, password });
   };
 
   render() {
@@ -56,8 +57,8 @@ class SignIn extends React.Component<SignInProps, SignInState> {
             autoFocus
             error={this.state.errors.id ? true : false}
             helperText={this.state.errors.id}
-            inputRef={this.idRef}
-            name="id"
+            inputRef={this.emailRef}
+            name="email"
             placeholder="E-Mail"
           />
           <Input
@@ -86,7 +87,8 @@ class SignIn extends React.Component<SignInProps, SignInState> {
             </MuiTypography>
           </li>
         </ul>
-        <MuiButton fullWidth>비밀번호 찾기</MuiButton>
+        {/* TODO: Implements passwrod find */}
+        {/* <MuiButton fullWidth>비밀번호 찾기</MuiButton> */}
       </div>
     );
   }

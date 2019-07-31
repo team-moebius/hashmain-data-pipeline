@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
+import { withAlert, AlertManager } from 'react-alert';
 
 import MuiTypography from '@material-ui/core/Typography';
 
@@ -7,10 +8,14 @@ import Paper from 'components/atoms/Paper';
 import Tabs from 'components/atoms/Tabs';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
+import Ajax from 'utils/Ajax';
 
 import 'assets/scss/SignPage.scss';
 
-interface SignPageProps {}
+interface SignPageProps {
+  alert: AlertManager;
+}
+
 interface SignPageState {
   index: 0 | 1;
   signing: boolean;
@@ -27,12 +32,27 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
     return false;
   };
 
-  onSubmitSignIn = (e: React.FormEvent<HTMLFormElement>) => {
-    // Temporary code
-    this.setState({ signing: true });
+  onSubmitSignIn = (data: object) => {
+    Ajax.post('/member/', data)
+      .then(response => {
+        this.setState({ signing: true });
+        this.props.alert.success('로그인 되었습니다.');
+      })
+      .catch(error => {
+        this.props.alert.error('로그인에 실패하였습니다.');
+      });
   };
 
-  onSubmitSignUp = (e: React.FormEvent<HTMLFormElement>) => {};
+  onSubmitSignUp = (data: object) => {
+    Ajax.post('/member/signup', data)
+      .then(() => {
+        this.setState({ index: 0 });
+        this.props.alert.success('회원 가입에 성공하였습니다.');
+      })
+      .catch(error => {
+        this.props.alert.error('회원 가입에 실패하였습니다. ' + error);
+      });
+  };
 
   onChangeTabs = (e: React.ChangeEvent<{}>, value: any) => {
     this.setState({ index: value });
@@ -46,7 +66,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
           <Tabs.HorizontalTabs
             centered
             indicatorColor="secondary"
-            textColor="sec ondary"
+            textColor="secondary"
             value={this.state.index}
             onChange={this.onChangeTabs}
           >
@@ -77,4 +97,4 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
   }
 }
 
-export default SignPage;
+export default withAlert()(SignPage);

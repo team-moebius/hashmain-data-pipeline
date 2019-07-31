@@ -8,12 +8,14 @@ import Checkbox from 'components/atoms/Checkbox';
 import FormValidator from 'utils/FormValidator';
 
 interface SignUpProps {
-  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
+  // TODO: change object type to specific type
+  onSubmit?: (data: object) => void;
   isDuplicatedId?: (id: string) => boolean;
 }
 
 interface SignUpState {
   errors: { [key: string]: string | undefined };
+  isCheckPermitTerms: boolean;
 }
 
 // TODO: Refactoring input validation code
@@ -28,8 +30,14 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
   constructor(props: SignUpProps) {
     super(props);
-    this.state = { errors: {} };
+    this.state = { errors: {}, isCheckPermitTerms: false };
   }
+
+  onChangePermitTerms = () => {
+    this.setState({ isCheckPermitTerms: !this.state.isCheckPermitTerms }, () => {
+      this.validatePermitTerms();
+    });
+  };
 
   validateId = () => {
     const id = this.idRef.current.value;
@@ -85,20 +93,37 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return errorText ? false : true;
   };
 
+  validatePermitTerms = () => {
+    const errorText = this.state.isCheckPermitTerms ? undefined : '이용약관에 동의해주세요';
+
+    this.setState({ errors: { ...this.state.errors, permitTerms: errorText } });
+    return this.state.isCheckPermitTerms;
+  };
+
   validate = async () => {
     let valid = false;
     valid = await this.validateId();
     valid = await this.validatePassword();
     valid = await this.validatePasswordConfirm();
-    valid = await this.validatePhoneNumber();
+    // valid = await this.validatePhoneNumber();
     valid = await this.validateUserName();
+    valid = await this.validatePermitTerms();
 
     return valid;
   };
 
-  onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (this.validate() && this.props.onSubmit) this.props.onSubmit(e);
+
+    if ((await this.validate()) && this.props.onSubmit) {
+      const data = {
+        email: this.idRef.current.value,
+        name: this.nameRef.current.value,
+        password: this.passwordRef.current.value,
+      };
+      console.log(data);
+      this.props.onSubmit(data);
+    }
   };
 
   render() {
@@ -111,7 +136,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             error={this.state.errors.id ? true : false}
             helperText={this.state.errors.id}
             inputRef={this.idRef}
-            name="id"
+            name="email"
             onBlur={this.validateId}
             placeholder="E-Mail(User ID)"
           />
@@ -120,11 +145,12 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             error={this.state.errors.userName ? true : false}
             helperText={this.state.errors.userName}
             inputRef={this.nameRef}
-            name="userName"
+            name="name"
             onBlur={this.validateUserName}
             placeholder="User Name"
           />
-          <Input
+          {/* TODO: Activate bloew after impelments phone number in backend */}
+          {/* <Input
             autoComplete="off"
             error={this.state.errors.phoneNumber ? true : false}
             helperText={this.state.errors.phoneNumber}
@@ -132,7 +158,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             name="phoneNumber"
             onBlur={this.validatePhoneNumber}
             placeholder="Phone number('-' 없이 10자 이상 입력)"
-          />
+          /> */}
           <ul>
             <li style={{ marginTop: '10px' }}>
               <MuiTypography variant="body1" gutterBottom>
@@ -166,12 +192,19 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             placeholder="Password confirm(영문 숫자포함 8자 이상)"
           />
           <Checkbox
+            name="permitTerms"
+            onChange={this.onChangePermitTerms}
             label={
               <MuiTypography variant="body1" gutterBottom>
                 <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
               </MuiTypography>
             }
           />
+          {this.state.errors.permitTerms && (
+            <MuiTypography variant="body2" gutterBottom color="error">
+              {this.state.errors.permitTerms}
+            </MuiTypography>
+          )}
           <MuiButton color="secondary" fullWidth size="large" type="submit" variant="contained">
             <MuiTypography variant="h5">회원가입</MuiTypography>
           </MuiButton>
