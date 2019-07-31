@@ -16,7 +16,7 @@ import javax.validation.Valid;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
 	private final MemberService memberService;
@@ -28,7 +28,7 @@ public class MemberController {
 		response = String.class,
 		notes = "성공할 경우 Json web token이 body에 담겨져 전달된다. 권한이 필요한 모든 요청의 Header에 'Authorization:Bearer ${JSON_WEB_TOKEN}'의 형태로 발송하면 된다."
 	)
-	@PostMapping("/member")
+	@PostMapping("/")
 	public Mono<ResponseEntity<String>> login(@RequestBody @Valid @ApiParam(value = "로그인 시 필요한 정보", required = true) LoginDto loginDto) {
 		return memberService.login(loginDto);
 	}
@@ -38,7 +38,7 @@ public class MemberController {
 		httpMethod = "POST",
 		response = String.class
 	)
-	@PostMapping("/member/signup")
+	@PostMapping("/signup")
 	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
 		return memberService.createAccount(signupDto);
 	}
@@ -48,26 +48,26 @@ public class MemberController {
 		httpMethod = "POST",
 		response = String.class
 	)
-	@PostMapping("/member/password")
+	@PostMapping("/password")
 	public Mono<ResponseEntity<?>> findPassword(@RequestBody @ApiParam(value = "초기화된 비밀번호를 전송할 이메일", required = true) String email) {
 		return null;
 	}
 
 	@ApiOperation("이메일 인증 요청")
-	@PostMapping("/member/{email}")
+	@PostMapping("/{email}")
 	public Mono<ResponseEntity<?>> requestToVerifyEmail(@PathVariable @ApiParam(value = "인증할 이메일", required = true) String email) {
 		return emailService.requestToVerifyEmail(email);
 	}
 
-	@ApiOperation("이메일 인증 확인")
-	@GetMapping("/member/verification")
-	public Mono<ResponseEntity<?>> verifyEmail(@ModelAttribute @Valid VerificationDto verificationDto) {
-		return emailService.verifyEmail(verificationDto);
-	}
-
 	@ApiOperation("중복된 이메일 여부 조회")
-	@GetMapping("/members/{email}")
+	@GetMapping("/{email}")
 	public Mono<ResponseEntity<Boolean>> getMember(@PathVariable String email) {
 		return memberService.isDuplicatedMember(email);
+	}
+
+	@ApiOperation("이메일 인증 확인")
+	@GetMapping("/verification")
+	public Mono<ResponseEntity<?>> verifyEmail(@ModelAttribute @Valid VerificationDto verificationDto) {
+		return emailService.verifyEmail(verificationDto);
 	}
 }
