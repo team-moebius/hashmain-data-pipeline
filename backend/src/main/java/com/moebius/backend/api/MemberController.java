@@ -28,7 +28,7 @@ public class MemberController {
 		response = String.class,
 		notes = "성공할 경우 Json web token이 body에 담겨져 전달된다. 권한이 필요한 모든 요청의 Header에 'Authorization:Bearer ${JSON_WEB_TOKEN}'의 형태로 발송하면 된다."
 	)
-	@PostMapping("/")
+	@PostMapping("")
 	public Mono<ResponseEntity<String>> login(@RequestBody @Valid @ApiParam(value = "로그인 시 필요한 정보", required = true) LoginDto loginDto) {
 		return memberService.login(loginDto);
 	}
@@ -60,12 +60,11 @@ public class MemberController {
 	}
 
 	@ApiOperation("중복된 이메일 여부 조회")
-	@GetMapping("/{email}")
+	@GetMapping("/duplicated-email/{email}")
 	public Mono<ResponseEntity<Boolean>> getMember(@PathVariable String email) {
 		return memberService.isDuplicatedMember(email);
 	}
 
-	@ApiOperation("이메일 인증 확인")
 	@GetMapping("/verification")
 	public Mono<ResponseEntity<?>> verifyEmail(@ModelAttribute @Valid VerificationDto verificationDto) {
 		return emailService.verifyEmail(verificationDto);
