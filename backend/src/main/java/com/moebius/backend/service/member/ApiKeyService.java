@@ -31,7 +31,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
-				new DuplicateDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(apiKeyDto.getName())) :
+				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(apiKeyDto.getName())) :
 				exception)
 			.map(apiKey -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}

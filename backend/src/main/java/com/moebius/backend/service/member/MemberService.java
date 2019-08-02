@@ -8,7 +8,7 @@ import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
 import com.moebius.backend.dto.frontend.LoginResponseDto;
 import com.moebius.backend.dto.frontend.SignupDto;
-import com.moebius.backend.exception.DuplicatedDataException;
+import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.UnverifiedDataException;
@@ -43,13 +43,13 @@ public class MemberService {
 			.map(MoebiusPrincipal::new);
 	}
 
-	public Mono<ResponseEntity<String>> checkDuplicatedMember(String email) {
+	public Mono<ResponseEntity<String>> checkDuplicateMember(String email) {
 		return memberRepository.findByEmail(email)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
 			.map(isNotDuplicated -> isNotDuplicated ?
-				ResponseEntity.badRequest().body(ExceptionTypes.DUPLICATED_DATA.getMessage(email)) :
+				ResponseEntity.badRequest().body(ExceptionTypes.DUPLICATE_DATA.getMessage(email)) :
 				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
@@ -58,7 +58,7 @@ public class MemberService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
-				new DuplicatedDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(signupDto.getEmail())) :
+				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(signupDto.getEmail())) :
 				exception)
 			.flatMap(member -> emailService.requestToVerifyEmail(member.getEmail()));
 	}

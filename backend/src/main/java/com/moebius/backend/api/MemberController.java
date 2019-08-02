@@ -49,7 +49,8 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = String.class),
-		@ApiResponse(code = 400, message = "Requested email already exists", response = VerificationFailedException.class),
+		@ApiResponse(code = 400, message = "Requested email already exists.", response = DuplicateDataException.class),
+		@ApiResponse(code = 400, message = "Requested email already verified", response = VerificationFailedException.class),
 		@ApiResponse(code = 404, message = "Requested email is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("/signup")
@@ -74,11 +75,11 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Requested email already exists", response = String.class),
-		@ApiResponse(code = 404, message = "Requested email doesn't exist", response = EmailNotFoundException.class),
+		@ApiResponse(code = 404, message = "Requested email doesn't exist", response = DataNotFoundException.class),
 	})
-	@GetMapping("/duplicated-email/{email}")
-	public Mono<ResponseEntity<String>> checkDuplicatedMember(@PathVariable String email) {
-		return memberService.checkDuplicatedMember(email);
+	@GetMapping("/duplicate/{email}")
+	public Mono<ResponseEntity<String>> checkDuplicateMember(@PathVariable String email) {
+		return memberService.checkDuplicateMember(email);
 	}
 
 	@GetMapping("/verification")
