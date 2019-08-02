@@ -6,7 +6,7 @@ import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
-import com.moebius.backend.dto.frontend.LoginResponseDto;
+import com.moebius.backend.dto.frontend.response.LoginResponseDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.DataNotFoundException;
@@ -49,7 +49,7 @@ public class MemberService {
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
 			.map(isNotDuplicated -> isNotDuplicated ?
-				ResponseEntity.badRequest().body(ExceptionTypes.DUPLICATE_DATA.getMessage(email)) :
+				ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)) :
 				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 

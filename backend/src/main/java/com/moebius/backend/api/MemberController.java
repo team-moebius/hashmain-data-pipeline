@@ -1,7 +1,7 @@
 package com.moebius.backend.api;
 
 import com.moebius.backend.dto.frontend.LoginDto;
-import com.moebius.backend.dto.frontend.LoginResponseDto;
+import com.moebius.backend.dto.frontend.response.LoginResponseDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.dto.frontend.VerificationDto;
 import com.moebius.backend.exception.*;
