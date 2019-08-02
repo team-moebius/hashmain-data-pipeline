@@ -12,7 +12,7 @@ import Idea from 'pages/contents/Idea';
 import CoinInfo from 'pages/contents/CoinInfo';
 import UseGuide from 'pages/contents/UseGuide';
 import Profile from 'pages/contents/Profile';
-import Ajax from 'utils/Ajax';
+import ajax from 'utils/Ajax';
 
 import bgImage from 'assets/images/bg.png';
 import logo from 'assets/images/logo.png';
@@ -52,7 +52,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   };
 
   render() {
-    console.log(Ajax.defaults.headers.common['Authorization']);
+    console.log(ajax.defaults.headers.common['Authorization']);
     return (
       <div style={{ backgroundImage: bgImage }} className="layout">
         <AppBar

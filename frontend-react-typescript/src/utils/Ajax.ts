@@ -1,12 +1,16 @@
 import axios from 'axios';
 import { push } from 'connected-react-router';
 
-const Ajax = axios.create({
+const ajax = axios.create({
   baseURL: 'http://52.79.86.26/api/',
   responseType: 'json',
 });
 
-Ajax.interceptors.response.use(
+const setAjaxJwtHeader = (jwtHeader: String) => {
+  ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtHeader}`;
+};
+
+ajax.interceptors.response.use(
   response => {
     return response;
   },
@@ -20,4 +24,5 @@ Ajax.interceptors.response.use(
   }
 );
 
-export default Ajax;
+export { ajax, setAjaxJwtHeader };
+export default ajax;

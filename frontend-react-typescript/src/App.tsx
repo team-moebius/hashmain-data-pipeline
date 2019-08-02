@@ -14,7 +14,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import AlertContents from 'components/molecules/AlertContents';
 import setReduxStore, { routeHistory } from 'utils/GlobalStore';
-import AppContainer from 'AppContainer';
+import PageContainer from 'pages/PageContainer';
 
 /** Material-ui theme setting */
 const defaultTheme = createMuiTheme({
@@ -68,7 +68,7 @@ const AppWrapper: React.SFC<{}> = props => (
 
 const App: React.FC = () => (
   <AppWrapper>
-    <AppContainer />
+    <PageContainer />
   </AppWrapper>
 );
 
