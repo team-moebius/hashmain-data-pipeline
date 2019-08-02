@@ -44,11 +44,12 @@ public class MemberController {
 	@ApiOperation(
 		value = "회원가입",
 		httpMethod = "POST",
-		notes = "회원가입을 요청한다."
+		notes = "회원가입을 요청한다. 회원 가입 요청 후 인증 이메일도 함께 발송된다."
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success.", response = String.class),
-		@ApiResponse(code = 400, message = "Requested email already exists.", response = DuplicatedDataException.class),
+		@ApiResponse(code = 400, message = "Requested email already exists.", response = VerificationFailedException.class),
+		@ApiResponse(code = 404, message = "Requested Email is not found.", response = EmailNotFoundException.class),
 	})
 	@PostMapping("/signup")
 	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
@@ -62,21 +63,6 @@ public class MemberController {
 	@PostMapping("/password")
 	public Mono<ResponseEntity<?>> findPassword(@RequestBody @ApiParam(value = "초기화된 비밀번호를 전송할 이메일", required = true) String email) {
 		return null;
-	}
-
-	@ApiOperation(
-		value = "이메일 인증 요청",
-		httpMethod = "POST",
-		notes = "회원 가입 요청 후 이메일 인증을 요청할 때 사용한다."
-	)
-	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success.", response = String.class),
-		@ApiResponse(code = 400, message = "Email is already verified.", response = VerificationFailedException.class),
-		@ApiResponse(code = 404, message = "Email is not found.", response = EmailNotFoundException.class),
-	})
-	@PostMapping("/verification/{email}")
-	public Mono<ResponseEntity<?>> requestToVerifyEmail(@PathVariable @ApiParam(value = "인증할 이메일", required = true) String email) {
-		return emailService.requestToVerifyEmail(email);
 	}
 
 	@ApiOperation(

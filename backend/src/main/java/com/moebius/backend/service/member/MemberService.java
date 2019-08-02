@@ -32,6 +32,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MemberAssembler memberAssembler;
+	private final EmailService emailService;
 
 	public Mono<UserDetails> findByEmail(String email) {
 		return memberRepository.findByEmail(email)
@@ -56,7 +57,7 @@ public class MemberService {
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
 				new DuplicatedDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(signupDto.getEmail())) :
 				exception)
-			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
+			.flatMap(member -> emailService.requestToVerifyEmail(member.getEmail()));
 	}
 
 	public Mono<ResponseEntity<String>> login(LoginDto loginDto) {
