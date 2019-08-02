@@ -5,16 +5,16 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 @ToString
 public class SignupDto {
-	@NotNull
+	@NotBlank
 	private String name;
 	@Email
 	private String email;
-	@NotNull
+	@NotBlank
 	private String password;
 }

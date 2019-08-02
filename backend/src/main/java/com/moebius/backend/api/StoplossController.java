@@ -41,7 +41,7 @@ public class StoplossController {
 	@GetMapping("/api-keys/{apiKey}")
 	public Flux<ResponseEntity<StoplossDto>> getStoplosses(
 		@PathVariable @ApiParam(value = "트레이더 거래소 api key", required = true) ObjectId apiKeyId) {
-		return stoplossService.findStoplossesByApiKey(apiKeyId);
+		return stoplossService.getStoplossesByApiKey(apiKeyId);
 	}
 
 	@ApiOperation(

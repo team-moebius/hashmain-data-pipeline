@@ -1,7 +1,7 @@
 package com.moebius.backend.api;
 
 import com.moebius.backend.dto.frontend.LoginDto;
-import com.moebius.backend.dto.frontend.LoginResponseDto;
+import com.moebius.backend.dto.frontend.response.LoginResponseDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.dto.frontend.VerificationDto;
 import com.moebius.backend.exception.*;
@@ -35,7 +35,7 @@ public class MemberController {
 		@ApiResponse(code = 200, message = "Success", response = LoginResponseDto.class),
 		@ApiResponse(code = 400, message = "Password is wrong", response = WrongDataException.class),
 		@ApiResponse(code = 401, message = "Email is not verified", response = UnverifiedDataException.class),
-		@ApiResponse(code = 404, message = "Email is not found", response = EmailNotFoundException.class),
+		@ApiResponse(code = 404, message = "Email is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("")
 	public Mono<ResponseEntity<?>> login(@RequestBody @Valid @ApiParam(value = "로그인 시 필요한 정보", required = true) LoginDto loginDto) {
@@ -49,8 +49,9 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = String.class),
-		@ApiResponse(code = 400, message = "Requested email already exists", response = VerificationFailedException.class),
-		@ApiResponse(code = 404, message = "Requested email is not found", response = EmailNotFoundException.class),
+		@ApiResponse(code = 400, message = "Requested email already exists.", response = DuplicateDataException.class),
+		@ApiResponse(code = 400, message = "Requested email already verified", response = VerificationFailedException.class),
+		@ApiResponse(code = 404, message = "Requested email is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("/signup")
 	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
@@ -60,7 +61,8 @@ public class MemberController {
 	@ApiOperation(
 		value = "비밀번호 초기화",
 		httpMethod = "POST",
-		response = String.class)
+		response = String.class
+	)
 	@PostMapping("/password")
 	public Mono<ResponseEntity<?>> findPassword(@RequestBody @ApiParam(value = "초기화된 비밀번호를 전송할 이메일", required = true) String email) {
 		return null;
@@ -73,11 +75,11 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Requested email already exists", response = String.class),
-		@ApiResponse(code = 404, message = "Requested email doesn't exist", response = EmailNotFoundException.class),
+		@ApiResponse(code = 404, message = "Requested email doesn't exist", response = DataNotFoundException.class),
 	})
-	@GetMapping("/duplicated-email/{email}")
-	public Mono<ResponseEntity<String>> checkDuplicatedMember(@PathVariable String email) {
-		return memberService.checkDuplicatedMember(email);
+	@GetMapping("/duplicate/{email}")
+	public Mono<ResponseEntity<String>> checkDuplicateMember(@PathVariable String email) {
+		return memberService.checkDuplicateMember(email);
 	}
 
 	@GetMapping("/verification")

@@ -32,17 +32,17 @@ public class StoplossService {
 		return apiKeyRepository.findById(apiKeyId)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] " + apiKeyId.toString())))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[Api-keys] " + apiKeyId.toString())))))
 			.flatMapIterable(apiKey -> stoplossAssembler.toStoplosses(apiKey, stoplossDtos))
 			.compose(this::saveStoplosses);
 	}
 
-	public Flux<ResponseEntity<StoplossDto>> findStoplossesByApiKey(ObjectId apiKeyId) {
+	public Flux<ResponseEntity<StoplossDto>> getStoplossesByApiKey(ObjectId apiKeyId) {
 		return stoplossRepository.findAllByApiKeyId(apiKeyId)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Flux.defer(() -> Flux.error(new WrongDataException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Stoploss] stoploss information based on  " + apiKeyId.toString())))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Stoplosses] Stoploss information based on  " + apiKeyId.toString())))))
 			.map(stoploss -> ResponseEntity.ok(stoplossAssembler.toDto(stoploss)));
 	}
 

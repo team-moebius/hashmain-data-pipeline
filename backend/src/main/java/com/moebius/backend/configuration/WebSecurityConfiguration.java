@@ -32,7 +32,7 @@ public class WebSecurityConfiguration {
 				"/",
 				"/csrf",
 				"/api/member/**",
-				"/api/members/**", // TODO : Find out proper way to reduce duplicated patterns
+				"/api/members/**", // TODO : Find out proper way to reduce duplicate patterns
 				"/login",
 				"/v2/api-docs",
 				"/swagger",

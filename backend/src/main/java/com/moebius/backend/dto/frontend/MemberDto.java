@@ -7,7 +7,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ public class MemberDto {
 	@Id
 	private String id;
 	private Level level;
-	@NotNull
+	@NotBlank
 	private String name;
 	@Email
 	private String email;

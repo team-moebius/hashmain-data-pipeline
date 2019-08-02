@@ -3,6 +3,7 @@ package com.moebius.backend.assembler;
 import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.Role;
 import com.moebius.backend.dto.frontend.SignupDto;
+import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ public class MemberAssembler {
 	private final PasswordEncoder passwordEncoder;
 
 	public Member toMember(@NotNull SignupDto signupDto) {
+		Verifier.checkNullField(signupDto);
+
 		Set<Role> roles = new HashSet<>();
 		roles.add(new Role(ROLE));
 
