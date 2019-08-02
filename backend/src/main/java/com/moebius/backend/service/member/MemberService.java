@@ -49,8 +49,8 @@ public class MemberService {
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
 			.map(isNotDuplicated -> isNotDuplicated ?
-				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()) :
-				ResponseEntity.badRequest().body(ExceptionTypes.DUPLICATED_DATA.getMessage(email)));
+				ResponseEntity.badRequest().body(ExceptionTypes.DUPLICATED_DATA.getMessage(email)) :
+				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
 	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
