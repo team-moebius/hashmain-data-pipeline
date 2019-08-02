@@ -69,11 +69,11 @@ public class MemberController {
 	@ApiOperation(
 		value = "중복된 이메일 여부 조회",
 		httpMethod = "GET",
-		notes = "회원 가입 시 중복된 이메일을 확인할 때 사용한다. 중복이면 Bad request(400), 중복이 아닐 경우 OK(200)을 반환한다."
+		notes = "회원 가입 시 중복된 이메일을 확인할 때 사용한다. 중복이면 OK(200), 중복이 아닐 경우 Not Found(404)을 반환한다."
 	)
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success", response = String.class),
-		@ApiResponse(code = 400, message = "Requested email already exists", response = DuplicatedDataException.class),
+		@ApiResponse(code = 200, message = "Requested email already exists", response = String.class),
+		@ApiResponse(code = 404, message = "Requested email doesn't exist", response = EmailNotFoundException.class),
 	})
 	@GetMapping("/duplicated-email/{email}")
 	public Mono<ResponseEntity<String>> checkDuplicatedMember(@PathVariable String email) {
