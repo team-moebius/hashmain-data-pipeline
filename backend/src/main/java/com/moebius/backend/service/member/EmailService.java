@@ -51,7 +51,7 @@ public class EmailService {
 	}
 
 	public Mono<ResponseEntity<?>> verifyEmail(@NonNull VerificationDto verificationDto) {
-		Verifier.checkNullField(verificationDto);
+		Verifier.checkNullFields(verificationDto);
 
 		return memberRepository.findByEmail(verificationDto.getEmail())
 			.subscribeOn(IO.scheduler())

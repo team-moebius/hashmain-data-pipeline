@@ -20,7 +20,7 @@ public class MemberAssembler {
 	private final PasswordEncoder passwordEncoder;
 
 	public Member toMember(@NotNull SignupDto signupDto) {
-		Verifier.checkNullField(signupDto);
+		Verifier.checkNullFields(signupDto);
 
 		Set<Role> roles = new HashSet<>();
 		roles.add(new Role(ROLE));

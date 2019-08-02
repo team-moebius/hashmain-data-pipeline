@@ -33,8 +33,8 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = LoginResponseDto.class),
-		@ApiResponse(code = 400, message = "Password is wrong", response = WrongDataException.class),
-		@ApiResponse(code = 401, message = "Email is not verified", response = UnverifiedDataException.class),
+		@ApiResponse(code = 400, message = "Password is wrong", response = VerificationFailedException.class),
+		@ApiResponse(code = 401, message = "Email is not verified", response = DataNotVerifiedException.class),
 		@ApiResponse(code = 404, message = "Email is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("")

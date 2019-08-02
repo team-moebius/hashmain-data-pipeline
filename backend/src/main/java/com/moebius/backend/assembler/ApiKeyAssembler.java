@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Component
 public class ApiKeyAssembler {
 	public ApiKey toApiKey(@NotNull ApiKeyDto apiKeyDto) {
-		Verifier.checkNullField(apiKeyDto);
+		Verifier.checkNullFields(apiKeyDto);
 
 		ApiKey apiKey = new ApiKey();
 
@@ -24,7 +24,7 @@ public class ApiKeyAssembler {
 	}
 
 	public ApiKeyDto toDto(@NotNull ApiKey apiKey) {
-		Verifier.checkNullField(apiKey);
+		Verifier.checkNullFields(apiKey);
 
 		ApiKeyDto apiKeyDto = new ApiKeyDto();
 

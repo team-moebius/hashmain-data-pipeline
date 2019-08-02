@@ -11,7 +11,7 @@ import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.exception.UnverifiedDataException;
+import com.moebius.backend.exception.DataNotVerifiedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -71,7 +71,7 @@ public class MemberService {
 				Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
 			.filter(Member::isActive)
 			.switchIfEmpty(
-				Mono.defer(() -> Mono.error(new UnverifiedDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
+				Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
 			.map(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()) ?
 				ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))) :
 				ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionTypes.WRONG_PASSWORD.getMessage())

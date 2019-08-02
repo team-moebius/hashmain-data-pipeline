@@ -28,7 +28,7 @@ public class ApiKeyService {
 	private final ApiKeyAssembler apiKeyAssembler;
 
 	public Mono<ResponseEntity<String>> createApiKey(ApiKeyDto apiKeyDto) {
-		Verifier.checkNullField(apiKeyDto);
+		Verifier.checkNullFields(apiKeyDto);
 
 		return apiKeyRepository.save(apiKeyAssembler.toApiKey(apiKeyDto))
 			.subscribeOn(IO.scheduler())
@@ -40,7 +40,7 @@ public class ApiKeyService {
 	}
 
 	public Flux<ResponseEntity<ApiKeyDto>> getApiKeysByMemberId(ObjectId memberId) {
-		Verifier.checkNullField(memberId);
+		Verifier.checkNullFields(memberId);
 
 		return apiKeyRepository.findAllByMemberId(memberId)
 			.subscribeOn(IO.scheduler())
@@ -51,7 +51,7 @@ public class ApiKeyService {
 	}
 
 	public Mono<ResponseEntity<String>> deleteApiKeyById(ObjectId id) {
-		Verifier.checkNullField(id);
+		Verifier.checkNullFields(id);
 
 		return apiKeyRepository.deleteById(id)
 			.subscribeOn(IO.scheduler())
@@ -60,7 +60,7 @@ public class ApiKeyService {
 	}
 
 	public Mono<ResponseEntity<String>> verifyApiKey(ObjectId id) {
-		Verifier.checkNullField(id);
+		Verifier.checkNullFields(id);
 
 		return apiKeyRepository.findById(id)
 			.subscribeOn(IO.scheduler())
