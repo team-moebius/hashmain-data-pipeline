@@ -18,39 +18,56 @@ interface SignPageProps {
 
 interface SignPageState {
   index: 0 | 1;
+  pending: boolean;
   signing: boolean;
 }
 
 class SignPage extends React.Component<SignPageProps, SignPageState> {
   constructor(props: SignPageProps) {
     super(props);
-    this.state = { index: 0, signing: false };
+    this.state = { index: 0, pending: false, signing: false };
   }
 
-  isDuplicatedId = (id: string) => {
-    return false;
+  isDuplicatedId = async (id: string) => {
+    let isDuplicated = false;
+    await this.setState({ pending: true }, () => {
+      Ajax.get(`/members/duplicate/${id}`)
+        .then(response => {
+          isDuplicated = true;
+        })
+        .finally(() => this.setState({ pending: false }));
+    });
+
+    return isDuplicated;
   };
 
   onSubmitSignIn = (data: object) => {
-    Ajax.post('/member/', data)
-      .then(response => {
-        this.setState({ signing: true });
-        this.props.alert.success('로그인 되었습니다.');
-      })
-      .catch(error => {
-        this.props.alert.error('로그인에 실패하였습니다.');
-      });
+    this.setState({ pending: true }, () => {
+      Ajax.post('/members', data)
+        .then(response => {
+          Ajax.defaults.headers.common['Authorization'] = response.data.token;
+          this.setState({ pending: false, signing: true });
+          this.props.alert.success('로그인 성공');
+        })
+        .catch(error => {
+          this.setState({ pending: false });
+          this.props.alert.error('로그인 실패');
+        });
+    });
   };
 
   onSubmitSignUp = (data: object) => {
-    Ajax.post('/member/signup', data)
-      .then(() => {
-        this.setState({ index: 0 });
-        this.props.alert.success('회원 가입에 성공하였습니다.');
-      })
-      .catch(error => {
-        this.props.alert.error('회원 가입에 실패하였습니다. ' + error);
-      });
+    this.setState({ pending: true }, () => {
+      Ajax.post('/members/signup', data)
+        .then(() => {
+          this.setState({ index: 0, pending: false });
+          this.props.alert.success('회원 가입 성공');
+        })
+        .catch(error => {
+          this.setState({ pending: false });
+          this.props.alert.error('회원 가입 실패');
+        });
+    });
   };
 
   onChangeTabs = (e: React.ChangeEvent<{}>, value: any) => {
@@ -85,9 +102,15 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
             />
           </Tabs.HorizontalTabs>
           <div className="sign-page__contents">
-            {this.state.index === 0 && <SignIn onSubmit={this.onSubmitSignIn} />}
+            {this.state.index === 0 && (
+              <SignIn pending={this.state.pending} onSubmit={this.onSubmitSignIn} />
+            )}
             {this.state.index === 1 && (
-              <SignUp isDuplicatedId={this.isDuplicatedId} onSubmit={this.onSubmitSignUp} />
+              <SignUp
+                isDuplicatedId={this.isDuplicatedId}
+                pending={this.state.pending}
+                onSubmit={this.onSubmitSignUp}
+              />
             )}
           </div>
         </Paper>
