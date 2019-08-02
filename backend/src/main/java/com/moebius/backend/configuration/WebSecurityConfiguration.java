@@ -23,6 +23,7 @@ public class WebSecurityConfiguration {
 	@Bean
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
 		return http
+			.csrf().disable()
 			.formLogin().disable()
 			.authenticationManager(authenticationManager)
 			.securityContextRepository(securityContextRepository)

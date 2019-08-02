@@ -74,7 +74,7 @@ public class MemberController {
 		@ApiResponse(code = 400, message = "Email is already verified.", response = VerificationFailedException.class),
 		@ApiResponse(code = 404, message = "Email is not found.", response = EmailNotFoundException.class),
 	})
-	@PostMapping("/verification")
+	@PostMapping("/verification/{email}")
 	public Mono<ResponseEntity<?>> requestToVerifyEmail(@PathVariable @ApiParam(value = "인증할 이메일", required = true) String email) {
 		return emailService.requestToVerifyEmail(email);
 	}
