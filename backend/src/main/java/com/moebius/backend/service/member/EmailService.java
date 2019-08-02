@@ -40,12 +40,9 @@ public class EmailService {
 	private String host;
 
 	public Mono<ResponseEntity<?>> requestToVerifyEmail(@NonNull String email) {
-		Hooks.onOperatorDebug();
-
 		return memberRepository.findByEmail(email)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.log()
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)))))
 			.filter(member -> !member.isActive())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(email)))))
@@ -55,12 +52,10 @@ public class EmailService {
 
 	public Mono<ResponseEntity<?>> verifyEmail(@NonNull VerificationDto verificationDto) {
 		Verifier.checkNullField(verificationDto);
-		Hooks.onOperatorDebug();
 
 		return memberRepository.findByEmail(verificationDto.getEmail())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.log()
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(verificationDto.getEmail())))))
 			.filter(member -> !member.isActive() && member.getVerificationCode() != null)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(verificationDto.getEmail())))))

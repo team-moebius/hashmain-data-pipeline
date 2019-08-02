@@ -25,20 +25,26 @@ public class WebSecurityConfiguration {
 		return http
 			.csrf().disable()
 			.formLogin().disable()
-			.httpBasic().disable()
 			.authenticationManager(authenticationManager)
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
-			.pathMatchers("/api/member/**",
+			.pathMatchers(
+				"/",
+				"/csrf",
+				"/api/member/**",
 				"/api/members/**", // TODO : Find out proper way to reduce duplicated patterns
 				"/login",
+				"/v2/api-docs",
+				"/swagger",
+				"/swagger-ui.html",
+				"/swagger-resources/**",
+				"/webjars/**",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/member/**",
-				"/swagger**",
-				"/v2/api-docs").hasAuthority("MEMBER")
+			.pathMatchers("/member/**").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
-			.and().build();
+			.and()
+			.build();
 	}
 
 	@Bean
@@ -48,6 +54,5 @@ public class WebSecurityConfiguration {
 		passwordEncoder.setAlgorithm(Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
 		return passwordEncoder;
 	}
-
 
 }
