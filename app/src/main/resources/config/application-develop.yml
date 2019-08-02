@@ -13,8 +13,7 @@ logging:
   level:
     root: INFO
     com.moebius: DEBUG
-  path: /var/log/moebius/app
-  file: app.log
+  file: /var/log/moebius/app.log
 
 moebius:
   protocol: http

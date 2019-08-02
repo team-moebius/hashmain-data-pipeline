@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
-
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
@@ -27,6 +27,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
  */
 @Slf4j
 @Service
+@Profile("!local")
 @RequiredArgsConstructor
 public class TrackerService implements ApplicationListener<ApplicationReadyEvent> {
 	private final WebSocketClient webSocketClient;
@@ -38,10 +39,11 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
-//		trackTrades();
+		trackTrades();
 	}
 
 	private void trackTrades() {
+		log.info("[Tracker] Start to track trades. - message : {}", message);
 		webSocketClient.execute(URI.create(uri),
 			session -> session.send(Mono.just(session.textMessage(message)))
 				.thenMany(session.receive().map(webSocketMessage -> {

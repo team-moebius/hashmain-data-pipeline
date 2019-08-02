@@ -2,19 +2,20 @@ package com.moebius.backend.service.member;
 
 import com.moebius.backend.assembler.MemberAssembler;
 import com.moebius.backend.configuration.security.JwtUtil;
+import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
 import com.moebius.backend.dto.frontend.SignupDto;
-import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.DuplicatedDataException;
 import com.moebius.backend.exception.EmailNotFoundException;
+import com.moebius.backend.exception.UnverifiedDataException;
 import com.moebius.backend.exception.ExceptionTypes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,13 +28,13 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MemberService implements ReactiveUserDetailsService {
+public class MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MemberAssembler memberAssembler;
+	private final EmailService emailService;
 
-	@Override
-	public Mono<UserDetails> findByUsername(String email) {
+	public Mono<UserDetails> findByEmail(String email) {
 		return memberRepository.findByEmail(email)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
@@ -41,14 +42,22 @@ public class MemberService implements ReactiveUserDetailsService {
 			.map(MoebiusPrincipal::new);
 	}
 
+	public Mono<ResponseEntity<Boolean>> isDuplicatedMember(String email) {
+		return memberRepository.findByEmail(email)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.hasElement()
+			.map(ResponseEntity::ok);
+	}
+
 	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
 		return memberRepository.save(memberAssembler.toMember(signupDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
-				new DuplicateDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(signupDto.getEmail())) :
+				new DuplicatedDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(signupDto.getEmail())) :
 				exception)
-			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
+			.flatMap(member -> emailService.requestToVerifyEmail(member.getEmail()));
 	}
 
 	public Mono<ResponseEntity<String>> login(LoginDto loginDto) {
@@ -57,9 +66,12 @@ public class MemberService implements ReactiveUserDetailsService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(
 				Mono.defer(() -> Mono.error(new EmailNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
+			.filter(Member::isActive)
+			.switchIfEmpty(
+				Mono.defer(() -> Mono.error(new UnverifiedDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
 			.map(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()) ?
 				ResponseEntity.ok(JwtUtil.generateToken(new MoebiusPrincipal(member))) :
-				ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionTypes.WRONG_PASSWORD.getMessage())
+				ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionTypes.WRONG_PASSWORD.getMessage())
 			);
 	}
 }

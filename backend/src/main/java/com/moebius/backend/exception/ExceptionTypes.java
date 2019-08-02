@@ -10,6 +10,12 @@ public enum ExceptionTypes {
 	INVALID_EMAIL("Email is not valid in moebius."),
 	INVALID_CODE("Entered code is not valid in moebius."),
 
+	UNVERIFIED_DATA("The data is not verified.") {
+		@Override
+		public String getMessage(String data) {
+			return data + " is not verified.";
+		}
+	},
 	ALREADY_VERIFIED_DATA("The data already verified.") {
 		@Override
 		public String getMessage(String data) {
