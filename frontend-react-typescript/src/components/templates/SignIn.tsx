@@ -5,7 +5,6 @@ import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
-import CircularLoader from 'components/atoms/Loader';
 import FormValidator from 'utils/FormValidator';
 
 interface SignInProps {
@@ -54,7 +53,6 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     return (
       <div>
         <form onSubmit={this.onSubmit}>
-          {this.props.pending && <CircularLoader />}
           <Input
             autoComplete="off"
             autoFocus
@@ -72,7 +70,14 @@ class SignIn extends React.Component<SignInProps, SignInState> {
             type="password"
             placeholder="Password"
           />
-          <MuiButton color="secondary" fullWidth size="large" type="submit" variant="contained">
+          <MuiButton
+            color="secondary"
+            disabled={this.props.pending}
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+          >
             <MuiTypography variant="h5">로그인</MuiTypography>
           </MuiButton>
         </form>

@@ -6,10 +6,10 @@ import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import { amber, green } from '@material-ui/core/colors';
-import IconButton from '@material-ui/core/IconButton';
 import SnackbarContent, { SnackbarContentProps } from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import { makeStyles } from '@material-ui/core/styles';
+import IconButton from 'components/atoms/IconButton';
 
 const useContentsStyles = makeStyles(theme => ({
   success: {
@@ -67,9 +67,13 @@ const AlertContents: React.FC<AlertContentsProps> = props => {
         </span>
       }
       action={[
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-          <CloseIcon className={classes.icon} />
-        </IconButton>,
+        <IconButton
+          key="close"
+          aria-label="close"
+          icon={<CloseIcon className={classes.icon} />}
+          color="inherit"
+          onClick={onClose}
+        />,
       ]}
       {...other}
     />

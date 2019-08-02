@@ -10,7 +10,7 @@ const AppEntry = () => (
   <Router>
     <Switch>
       <Route component={SignPage} path="/sign" />
-      <PrivateRoute component={MainPage} path="/" redirectPath="/sign" signing={true} />
+      <PrivateRoute component={MainPage} path="/" redirectPath="/sign" signing={false} />
     </Switch>
   </Router>
 );

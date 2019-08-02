@@ -37,7 +37,7 @@ const defaultTheme = createMuiTheme({
 const alertOptions = {
   position: positions.BOTTOM_CENTER,
   timeout: 40000,
-  offset: '30px',
+  offset: '15px 0px 15px 0px',
   transition: transitions.FADE,
 };
 

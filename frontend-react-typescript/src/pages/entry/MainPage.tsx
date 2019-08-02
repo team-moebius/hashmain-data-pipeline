@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { push } from 'connected-react-router';
 import MuiButton from '@material-ui/core/Button';
 import MuiTypography from '@material-ui/core/Typography';
 
@@ -11,6 +12,7 @@ import Idea from 'pages/contents/Idea';
 import CoinInfo from 'pages/contents/CoinInfo';
 import UseGuide from 'pages/contents/UseGuide';
 import Profile from 'pages/contents/Profile';
+import Ajax from 'utils/Ajax';
 
 import bgImage from 'assets/images/bg.png';
 import logo from 'assets/images/logo.png';
@@ -18,7 +20,6 @@ import 'assets/scss/MainPage.scss';
 
 interface MainPageProps {
   onClickAlertSample?: (e: React.MouseEvent<HTMLElement>) => void;
-  onClickSignOut?: (e: React.MouseEvent<HTMLElement>) => void;
 }
 interface MainPageState {
   index: number;
@@ -42,11 +43,16 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
     };
   }
 
+  onClickSignOut = () => {
+    push('http://localhost:3000/sign');
+  };
+
   onChangeMenuIndex = (e: React.ChangeEvent<{}>, value: any) => {
     this.setState({ index: value });
   };
 
   render() {
+    console.log(Ajax.defaults.headers.common['Authorization']);
     return (
       <div style={{ backgroundImage: bgImage }} className="layout">
         <AppBar
@@ -73,7 +79,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
                 <MuiButton
                   className="layout-header__button"
                   size="medium"
-                  onClick={this.props.onClickSignOut}
+                  onClick={this.onClickSignOut}
                 >
                   <MuiTypography variant="h6">로그 아웃</MuiTypography>
                 </MuiButton>

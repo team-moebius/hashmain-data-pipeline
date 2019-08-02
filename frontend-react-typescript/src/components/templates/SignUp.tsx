@@ -5,14 +5,13 @@ import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
-import CircularLoader from 'components/atoms/Loader';
 import FormValidator from 'utils/FormValidator';
 
 interface SignUpProps {
   // TODO: change object type to specific type
   pending?: boolean;
   onSubmit?: (data: object) => void;
-  isDuplicatedId?: (id: string) => boolean;
+  isDuplicatedId?: (id: string) => Promise<boolean>;
 }
 
 interface SignUpState {
@@ -131,7 +130,6 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return (
       <div>
         <form onSubmit={this.onSubmit}>
-          {this.props.pending && <CircularLoader />}
           <Input
             autoComplete="off"
             autoFocus
@@ -207,7 +205,14 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
               {this.state.errors.permitTerms}
             </MuiTypography>
           )}
-          <MuiButton color="secondary" fullWidth size="large" type="submit" variant="contained">
+          <MuiButton
+            color="secondary"
+            disabled={this.props.pending}
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+          >
             <MuiTypography variant="h5">회원가입</MuiTypography>
           </MuiButton>
         </form>
