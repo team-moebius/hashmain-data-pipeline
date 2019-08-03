@@ -6,17 +6,20 @@ import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
-import com.moebius.backend.dto.frontend.response.LoginResponseDto;
+import com.moebius.backend.dto.frontend.MemberDto;
 import com.moebius.backend.dto.frontend.SignupDto;
-import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.dto.frontend.response.LoginResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
-import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.DataNotVerifiedException;
+import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.ExceptionTypes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,9 +51,9 @@ public class MemberService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
-			.map(isNotDuplicated -> isNotDuplicated ?
-				ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)) :
-				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
+			.map(isDuplicated -> isDuplicated ?
+				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()) :
+				ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)));
 	}
 
 	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
@@ -76,5 +79,22 @@ public class MemberService {
 				ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))) :
 				ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionTypes.WRONG_PASSWORD.getMessage())
 			);
+	}
+
+	public Mono<ResponseEntity<MemberDto>> getMember() {
+		return ReactiveSecurityContextHolder.getContext()
+			.map(securityContext -> (String) securityContext.getAuthentication().getPrincipal())
+			.subscribeOn(COMPUTE.scheduler())
+			.flatMap(this::getCurrentMemberById)
+			.map(ResponseEntity::ok);
+	}
+
+	private Mono<MemberDto> getCurrentMemberById(String id) {
+		return memberRepository.findById(new ObjectId(id))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(
+				Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("Member(" + id + ")")))))
+			.map(memberAssembler::toDto);
 	}
 }

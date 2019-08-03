@@ -4,7 +4,6 @@ import com.moebius.backend.domain.commons.Exchange;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.bson.types.ObjectId;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,8 +12,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class ApiKeyDto {
-	@NotNull
-	private ObjectId memberId;
+	@NotBlank
+	private String memberId;
 	@NotNull
 	private Exchange exchange;
 	@NotBlank

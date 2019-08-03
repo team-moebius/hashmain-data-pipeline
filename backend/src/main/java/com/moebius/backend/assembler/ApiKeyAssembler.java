@@ -3,6 +3,7 @@ package com.moebius.backend.assembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.utils.Verifier;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ public class ApiKeyAssembler {
 
 		ApiKey apiKey = new ApiKey();
 
-		apiKey.setMemberId(apiKeyDto.getMemberId());
+		apiKey.setMemberId(new ObjectId(apiKeyDto.getMemberId()));
 		apiKey.setExchange(apiKeyDto.getExchange());
 		apiKey.setName(apiKeyDto.getName());
 		apiKey.setAccessKey(apiKeyDto.getAccessKey());
@@ -28,7 +29,7 @@ public class ApiKeyAssembler {
 
 		ApiKeyDto apiKeyDto = new ApiKeyDto();
 
-		apiKeyDto.setMemberId(apiKey.getMemberId());
+		apiKeyDto.setMemberId(apiKey.getMemberId().toHexString());
 		apiKeyDto.setExchange(apiKey.getExchange());
 		apiKeyDto.setName(apiKey.getName());
 		apiKeyDto.setAccessKey(apiKey.getAccessKey());

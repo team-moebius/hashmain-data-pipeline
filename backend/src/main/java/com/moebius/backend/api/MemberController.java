@@ -1,18 +1,20 @@
 package com.moebius.backend.api;
 
 import com.moebius.backend.dto.frontend.LoginDto;
-import com.moebius.backend.dto.frontend.response.LoginResponseDto;
+import com.moebius.backend.dto.frontend.MemberDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.dto.frontend.VerificationDto;
-import com.moebius.backend.exception.*;
+import com.moebius.backend.dto.frontend.response.LoginResponseDto;
+import com.moebius.backend.exception.DataNotFoundException;
+import com.moebius.backend.exception.DataNotVerifiedException;
+import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.VerificationFailedException;
 import com.moebius.backend.service.member.EmailService;
 import com.moebius.backend.service.member.MemberService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -29,7 +31,7 @@ public class MemberController {
 	@ApiOperation(
 		value = "로그인",
 		httpMethod = "POST",
-		notes = "성공할 경우 Json web token이 body에 담겨져 전달된다. 권한이 필요한 모든 요청의 Header에 'Authorization:Bearer ${JSON_WEB_TOKEN}'의 형태로 발송하면 된다."
+		notes = "성공할 경우 access token이 body에 담겨져 전달된다. 권한이 필요한 모든 요청의 Header에 'Authorization:Bearer ${ACCESS_TOKEN}'의 형태로 발송하면 된다."
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = LoginResponseDto.class),
@@ -40,6 +42,23 @@ public class MemberController {
 	@PostMapping("")
 	public Mono<ResponseEntity<?>> login(@RequestBody @Valid @ApiParam(value = "로그인 시 필요한 정보", required = true) LoginDto loginDto) {
 		return memberService.login(loginDto);
+	}
+
+	@ApiOperation(
+		value = "회원 정보 조회",
+		httpMethod = "GET",
+		notes = "회원 정보를 조회한다."
+	)
+	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Success", response = MemberDto.class),
+		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
+		@ApiResponse(code = 404, message = "Member is not found", response = DataNotFoundException.class),
+	})
+	@PreAuthorize("hasAuthority('MEMBER')")
+	@GetMapping("")
+	public Mono<ResponseEntity<MemberDto>> getMember() {
+		return memberService.getMember();
 	}
 
 	@ApiOperation(

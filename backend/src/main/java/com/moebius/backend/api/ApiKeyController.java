@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -47,7 +46,7 @@ public class ApiKeyController {
 		@ApiResponse(code = 404, message = "Api keys are not found at all", response = DataNotFoundException.class),
 	})
 	@GetMapping("/member/{memberId}")
-	public Flux<ResponseEntity<ApiKeyDto>> getApiKeys(@PathVariable ObjectId memberId) {
+	public Flux<ResponseEntity<ApiKeyDto>> getApiKeys(@PathVariable String memberId) {
 		return apiKeyService.getApiKeysByMemberId(memberId);
 	}
 
@@ -60,7 +59,7 @@ public class ApiKeyController {
 		@ApiResponse(code = 200, message = "The deleted api key id", response = String.class),
 	})
 	@DeleteMapping("/{id}")
-	public Mono<ResponseEntity<String>> deleteApiKey(@PathVariable ObjectId id) {
+	public Mono<ResponseEntity<String>> deleteApiKey(@PathVariable String id) {
 		return apiKeyService.deleteApiKeyById(id);
 	}
 
@@ -75,7 +74,7 @@ public class ApiKeyController {
 		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("/{id}/verification")
-	public Mono<ResponseEntity<String>> verifyApiKey(@PathVariable ObjectId id) {
+	public Mono<ResponseEntity<String>> verifyApiKey(@PathVariable String id) {
 		return apiKeyService.verifyApiKey(id);
 	}
 

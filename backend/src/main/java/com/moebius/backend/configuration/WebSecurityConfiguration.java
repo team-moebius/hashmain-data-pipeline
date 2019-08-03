@@ -41,7 +41,7 @@ public class WebSecurityConfiguration {
 				"/webjars/**",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/member/**").hasAuthority("MEMBER")
+			.pathMatchers("/api/stoplosses/**").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and()
 			.build();

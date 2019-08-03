@@ -5,8 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.Exchange;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UpbitService implements ExchangeService {
@@ -34,6 +35,8 @@ public class UpbitService implements ExchangeService {
 
 	@Override
 	public Mono<String> getAuthToken(ApiKey apiKey) {
+		log.info("[ApiKeys] Start to getting auth token.");
+
 		return Mono.fromCallable(() -> {
 			Algorithm algorithm = Algorithm.HMAC256(apiKey.getSecretKey());
 			return JWT.create()
@@ -45,10 +48,12 @@ public class UpbitService implements ExchangeService {
 
 	@Override
 	public Mono<ResponseEntity<String>> doHealthCheck(String authToken) {
+		log.info("[ApiKeys] Start to do health check.");
+
 		return webClient.get()
 			.uri(publicUri + assetUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.exchange()
-			.map(clientResponse -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase())); // FIXME : Add exception handler ...
+			.flatMap(clientResponse -> clientResponse.toEntity(String.class));
 	}
 }

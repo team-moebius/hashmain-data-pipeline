@@ -7,6 +7,7 @@ import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.exchange.ExchangeFactory;
+import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.utils.Verifier;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
@@ -41,36 +42,39 @@ public class ApiKeyService {
 			.map(apiKey -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
-	public Flux<ResponseEntity<ApiKeyDto>> getApiKeysByMemberId(ObjectId memberId) {
+	public Flux<ResponseEntity<ApiKeyDto>> getApiKeysByMemberId(String memberId) {
 		Verifier.checkNullFields(memberId);
 
-		return apiKeyRepository.findAllByMemberId(memberId)
+		return apiKeyRepository.findAllByMemberId(new ObjectId(memberId))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Flux.defer(() -> Flux.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key based on memberId(" + memberId.toString() + ")")))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key based on memberId(" + memberId + ")")))))
 			.map(apiKey -> ResponseEntity.ok(apiKeyAssembler.toDto(apiKey)));
 	}
 
-	public Mono<ResponseEntity<String>> deleteApiKeyById(ObjectId id) {
+	public Mono<ResponseEntity<String>> deleteApiKeyById(String id) {
 		Verifier.checkNullFields(id);
 
-		return apiKeyRepository.deleteById(id)
+		return apiKeyRepository.deleteById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(aVoid -> ResponseEntity.ok(id.toHexString()));
+			.map(aVoid -> ResponseEntity.ok(id));
 	}
 
-	public Mono<ResponseEntity<?>> verifyApiKey(ObjectId id) {
+	public Mono<ResponseEntity<String>> verifyApiKey(String id) {
 		Verifier.checkNullFields(id);
 
-		return apiKeyRepository.findById(id)
+		return apiKeyRepository.findById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
+			.log()
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key")))))
-			.map(apiKey -> exchangeFactory.getService(apiKey.getExchange()))
-			// FIXME : Implement exchange health check ...
-			.map(exchangeService -> ResponseEntity.ok(exchangeService.toString()));
+			.flatMap(apiKey -> {
+				ExchangeService exchangeService = exchangeFactory.getService(apiKey.getExchange());
+				return exchangeService.getAuthToken(apiKey)
+					.flatMap(exchangeService::doHealthCheck);
+			});
 	}
 }

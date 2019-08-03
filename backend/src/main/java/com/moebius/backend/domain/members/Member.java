@@ -21,6 +21,7 @@ import java.util.Set;
 public class Member extends Base {
 	@Id
 	private ObjectId id;
+	@Nullable
 	private Level level;
 	private String name;
 	@Email

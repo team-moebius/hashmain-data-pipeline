@@ -5,7 +5,7 @@ spring:
     web-application-type: reactive
   data:
     mongodb:
-      uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true&streamType=netty&readPreference=secondary&maxPoolSize=80
+      uri: mongodb+srv://moebius:highbal1!@moebius-beta-zbd8m.mongodb.net/test?retryWrites=true&streamType=netty&readPreference=secondary
       database: moebius
   thymeleaf:
     reactive:
@@ -27,9 +27,9 @@ exchange:
     websocket:
       uri: wss://api.upbit.com/websocket/v1
     rest:
-      public-uri: https://api.upbit.com
-      secret-uri: https://crix-api-endpoint.upbit.com/v1/crix
-      asset: /v1/accounts
+      public-uri: https://api.upbit.com/
+      secret-uri: https://crix-api-endpoint.upbit.com/v1/crix/
+      asset: v1/accounts
 
 logging.group.org.springframework.web.handler-mappings:
   - 'org.springframework.web.reactive.result.method'
