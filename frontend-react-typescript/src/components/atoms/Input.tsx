@@ -14,6 +14,7 @@ const MobeiusInput = withStyles(theme => ({
     },
     backgroundColor: theme.palette.primary.light,
     borderRadius: 4,
+    margin: '0 0px 8px 0',
   },
 }))(MuiTextField);
 
@@ -21,8 +22,10 @@ const Input: React.FunctionComponent<InputProps> = props => {
   const { className, ...rest } = props;
   return (
     <MobeiusInput
-      // className={classNames('input', props.className)}
       fullWidth
+      inputProps={{
+        style: { padding: '11px' },
+      }}
       margin="dense"
       variant="outlined"
       {...rest}

@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import MuiTypography from '@material-ui/core/Typography';
 import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
-import Checkbox from 'components/atoms/Checkbox';
+import Text from 'components/atoms/Text';
+import TextForButton from 'components/atoms/TextForButton';
 import FormValidator from 'utils/FormValidator';
 
 interface SignInProps {
@@ -77,20 +77,20 @@ class SignIn extends React.Component<SignInProps, SignInState> {
           type="submit"
           variant="contained"
         >
-          <MuiTypography variant="h5">로그인</MuiTypography>
+          <TextForButton variant="h6">로그인</TextForButton>
         </MuiButton>
         {/* <Checkbox label="아이디 저장하기" /> */}
         <ul>
-          <li style={{ marginTop: '10px' }}>
-            <MuiTypography variant="body1" gutterBottom>
-              - 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>
+          <li>
+            <Text gutterBottom>
+              * 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>
               에 동의하는 것으로 간주합니다.
-            </MuiTypography>
+            </Text>
           </li>
           <li>
-            <MuiTypography variant="body1" gutterBottom>
-              - CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.
-            </MuiTypography>
+            <Text gutterBottom>
+              * CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.
+            </Text>
           </li>
         </ul>
         {/* TODO: Implements passwrod find */}

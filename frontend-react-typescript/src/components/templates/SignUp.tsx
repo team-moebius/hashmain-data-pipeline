@@ -1,10 +1,11 @@
 import * as React from 'react';
 
-import MuiTypography from '@material-ui/core/Typography';
 import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
+import Text from 'components/atoms/Text';
+import TextForButton from 'components/atoms/TextForButton';
 import FormValidator from 'utils/FormValidator';
 
 interface SignUpProps {
@@ -159,17 +160,17 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             placeholder="Phone number('-' 없이 10자 이상 입력)"
           /> */}
         <ul>
-          <li style={{ marginTop: '10px' }}>
-            <MuiTypography variant="body1" gutterBottom>
-              - <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
+          <li>
+            <Text variant="body1" gutterBottom>
+              * <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
               <em>계정 인증용 메일</em>이 전송됩니다.
-            </MuiTypography>
+            </Text>
           </li>
           <li>
-            <MuiTypography variant="body1" gutterBottom>
-              - 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
+            <Text variant="body1" gutterBottom>
+              * 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
               <em>스팸 메일함을 확인</em> 하시기 바랍니다.
-            </MuiTypography>
+            </Text>
           </li>
         </ul>
         <Input
@@ -194,15 +195,15 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           name="permitTerms"
           onChange={this.onChangePermitTerms}
           label={
-            <MuiTypography variant="body1" gutterBottom>
+            <Text variant="body1" gutterBottom>
               <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
-            </MuiTypography>
+            </Text>
           }
         />
         {this.state.errors.permitTerms && (
-          <MuiTypography variant="body2" gutterBottom color="error">
+          <Text variant="body1" gutterBottom color="error">
             {this.state.errors.permitTerms}
-          </MuiTypography>
+          </Text>
         )}
         <MuiButton
           color="secondary"
@@ -212,7 +213,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           type="submit"
           variant="contained"
         >
-          <MuiTypography variant="h5">회원가입</MuiTypography>
+          <TextForButton variant="h6">회원가입</TextForButton>
         </MuiButton>
       </form>
     );
