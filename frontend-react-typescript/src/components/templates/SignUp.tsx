@@ -128,29 +128,28 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
   render() {
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
-          <Input
-            autoComplete="off"
-            autoFocus
-            error={this.state.errors.id ? true : false}
-            helperText={this.state.errors.id}
-            inputRef={this.idRef}
-            name="email"
-            onBlur={this.validateId}
-            placeholder="E-Mail(User ID)"
-          />
-          <Input
-            autoComplete="off"
-            error={this.state.errors.userName ? true : false}
-            helperText={this.state.errors.userName}
-            inputRef={this.nameRef}
-            name="name"
-            onBlur={this.validateUserName}
-            placeholder="User Name"
-          />
-          {/* TODO: Activate bloew after impelments phone number in backend */}
-          {/* <Input
+      <form onSubmit={this.onSubmit}>
+        <Input
+          autoComplete="off"
+          autoFocus
+          error={this.state.errors.id ? true : false}
+          helperText={this.state.errors.id}
+          inputRef={this.idRef}
+          name="email"
+          onBlur={this.validateId}
+          placeholder="E-Mail(User ID)"
+        />
+        <Input
+          autoComplete="off"
+          error={this.state.errors.userName ? true : false}
+          helperText={this.state.errors.userName}
+          inputRef={this.nameRef}
+          name="name"
+          onBlur={this.validateUserName}
+          placeholder="User Name"
+        />
+        {/* TODO: Activate bloew after impelments phone number in backend */}
+        {/* <Input
             autoComplete="off"
             error={this.state.errors.phoneNumber ? true : false}
             helperText={this.state.errors.phoneNumber}
@@ -159,64 +158,63 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             onBlur={this.validatePhoneNumber}
             placeholder="Phone number('-' 없이 10자 이상 입력)"
           /> */}
-          <ul>
-            <li style={{ marginTop: '10px' }}>
-              <MuiTypography variant="body1" gutterBottom>
-                - <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
-                <em>계정 인증용 메일</em>이 전송됩니다.
-              </MuiTypography>
-            </li>
-            <li>
-              <MuiTypography variant="body1" gutterBottom>
-                - 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
-                <em>스팸 메일함을 확인</em> 하시기 바랍니다.
-              </MuiTypography>
-            </li>
-          </ul>
-          <Input
-            error={this.state.errors.password ? true : false}
-            helperText={this.state.errors.password}
-            inputRef={this.passwordRef}
-            name="password"
-            onBlur={this.validatePassword}
-            type="password"
-            placeholder="Password(영문 숫자포함 8자 이상)"
-          />
-          <Input
-            error={this.state.errors.passwordConfirm ? true : false}
-            helperText={this.state.errors.passwordConfirm}
-            inputRef={this.passwordConfirmRef}
-            name="passwordConfirm"
-            onBlur={this.validatePasswordConfirm}
-            type="password"
-            placeholder="Password confirm(영문 숫자포함 8자 이상)"
-          />
-          <Checkbox
-            name="permitTerms"
-            onChange={this.onChangePermitTerms}
-            label={
-              <MuiTypography variant="body1" gutterBottom>
-                <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
-              </MuiTypography>
-            }
-          />
-          {this.state.errors.permitTerms && (
-            <MuiTypography variant="body2" gutterBottom color="error">
-              {this.state.errors.permitTerms}
+        <ul>
+          <li style={{ marginTop: '10px' }}>
+            <MuiTypography variant="body1" gutterBottom>
+              - <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
+              <em>계정 인증용 메일</em>이 전송됩니다.
             </MuiTypography>
-          )}
-          <MuiButton
-            color="secondary"
-            disabled={this.props.pending}
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-          >
-            <MuiTypography variant="h5">회원가입</MuiTypography>
-          </MuiButton>
-        </form>
-      </div>
+          </li>
+          <li>
+            <MuiTypography variant="body1" gutterBottom>
+              - 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
+              <em>스팸 메일함을 확인</em> 하시기 바랍니다.
+            </MuiTypography>
+          </li>
+        </ul>
+        <Input
+          error={this.state.errors.password ? true : false}
+          helperText={this.state.errors.password}
+          inputRef={this.passwordRef}
+          name="password"
+          onBlur={this.validatePassword}
+          type="password"
+          placeholder="Password(영문 숫자포함 8자 이상)"
+        />
+        <Input
+          error={this.state.errors.passwordConfirm ? true : false}
+          helperText={this.state.errors.passwordConfirm}
+          inputRef={this.passwordConfirmRef}
+          name="passwordConfirm"
+          onBlur={this.validatePasswordConfirm}
+          type="password"
+          placeholder="Password confirm(영문 숫자포함 8자 이상)"
+        />
+        <Checkbox
+          name="permitTerms"
+          onChange={this.onChangePermitTerms}
+          label={
+            <MuiTypography variant="body1" gutterBottom>
+              <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
+            </MuiTypography>
+          }
+        />
+        {this.state.errors.permitTerms && (
+          <MuiTypography variant="body2" gutterBottom color="error">
+            {this.state.errors.permitTerms}
+          </MuiTypography>
+        )}
+        <MuiButton
+          color="secondary"
+          disabled={this.props.pending}
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+        >
+          <MuiTypography variant="h5">회원가입</MuiTypography>
+        </MuiButton>
+      </form>
     );
   }
 }

@@ -51,37 +51,35 @@ class SignIn extends React.Component<SignInProps, SignInState> {
 
   render() {
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
-          <Input
-            autoComplete="off"
-            autoFocus
-            error={this.state.errors.id ? true : false}
-            helperText={this.state.errors.id}
-            inputRef={this.emailRef}
-            name="email"
-            placeholder="E-Mail"
-          />
-          <Input
-            error={this.state.errors.password ? true : false}
-            helperText={this.state.errors.password}
-            inputRef={this.passwordRef}
-            name="password"
-            type="password"
-            placeholder="Password"
-          />
-          <MuiButton
-            color="secondary"
-            disabled={this.props.pending}
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-          >
-            <MuiTypography variant="h5">로그인</MuiTypography>
-          </MuiButton>
-        </form>
-        <Checkbox label="아이디 저장하기" />
+      <form onSubmit={this.onSubmit}>
+        <Input
+          autoComplete="off"
+          autoFocus
+          error={this.state.errors.id ? true : false}
+          helperText={this.state.errors.id}
+          inputRef={this.emailRef}
+          name="email"
+          placeholder="E-Mail"
+        />
+        <Input
+          error={this.state.errors.password ? true : false}
+          helperText={this.state.errors.password}
+          inputRef={this.passwordRef}
+          name="password"
+          type="password"
+          placeholder="Password"
+        />
+        <MuiButton
+          color="secondary"
+          disabled={this.props.pending}
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+        >
+          <MuiTypography variant="h5">로그인</MuiTypography>
+        </MuiButton>
+        {/* <Checkbox label="아이디 저장하기" /> */}
         <ul>
           <li style={{ marginTop: '10px' }}>
             <MuiTypography variant="body1" gutterBottom>
@@ -97,7 +95,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         </ul>
         {/* TODO: Implements passwrod find */}
         {/* <MuiButton fullWidth>비밀번호 찾기</MuiButton> */}
-      </div>
+      </form>
     );
   }
 }
