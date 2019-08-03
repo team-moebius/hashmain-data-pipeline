@@ -1,26 +1,37 @@
 import * as React from 'react';
-import { push } from 'connected-react-router';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router';
+
 import MuiButton from '@material-ui/core/Button';
 import MuiTypography from '@material-ui/core/Typography';
 
 import AppBar from 'components/molecules/AppBar';
 import VerticalTabs from 'components/molecules/VerticalTabs';
-
 import HtsConfig from 'pages/contents/HtsConfig';
 import AssetManagement from 'pages/contents/AssetManagement';
 import Idea from 'pages/contents/Idea';
 import CoinInfo from 'pages/contents/CoinInfo';
 import UseGuide from 'pages/contents/UseGuide';
 import Profile from 'pages/contents/Profile';
-import ajax from 'utils/Ajax';
+import { actionCreators as pageActions } from 'pages/PageWidgets';
+import ajax, { setAjaxJwtHeader } from 'utils/Ajax';
+import { ReduxState } from 'utils/GlobalReducer';
 
 import bgImage from 'assets/images/bg.png';
 import logo from 'assets/images/logo.png';
 import 'assets/scss/MainPage.scss';
 
-interface MainPageProps {
-  onClickAlertSample?: (e: React.MouseEvent<HTMLElement>) => void;
+interface StateProps {
+  signing: boolean;
 }
+
+interface DispatchProps {
+  signOut: () => void;
+}
+
+interface MainPageProps extends StateProps, DispatchProps {}
+
 interface MainPageState {
   index: number;
 }
@@ -43,8 +54,22 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
     };
   }
 
+  onClickAlertSample? = (e: React.MouseEvent<HTMLElement>) => {
+    console.log(ajax.defaults.headers.common['Authorization']);
+    ajax
+      .post('stoplosses/api-keys/123')
+      .then(response => {
+        console.log('stoploss api');
+      })
+      .catch(error => {
+        console.log(error.response);
+        console.log('stoploss api error');
+      });
+  };
+
   onClickSignOut = () => {
-    push('http://localhost:3000/sign');
+    this.props.signOut();
+    setAjaxJwtHeader('');
   };
 
   onChangeMenuIndex = (e: React.ChangeEvent<{}>, value: any) => {
@@ -52,7 +77,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   };
 
   render() {
-    console.log(ajax.defaults.headers.common['Authorization']);
+    if (!this.props.signing) return <Redirect to="/sign" />;
     return (
       <div style={{ backgroundImage: bgImage }} className="layout">
         <AppBar
@@ -72,7 +97,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
                 <MuiButton
                   className="layout-header__button"
                   size="medium"
-                  onClick={this.props.onClickAlertSample}
+                  onClick={this.onClickAlertSample}
                 >
                   <MuiTypography variant="h6">얼럿 샘플</MuiTypography>
                 </MuiButton>
@@ -81,7 +106,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
                   size="medium"
                   onClick={this.onClickSignOut}
                 >
-                  <MuiTypography variant="h6">로그 아웃</MuiTypography>
+                  <MuiTypography variant="h6">로그아웃</MuiTypography>
                 </MuiButton>
               </>
             ),
@@ -108,4 +133,15 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   }
 }
 
-export default MainPage;
+const mapStateToProps = (state: ReduxState) => ({
+  signing: state.page.signing,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
+  signOut: () => dispatch(pageActions.signOut()),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MainPage);

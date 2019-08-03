@@ -13,8 +13,10 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import AlertContents from 'components/molecules/AlertContents';
-import setReduxStore, { routeHistory } from 'utils/GlobalStore';
 import PageContainer from 'pages/PageContainer';
+import setReduxStore, { routeHistory } from 'utils/GlobalStore';
+import { addSignOutInterceptor } from 'utils/Ajax';
+import { actionCreators as pageActions } from 'pages/PageWidgets';
 
 /** Material-ui theme setting */
 const defaultTheme = createMuiTheme({
@@ -36,7 +38,7 @@ const defaultTheme = createMuiTheme({
 /** Alert setting */
 const alertOptions = {
   position: positions.BOTTOM_CENTER,
-  timeout: 40000,
+  timeout: 3000,
   offset: '15px 0px 15px 0px',
   transition: transitions.FADE,
 };
@@ -50,6 +52,8 @@ const AlertTemplate = ({ style, options, message, close }: AlertComponentPropsWi
 
 /** Get Redux Store */
 const mainStore = setReduxStore();
+
+addSignOutInterceptor(mainStore.store.dispatch(pageActions.signOut()));
 
 /** App의 기본 설정들을 위한 Wrapper들을 적용시키는 Functional Component */
 const AppWrapper: React.SFC<{}> = props => (
