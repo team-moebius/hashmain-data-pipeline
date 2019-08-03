@@ -6,15 +6,20 @@ import 'assets/scss/HtsConfig.scss';
 
 interface HtsConfigProps {}
 
-const HtsConfig: React.FunctionComponent<HtsConfigProps> = props => {
-  return (
-    <div>
-      HtsConfig!
-      <Paper className="api-key-box">
-        <ApiKeyRegistBox />
-      </Paper>
-    </div>
-  );
-};
+interface HtsConfigState {}
+
+class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
+  onClickApiRegistButton = () => {};
+
+  render() {
+    return (
+      <div>
+        <Paper className="api-key-box">
+          <ApiKeyRegistBox onClickRegistApiKeyButton={this.onClickApiRegistButton} />
+        </Paper>
+      </div>
+    );
+  }
+}
 
 export default HtsConfig;

@@ -1,20 +1,46 @@
 import * as React from 'react';
-import MuiTypography from '@material-ui/core/Typography';
+import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Text from 'components/atoms/Text';
+import TextForButton from 'components/atoms/TextForButton';
 
-interface ApiKeyRegistBoxProps {}
+interface ApiKeyRegistBoxProps {
+  onClickRegistApiKeyButton: () => void;
+  onClickViewMyApiKeyButton?: () => void;
+}
 
 const ApiKeyRegistBox: React.FC<ApiKeyRegistBoxProps> = props => {
+  const botNameRef = React.createRef<any>();
+  const accessKeyRef = React.createRef<any>();
+  const secretKeyRef = React.createRef<any>();
+  const onClickRegistApiKeyButton = () => {
+    props.onClickRegistApiKeyButton();
+  };
   return (
     <div>
-      <MuiTypography align="center" style={{ paddingBottom: '15px' }} variant="h6">
+      <Text align="center" style={{ paddingBottom: '15px' }} variant="h6">
         API KEY 등록하기
-      </MuiTypography>
-      <Input autoComplete="off" autoFocus name="Bot name" placeholder="Bot name" />
-      <Input autoComplete="off" autoFocus name="Access Key" placeholder="Access Key" />
-      <Input autoComplete="off" autoFocus name="Secret Key" placeholder="Secret Key" />
+      </Text>
+      <Input
+        autoComplete="off"
+        autoFocus
+        inputRef={botNameRef}
+        name="Bot name"
+        placeholder="Bot name"
+      />
+      <Input
+        autoComplete="off"
+        inputRef={accessKeyRef}
+        name="Access Key"
+        placeholder="Access Key"
+      />
+      <Input
+        autoComplete="off"
+        inputRef={secretKeyRef}
+        name="Secret Key"
+        placeholder="Secret Key"
+      />
       <ul>
         <li>
           <Text gutterBottom>
@@ -41,6 +67,28 @@ const ApiKeyRegistBox: React.FC<ApiKeyRegistBoxProps> = props => {
           </Text>
         </li>
       </ul>
+      <MuiButton
+        color="secondary"
+        // disabled={this.props.pending}
+        fullWidth
+        style={{ marginBottom: '8px' }}
+        size="large"
+        type="submit"
+        variant="contained"
+        onClick={onClickRegistApiKeyButton}
+      >
+        <TextForButton variant="h6">API KEY 등록</TextForButton>
+      </MuiButton>
+      <MuiButton
+        color="secondary"
+        // disabled={this.props.pending}
+        fullWidth
+        size="large"
+        type="submit"
+        variant="contained"
+      >
+        <TextForButton variant="h6">내 API KEY 확인</TextForButton>
+      </MuiButton>
     </div>
   );
 };
