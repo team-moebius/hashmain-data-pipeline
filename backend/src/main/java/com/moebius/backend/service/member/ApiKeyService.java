@@ -6,6 +6,7 @@ import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.ExceptionTypes;
+import com.moebius.backend.service.exchange.ExchangeFactory;
 import com.moebius.backend.utils.Verifier;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 public class ApiKeyService {
 	private final ApiKeyRepository apiKeyRepository;
 	private final ApiKeyAssembler apiKeyAssembler;
+	private final ExchangeFactory exchangeFactory;
 
 	public Mono<ResponseEntity<String>> createApiKey(ApiKeyDto apiKeyDto) {
 		Verifier.checkNullFields(apiKeyDto);
@@ -59,7 +61,7 @@ public class ApiKeyService {
 			.map(aVoid -> ResponseEntity.ok(id.toHexString()));
 	}
 
-	public Mono<ResponseEntity<String>> verifyApiKey(ObjectId id) {
+	public Mono<ResponseEntity<?>> verifyApiKey(ObjectId id) {
 		Verifier.checkNullFields(id);
 
 		return apiKeyRepository.findById(id)
@@ -67,7 +69,8 @@ public class ApiKeyService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key")))))
-			// FIXME : Implement exchange health check
-			.map(apiKey -> null);
+			.map(apiKey -> exchangeFactory.getService(apiKey.getExchange()))
+			// FIXME : Implement exchange health check ...
+			.map(exchangeService -> ResponseEntity.ok(exchangeService.toString()));
 	}
 }
