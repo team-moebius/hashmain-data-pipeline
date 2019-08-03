@@ -25,13 +25,16 @@ const defaultTheme = createMuiTheme({
     primary: {
       main: '#13253F',
       light: '#173456',
+      contrastText: '#C9CFE8',
     },
     secondary: {
       main: '#1E8CDE',
     },
   },
   typography: {
-    fontSize: 11,
+    fontSize: 12,
+    body1: { fontSize: 12 },
+    h6: { fontSize: 14 },
   },
 });
 
@@ -53,7 +56,7 @@ const AlertTemplate = ({ style, options, message, close }: AlertComponentPropsWi
 /** Get Redux Store */
 const mainStore = setReduxStore();
 
-addSignOutInterceptor(mainStore.store.dispatch(pageActions.signOut()));
+addSignOutInterceptor(mainStore.store.dispatch, pageActions.signOut);
 
 /** App의 기본 설정들을 위한 Wrapper들을 적용시키는 Functional Component */
 const AppWrapper: React.SFC<{}> = props => (

@@ -57,14 +57,9 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   onClickAlertSample? = (e: React.MouseEvent<HTMLElement>) => {
     console.log(ajax.defaults.headers.common['Authorization']);
     ajax
-      .post('stoplosses/api-keys/123')
-      .then(response => {
-        console.log('stoploss api');
-      })
-      .catch(error => {
-        console.log(error.response);
-        console.log('stoploss api error');
-      });
+      .get('/members')
+      .then(response => {})
+      .catch(error => {});
   };
 
   onClickSignOut = () => {
