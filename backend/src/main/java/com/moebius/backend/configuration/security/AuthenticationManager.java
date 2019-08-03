@@ -20,8 +20,6 @@ import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationManager implements ReactiveAuthenticationManager {
-	private static final String AUTHORITIES_KEY = "roles";
-
 	@Override
 	public Mono<Authentication> authenticate(Authentication authentication) {
 		return Mono.fromCallable(() -> {
@@ -34,11 +32,11 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 				log.warn("There is an exception on getAllClaimsFromToken.", e);
 				claims = null;
 			}
-			if (claims != null && !JwtUtil.isTokenExpired(claims)) {
-				String userName = claims.getSubject();
-				List<String> rawRoles = claims.get(AUTHORITIES_KEY, List.class);
+			if (claims != null && !JwtUtil.isTokenExpired(claims) && JwtUtil.isActiveMember(claims)) {
+				String memberId = claims.getSubject();
+				List<String> rawRoles = JwtUtil.getRoles(claims);
 				Set<Role> roles = rawRoles.stream().map(Role::new).collect(Collectors.toSet());
-				return (Authentication) new UsernamePasswordAuthenticationToken(userName, authToken, roles);
+				return (Authentication) new UsernamePasswordAuthenticationToken(memberId, authToken, roles);
 			}
 			return null;
 		}).subscribeOn(COMPUTE.scheduler());

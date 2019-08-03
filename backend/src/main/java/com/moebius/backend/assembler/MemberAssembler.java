@@ -1,7 +1,9 @@
 package com.moebius.backend.assembler;
 
+import com.moebius.backend.domain.members.Level;
 import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.Role;
+import com.moebius.backend.dto.frontend.MemberDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +36,17 @@ public class MemberAssembler {
 		member.setUpdatedAt(LocalDateTime.now());
 
 		return member;
+	}
+
+	public MemberDto toDto(@NotNull Member member) {
+		Verifier.checkNullField(member);
+
+		MemberDto dto = new MemberDto();
+		dto.setId(member.getId().toHexString());
+		dto.setEmail(member.getEmail());
+		dto.setName(member.getName());
+		dto.setLevel(member.getLevel() != null ? member.getLevel() : Level.NORMAL);
+
+		return dto;
 	}
 }

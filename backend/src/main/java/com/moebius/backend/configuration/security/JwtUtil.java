@@ -9,25 +9,24 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JwtUtil implements Serializable {
 	private static final long serialVersionUID = 7286015171049934299L;
 
+	private static final String AUTHORITY_KEY = "roles";
 	private static final String ISSUER = "moebius";
-	private static final String AUTHORITIES_KEY = "roles";
+	private static final String VERIFICATION_KEY = "isActive";
 	private static final Key SECRET = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-	private static final long EXPIRATION_TIME = 60000L * 60L * 12L; // 12 hours
+	private static final long EXPIRATION_TIME = 60000L * 60L * 8L; // 8 hours
 
 	public static String generateToken(MoebiusPrincipal principal) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put(AUTHORITIES_KEY, principal.getAuthorities().stream()
+		claims.put(AUTHORITY_KEY, principal.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)
 			.collect(Collectors.toSet()));
+		claims.put(VERIFICATION_KEY, principal.isEnabled());
 
 		Date createdAt = new Date();
 		return Jwts.builder()
@@ -47,7 +46,15 @@ public class JwtUtil implements Serializable {
 			.getBody();
 	}
 
-	static Boolean isTokenExpired(Claims claims) {
+	static boolean isTokenExpired(Claims claims) {
 		return claims.getExpiration().before(new Date());
+	}
+
+	static boolean isActiveMember(Claims claims) {
+		return claims.get(VERIFICATION_KEY, Boolean.class);
+	}
+
+	static List<String> getRoles(Claims claims) {
+		return claims.get(AUTHORITY_KEY, List.class);
 	}
 }

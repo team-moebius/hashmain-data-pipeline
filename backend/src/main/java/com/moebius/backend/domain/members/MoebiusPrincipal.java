@@ -41,7 +41,7 @@ public class MoebiusPrincipal implements UserDetails, CredentialsContainer {
 
     @Override
     public String getUsername() {
-        return member.getName();
+        return member.getId().toHexString();
     }
 
     @Override
