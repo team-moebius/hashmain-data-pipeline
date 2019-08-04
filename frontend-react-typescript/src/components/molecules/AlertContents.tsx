@@ -12,6 +12,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import IconButton from 'components/atoms/IconButton';
 
 const useContentsStyles = makeStyles(theme => ({
+  wrapper: {
+    width: 360,
+  },
   success: {
     backgroundColor: green[600],
   },
@@ -58,7 +61,7 @@ const AlertContents: React.FC<AlertContentsProps> = props => {
 
   return (
     <SnackbarContent
-      className={classNames(classes[variant], className)}
+      className={classNames(classes.wrapper, classes[variant], className)}
       aria-describedby="client-snackbar"
       message={
         <span id="client-snackbar" className={classes.message}>

@@ -60,6 +60,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
       ajax
         .post('/members', data)
         .then(response => {
+          console.log(response);
           setAjaxJwtHeader(response.data.token);
           this.setState({ pending: false });
           this.props.signInSuccess();
@@ -67,7 +68,11 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         })
         .catch(error => {
           this.setState({ pending: false });
-          this.props.alert.error('로그인 실패');
+          if (error.response.status === 401) {
+            this.props.alert.error('해당 계정은 이메일 인증이 완료되지 않았습니다.');
+          } else {
+            this.props.alert.error('로그인 실패. ID 혹은 Password를 확인하세요.');
+          }
         });
     });
   };
