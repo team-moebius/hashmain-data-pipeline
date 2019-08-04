@@ -1,9 +1,10 @@
-package com.moebius.backend.dto.frontend;
+package com.moebius.backend.dto.frontend.response;
 
 import com.moebius.backend.domain.commons.Exchange;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,7 +12,9 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
-public class ApiKeyDto {
+public class ApiKeyResponseDto {
+	@Id
+	private String id;
 	@NotNull
 	private Exchange exchange;
 	@NotBlank

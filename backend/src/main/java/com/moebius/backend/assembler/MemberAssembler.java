@@ -22,7 +22,7 @@ public class MemberAssembler {
 	private final PasswordEncoder passwordEncoder;
 
 	public Member toMember(@NotNull SignupDto signupDto) {
-		Verifier.checkNullField(signupDto);
+		Verifier.checkNullFields(signupDto);
 
 		Set<Role> roles = new HashSet<>();
 		roles.add(new Role(ROLE));
@@ -39,10 +39,9 @@ public class MemberAssembler {
 	}
 
 	public MemberDto toDto(@NotNull Member member) {
-		Verifier.checkNullField(member);
+		Verifier.checkNullFields(member);
 
 		MemberDto dto = new MemberDto();
-		dto.setId(member.getId().toHexString());
 		dto.setEmail(member.getEmail());
 		dto.setName(member.getName());
 		dto.setLevel(member.getLevel() != null ? member.getLevel() : Level.NORMAL);

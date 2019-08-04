@@ -1,7 +1,5 @@
 package com.moebius.backend.utils;
 
-import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.exception.WrongDataException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.lang.Nullable;
 
@@ -15,7 +13,7 @@ public class Verifier {
 		return RandomStringUtils.randomNumeric(VERIFICATION_CODE_LENGTH);
 	}
 
-	public static <T> void checkNullField(T object) throws WrongDataException {
+	public static <T> void checkNullFields(T object) throws NullPointerException {
 		Stream.of(object.getClass().getDeclaredFields())
 			.filter(field -> field.getDeclaredAnnotation(Nullable.class) == null)
 			.forEach(field -> {
@@ -23,7 +21,7 @@ public class Verifier {
 
 				try {
 					if (Objects.isNull(field.get(object))) {
-						throw new WrongDataException(ExceptionTypes.NULL_DATA.getMessage(object.toString()));
+						throw new NullPointerException(object.toString() + " is null");
 					}
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
@@ -31,5 +29,11 @@ public class Verifier {
 					field.setAccessible(false);
 				}
 			});
+	}
+
+	public static void checkBlankString(String target) throws IllegalArgumentException {
+		if (target == null || target.isEmpty()) {
+			throw new IllegalArgumentException(target + " is blank.");
+		}
 	}
 }

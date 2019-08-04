@@ -14,31 +14,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 	@Override
 	public Mono<Authentication> authenticate(Authentication authentication) {
-		return Mono.fromCallable(() -> {
-			String authToken = authentication.getCredentials().toString();
-			Claims claims;
+		String authToken = authentication.getCredentials().toString();
+		Claims claims;
 
-			try {
-				claims = JwtUtil.getAllClaimsFromToken(authToken);
-			} catch (Exception e) {
-				log.warn("There is an exception on getAllClaimsFromToken.", e);
-				claims = null;
-			}
-			if (claims != null && !JwtUtil.isTokenExpired(claims) && JwtUtil.isActiveMember(claims)) {
-				String memberId = claims.getSubject();
-				List<String> rawRoles = JwtUtil.getRoles(claims);
-				Set<Role> roles = rawRoles.stream().map(Role::new).collect(Collectors.toSet());
-				return (Authentication) new UsernamePasswordAuthenticationToken(memberId, authToken, roles);
-			}
-			return null;
-		}).subscribeOn(COMPUTE.scheduler());
+		try {
+			claims = JwtUtil.getAllClaimsFromToken(authToken);
+		} catch (Exception e) {
+			log.warn("There is an exception on getAllClaimsFromToken.", e);
+			claims = null;
+		}
+		if (claims != null && !JwtUtil.isTokenExpired(claims) && JwtUtil.isActiveMember(claims)) {
+			String memberId = claims.getSubject();
+			List<String> rawRoles = JwtUtil.getRoles(claims);
+			Set<Role> roles = rawRoles.stream().map(Role::new).collect(Collectors.toSet());
+			log.info("[Auth] Succeeded in authentication [memberId : {}]", memberId);
+			return Mono.just(new UsernamePasswordAuthenticationToken(memberId, authToken, roles));
+		}
+		return Mono.empty();
 	}
 }
