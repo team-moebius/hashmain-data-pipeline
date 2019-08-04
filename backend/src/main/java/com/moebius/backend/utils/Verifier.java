@@ -30,4 +30,10 @@ public class Verifier {
 				}
 			});
 	}
+
+	public static void checkBlankString(String target) throws IllegalArgumentException {
+		if (target == null || target.isEmpty()) {
+			throw new IllegalArgumentException(target + " is blank.");
+		}
+	}
 }

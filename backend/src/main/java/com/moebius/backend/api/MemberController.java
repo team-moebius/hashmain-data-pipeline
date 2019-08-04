@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @CrossOrigin
 @RestController
@@ -57,8 +58,8 @@ public class MemberController {
 	})
 	@PreAuthorize("hasAuthority('MEMBER')")
 	@GetMapping("")
-	public Mono<ResponseEntity<MemberDto>> getMember() {
-		return memberService.getMember();
+	public Mono<ResponseEntity<MemberDto>> getMember(Principal principal) {
+		return memberService.getMember(principal.getName());
 	}
 
 	@ApiOperation(

@@ -3,6 +3,7 @@ package com.moebius.backend.service.member;
 import com.moebius.backend.assembler.ApiKeyAssembler;
 import com.moebius.backend.domain.apikeys.ApiKeyRepository;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
+import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.ExceptionTypes;
@@ -13,11 +14,11 @@ import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
@@ -30,45 +31,53 @@ public class ApiKeyService {
 	private final ApiKeyAssembler apiKeyAssembler;
 	private final ExchangeFactory exchangeFactory;
 
-	public Mono<ResponseEntity<String>> createApiKey(ApiKeyDto apiKeyDto) {
+	public Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(ApiKeyDto apiKeyDto, String memberId) {
 		Verifier.checkNullFields(apiKeyDto);
+		Verifier.checkBlankString(memberId);
 
-		return apiKeyRepository.save(apiKeyAssembler.toApiKey(apiKeyDto))
+		return apiKeyRepository.save(apiKeyAssembler.toApiKey(apiKeyDto, memberId))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
 				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(apiKeyDto.getName())) :
 				exception)
-			.map(apiKey -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
+			.map(apiKeyAssembler::toResponseDto)
+			.map(ResponseEntity::ok);
 	}
 
-	public Flux<ResponseEntity<ApiKeyDto>> getApiKeysByMemberId(String memberId) {
-		Verifier.checkNullFields(memberId);
+	// TODO : Refactor return type as simplified one. (ServerResponse)
+	public Mono<ResponseEntity<List<ApiKeyResponseDto>>> getApiKeysByMemberId(String memberId) {
+		Verifier.checkBlankString(memberId);
 
 		return apiKeyRepository.findAllByMemberId(new ObjectId(memberId))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Flux.defer(() -> Flux.error(new DataNotFoundException(
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key based on memberId(" + memberId + ")")))))
-			.map(apiKey -> ResponseEntity.ok(apiKeyAssembler.toDto(apiKey)));
+			.map(apiKeyAssembler::toResponseDto)
+			.collectList()
+			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<String>> deleteApiKeyById(String id) {
+	public Mono<ResponseEntity<String>> deleteApiKeyById(String id, String memberId) {
 		Verifier.checkNullFields(id);
 
-		return apiKeyRepository.deleteById(new ObjectId(id))
+		return apiKeyRepository.deleteByIdAndMemberId(new ObjectId(id), new ObjectId(memberId))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(aVoid -> ResponseEntity.ok(id));
+			.onErrorMap(exception -> {
+				log.error("[ApiKeys] Deletion failed", exception);
+				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key"));
+			})
+			.map(aLong -> ResponseEntity.ok(id));
 	}
 
-	public Mono<ResponseEntity<String>> verifyApiKey(String id) {
+	public Mono<ResponseEntity<String>> verifyApiKey(String id, String memberId) {
 		Verifier.checkNullFields(id);
 
-		return apiKeyRepository.findById(new ObjectId(id))
+		return apiKeyRepository.findByIdAndMemberId(new ObjectId(id), new ObjectId(memberId))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.log()
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key")))))
 			.flatMap(apiKey -> {

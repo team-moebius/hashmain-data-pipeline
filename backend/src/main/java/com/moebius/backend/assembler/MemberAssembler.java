@@ -42,7 +42,6 @@ public class MemberAssembler {
 		Verifier.checkNullFields(member);
 
 		MemberDto dto = new MemberDto();
-		dto.setId(member.getId().toHexString());
 		dto.setEmail(member.getEmail());
 		dto.setName(member.getName());
 		dto.setLevel(member.getLevel() != null ? member.getLevel() : Level.NORMAL);
