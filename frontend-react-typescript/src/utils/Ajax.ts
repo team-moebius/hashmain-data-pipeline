@@ -3,6 +3,7 @@ import { push } from 'connected-react-router';
 
 const ajax = axios.create({
   baseURL: 'http://52.79.86.26/api/',
+  // baseURL: 'http://api-dev.cryptoboxglobal.com/api/',
   responseType: 'json',
 });
 
@@ -17,8 +18,7 @@ const addSignOutInterceptor = (dispatchFunc: any, signOutFunc: any) => {
     },
     error => {
       console.log(error);
-      if (error.response.status === 401) {
-        setAjaxJwtHeader('');
+      if (error.response && error.response.status === 401) {
         alert('세션 만료. 재로그인 해주세요.');
         dispatchFunc(signOutFunc());
         push('http://localhost:3000/sign');
@@ -28,5 +28,5 @@ const addSignOutInterceptor = (dispatchFunc: any, signOutFunc: any) => {
   );
 };
 
-export { ajax, setAjaxJwtHeader, addSignOutInterceptor };
+export { setAjaxJwtHeader, addSignOutInterceptor };
 export default ajax;

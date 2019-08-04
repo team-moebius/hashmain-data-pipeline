@@ -1,4 +1,5 @@
 import * as React from 'react';
+import _ from 'lodash';
 
 import MuiButton from '@material-ui/core/Button';
 
@@ -10,9 +11,9 @@ import FormValidator from 'utils/FormValidator';
 
 interface SignUpProps {
   // TODO: change object type to specific type
-  pending?: boolean;
-  onSubmit?: (data: object) => void;
-  isDuplicatedId?: (id: string) => Promise<boolean>;
+  pending: boolean;
+  onSubmit: (data: object) => void;
+  isDuplicatedId: (id: string) => Promise<boolean>;
 }
 
 interface SignUpState {
@@ -41,15 +42,18 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     });
   };
 
-  validateId = () => {
+  validateId = async () => {
     const id = this.idRef.current.value;
     let errorText = undefined;
     if (!FormValidator.isExistInput(id)) errorText = '아이디를 입력 해주세요.';
     else if (!FormValidator.validateEmail(id)) errorText = 'ID는 E-mail 형태로 입력하세요.';
-    else if (this.props.isDuplicatedId && this.props.isDuplicatedId(id))
-      errorText = '중복된 ID입니다.';
 
-    this.setState({ errors: { ...this.state.errors, id: errorText } });
+    // 입력 ID form이 올바르다면, 중복 여부 제출
+    if (!errorText && (await this.props.isDuplicatedId(id))) errorText = '중복된 ID 입니다.';
+
+    if (errorText) await this.setState({ errors: { ...this.state.errors, id: errorText } });
+    else await this.setState({ errors: _.omit(this.state.errors, 'id') });
+
     return errorText ? false : true;
   };
 
@@ -58,7 +62,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     let errorText = undefined;
     if (!FormValidator.isExistInput(name)) errorText = '이름을 입력 해주세요.';
 
-    this.setState({ errors: { ...this.state.errors, userName: errorText } });
+    this.setErrorState('userName', errorText);
     return errorText ? false : true;
   };
 
@@ -69,7 +73,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     else if (!FormValidator.validatePhoneNumber(phoneNumber))
       errorText = '핸드폰 번호가 올바르지 않습니다.(- 제외하고 입력하세요)';
 
-    this.setState({ errors: { ...this.state.errors, phoneNumber: errorText } });
+    this.setErrorState('phoneNumber', errorText);
     return errorText ? false : true;
   };
 
@@ -80,7 +84,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     else if (!FormValidator.validatePassword(password))
       errorText = '패스워드 패턴이 올바르지 않습니다.(영문,숫자 포함 8자 이상, 30자 이하)';
 
-    this.setState({ errors: { ...this.state.errors, password: errorText } });
+    this.setErrorState('password', errorText);
     return errorText ? false : true;
   };
 
@@ -91,33 +95,26 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     else if (passwordConfirm !== this.passwordRef.current.value)
       errorText = '패스워드 확인란이 패스워드란과 동일하지 않습니다';
 
-    this.setState({ errors: { ...this.state.errors, passwordConfirm: errorText } });
+    this.setErrorState('passwordConfirm', errorText);
     return errorText ? false : true;
   };
 
   validatePermitTerms = () => {
     const errorText = this.state.isCheckPermitTerms ? undefined : '이용약관에 동의해주세요';
 
-    this.setState({ errors: { ...this.state.errors, permitTerms: errorText } });
+    this.setErrorState('permitTerms', errorText);
     return this.state.isCheckPermitTerms;
   };
 
   validate = async () => {
-    let valid = false;
-    valid = await this.validateId();
-    valid = await this.validatePassword();
-    valid = await this.validatePasswordConfirm();
-    // valid = await this.validatePhoneNumber();
-    valid = await this.validateUserName();
-    valid = await this.validatePermitTerms();
-
-    return valid;
+    // ID는 중복 값 Check logic 존재 하나, 제출 직전 한번 더 검사합니다.
+    return Object.keys(this.state.errors).length === 0 && (await this.validateId());
   };
 
   onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if ((await this.validate()) && this.props.onSubmit) {
+    if (await this.validate()) {
       const data = {
         email: this.idRef.current.value,
         name: this.nameRef.current.value,
@@ -218,6 +215,11 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
       </form>
     );
   }
+
+  private setErrorState = (field: string, errorText?: string) => {
+    if (errorText) this.setState({ errors: { ...this.state.errors, [field]: errorText } });
+    else this.setState({ errors: _.omit(this.state.errors, field) });
+  };
 }
 
 export default SignUp;
