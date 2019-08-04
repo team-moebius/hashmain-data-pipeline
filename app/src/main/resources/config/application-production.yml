@@ -5,9 +5,13 @@ spring:
 server:
   port: 80
   tomcat:
+    basedir: /var/log/moebius
     accesslog:
       enabled: true
-      directory: /var/log/moebius/tomcat
+      directory: tomcat
+  error:
+    whitelabel:
+      enabled: false
 logging:
   level:
     root: INFO

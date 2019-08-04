@@ -34,14 +34,14 @@ public class WebSecurityConfiguration {
 				"/api/member/**",
 				"/api/members/**", // TODO : Find out proper way to reduce duplicate patterns
 				"/login",
+				"/static/**").permitAll()
+			.pathMatchers("/admin").hasAuthority("ADMIN")
+			.pathMatchers("/api/stoplosses/**",
 				"/v2/api-docs",
 				"/swagger",
 				"/swagger-ui.html",
 				"/swagger-resources/**",
-				"/webjars/**",
-				"/static/**").permitAll()
-			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/api/stoplosses/**").hasAuthority("MEMBER")
+				"/webjars/**").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and()
 			.build();
