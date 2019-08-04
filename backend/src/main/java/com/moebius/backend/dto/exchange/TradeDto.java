@@ -8,6 +8,8 @@ import com.moebius.backend.domain.commons.Symbol;
 import com.moebius.backend.domain.commons.TradeType;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TradeDto {
@@ -32,5 +34,6 @@ public class TradeDto {
 	@JsonProperty("sid")
 	private long sequentialId;
 
+	@NotBlank
 	private Exchange exchange;
 }

@@ -33,10 +33,6 @@ public enum ExceptionTypes {
 		public String getMessage(String data) {
 			return data + " is not found.";
 		}
-	},
-	NULL_DATA("The data is null.") {
-		@Override
-		public String getMessage(String object) { return object + " has null data."; }
 	};
 
 	private String message;

@@ -26,14 +26,12 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
     }
 
     @Override
-//     FIXME : Need to refactor these code as chained one
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         ServerHttpRequest request = exchange.getRequest();
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
         if (authHeader != null && authHeader.startsWith(AUTH_PREFIX)) {
             String authToken = authHeader.substring(TOKEN_STARTING_INDEX);
-            // TODO : Need to check out parameters in constructor (maybe need to be refactored)
             Authentication auth = new UsernamePasswordAuthenticationToken(request.getId(), authToken);
             return authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
         }

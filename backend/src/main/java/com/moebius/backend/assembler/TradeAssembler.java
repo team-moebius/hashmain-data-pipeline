@@ -1,6 +1,5 @@
 package com.moebius.backend.assembler;
 
-import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.trades.Trade;
 import com.moebius.backend.dto.exchange.TradeDto;
 import com.moebius.backend.utils.Verifier;
@@ -14,10 +13,10 @@ import java.util.TimeZone;
 @Component
 public class TradeAssembler {
 	public Trade toTrade(@NotNull TradeDto tradeDto) {
-		Verifier.checkNullField(tradeDto);
+		Verifier.checkNullFields(tradeDto);
 
 		Trade trade = new Trade();
-		trade.setExchange(tradeDto.getExchange() == null ? Exchange.UPBIT : tradeDto.getExchange());
+		trade.setExchange(tradeDto.getExchange());
 		trade.setSymbol(tradeDto.getSymbol());
 		trade.setTradeType(tradeDto.getAskBid());
 		trade.setChange(tradeDto.getChange());
@@ -32,7 +31,7 @@ public class TradeAssembler {
 	}
 
 	public Trade toUpdatedTrade(@NotNull Trade trade, @NotNull TradeDto newTradeDto) {
-		Verifier.checkNullField(newTradeDto);
+		Verifier.checkNullFields(newTradeDto);
 
 		trade.setTradeType(newTradeDto.getAskBid());
 		trade.setChange(newTradeDto.getChange());
