@@ -31,14 +31,14 @@ public class WebSecurityConfiguration {
 			.pathMatchers(
 				"/",
 				"/csrf",
-				"/api/member/**",
-				"/api/members/**", // TODO : Find out proper way to reduce duplicate patterns
-				"/login",
 				"/v2/api-docs",
 				"/swagger",
 				"/swagger-ui.html",
 				"/swagger-resources/**",
 				"/webjars/**",
+				"/api/member/**",
+				"/api/members/**", // TODO : Find out proper way to reduce duplicate patterns
+				"/login",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
 			.pathMatchers("/api/stoplosses/**").hasAuthority("MEMBER")
