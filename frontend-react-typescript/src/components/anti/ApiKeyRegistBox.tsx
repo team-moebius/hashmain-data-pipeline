@@ -6,16 +6,20 @@ import Text from 'components/atoms/Text';
 import TextForButton from 'components/atoms/TextForButton';
 
 interface ApiKeyRegistBoxProps {
-  onClickRegistApiKeyButton: () => void;
-  onClickViewMyApiKeyButton?: () => void;
+  onClickRegistApiKeyButton: (data: object) => void;
+  onClickViewMyApiKeyButton: () => void;
 }
 
 const ApiKeyRegistBox: React.FC<ApiKeyRegistBoxProps> = props => {
   const botNameRef = React.createRef<any>();
   const accessKeyRef = React.createRef<any>();
   const secretKeyRef = React.createRef<any>();
-  const onClickRegistApiKeyButton = () => {
-    props.onClickRegistApiKeyButton();
+  const onClickRegistApiKeyButton = (data: object) => {
+    props.onClickRegistApiKeyButton({
+      botName: botNameRef.current.value,
+      accessKey: accessKeyRef.current.value,
+      secretKey: secretKeyRef.current.value,
+    });
   };
   return (
     <div>
@@ -86,6 +90,7 @@ const ApiKeyRegistBox: React.FC<ApiKeyRegistBoxProps> = props => {
         size="large"
         type="submit"
         variant="contained"
+        onClick={props.onClickViewMyApiKeyButton}
       >
         <TextForButton variant="h6">내 API KEY 확인</TextForButton>
       </MuiButton>
