@@ -19,10 +19,12 @@ const addSignOutInterceptor = (dispatchFunc: any, signOutFunc: any) => {
       return response;
     },
     error => {
+      const isSignInRequest =
+        error.config.url === `${BASE_URL}/members` && error.config.method === 'post';
       if (
         error.response &&
         error.response.status === 401 &&
-        error.config.url !== `${BASE_URL}/members`
+        !isSignInRequest // Login
       ) {
         // 로그인을 제외한 일반적인 401 error시에는 login form으로 forward
         alert('세션 만료. 재로그인 해주세요.');
