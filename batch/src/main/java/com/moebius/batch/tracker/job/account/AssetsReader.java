@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 @StepScope
 public class AssetsReader extends AbstractItemCountingItemStreamItemReader<Assets> { // TODO : Maybe change base class to JsonItemReader
-	private static final int MAX_RETRY_COUNT = 1;
+	private static final int MAX_RETRY_COUNT = 3;
 
 	private final WebClient webClient;
 	private final UpbitProperties upbitProperties;
@@ -28,7 +28,7 @@ public class AssetsReader extends AbstractItemCountingItemStreamItemReader<Asset
 
 	@Override
 	protected Assets doRead() {
-		log.info("Start to read assets from exchanges ...");
+		log.info("Start to read assets from exchanges.");
 		return webClient.get()
 			.uri(upbitProperties.getUriInfo().getOpenedHost() + upbitProperties.getUriInfo().getAsset())
 			.headers(HttpHeaders -> HttpHeaders.setBearerAuth(upbitJwtAuthToken))

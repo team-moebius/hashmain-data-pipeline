@@ -3,7 +3,9 @@ package com.moebius.backend.configuration;
 import com.moebius.backend.domain.Repositories;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
@@ -14,22 +16,20 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 @Configuration
-//@EnableMongoAuditing
+@RequiredArgsConstructor
+@EnableConfigurationProperties(MongoProperties.class)
 @EnableReactiveMongoRepositories(basePackageClasses = Repositories.class)
 public class MongoConfiguration {
-	@Value("${spring.data.mongodb.uri}")
-	private String mongoUri;
-	@Value("${spring.data.mongodb.database}")
-	private String database;
+	private final MongoProperties mongoProperties;
 
 	@Bean
 	public MongoClient mongoClient() {
-		return MongoClients.create(mongoUri);
+		return MongoClients.create(mongoProperties.getUri());
 	}
 
 	@Bean
 	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongoClient) {
-		return new SimpleReactiveMongoDatabaseFactory(mongoClient, database);
+		return new SimpleReactiveMongoDatabaseFactory(mongoClient, mongoProperties.getDatabase());
 	}
 
 	@Bean

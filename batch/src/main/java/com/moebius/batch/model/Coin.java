@@ -10,6 +10,4 @@ public abstract class Coin {
 	private String balance;
 
 	abstract String getOwner();
-
-	abstract Class<?> getConcreteClass();
 }
