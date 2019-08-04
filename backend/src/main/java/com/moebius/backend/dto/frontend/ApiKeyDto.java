@@ -1,20 +1,23 @@
 package com.moebius.backend.dto.frontend;
 
+import com.moebius.backend.domain.commons.Exchange;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @ToString
-public class SignupDto {
+public class ApiKeyDto {
+	@NotNull
+	private Exchange exchange;
 	@NotBlank
 	private String name;
-	@Email
-	private String email;
 	@NotBlank
-	private String password;
+	private String accessKey;
+	@NotBlank
+	private String secretKey;
 }

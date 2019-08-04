@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.security.Principal;
-
 @Repository
 @RequiredArgsConstructor
 public class SecurityContextRepository implements ServerSecurityContextRepository {
@@ -28,15 +26,13 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
     }
 
     @Override
-//     FIXME : Need to refactor these code as chained one
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         ServerHttpRequest request = exchange.getRequest();
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
         if (authHeader != null && authHeader.startsWith(AUTH_PREFIX)) {
             String authToken = authHeader.substring(TOKEN_STARTING_INDEX);
-            // TODO : Need to check out parameters in constructor (maybe need to be refactored)
-            Authentication auth = new UsernamePasswordAuthenticationToken(exchange.getPrincipal().map(Principal::getName), authToken);
+            Authentication auth = new UsernamePasswordAuthenticationToken(request.getId(), authToken);
             return authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
         }
         return Mono.empty();

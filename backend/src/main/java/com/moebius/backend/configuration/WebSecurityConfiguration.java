@@ -32,7 +32,7 @@ public class WebSecurityConfiguration {
 				"/",
 				"/csrf",
 				"/api/member/**",
-				"/api/members/**", // TODO : Find out proper way to reduce duplicated patterns
+				"/api/members/**", // TODO : Find out proper way to reduce duplicate patterns
 				"/login",
 				"/v2/api-docs",
 				"/swagger",
@@ -41,7 +41,7 @@ public class WebSecurityConfiguration {
 				"/webjars/**",
 				"/static/**").permitAll()
 			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/member/**").hasAuthority("MEMBER")
+			.pathMatchers("/api/stoplosses/**").hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and()
 			.build();

@@ -1,8 +1,8 @@
 package com.moebius.backend.assembler;
 
-import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.trades.Trade;
 import com.moebius.backend.dto.exchange.TradeDto;
+import com.moebius.backend.utils.Verifier;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -13,8 +13,10 @@ import java.util.TimeZone;
 @Component
 public class TradeAssembler {
 	public Trade toTrade(@NotNull TradeDto tradeDto) {
+		Verifier.checkNullFields(tradeDto);
+
 		Trade trade = new Trade();
-		trade.setExchange(tradeDto.getExchange() == null ? Exchange.UPBIT : tradeDto.getExchange());
+		trade.setExchange(tradeDto.getExchange());
 		trade.setSymbol(tradeDto.getSymbol());
 		trade.setTradeType(tradeDto.getAskBid());
 		trade.setChange(tradeDto.getChange());
@@ -28,7 +30,9 @@ public class TradeAssembler {
 		return trade;
 	}
 
-	public Trade updateTrade(@NotNull Trade trade, @NotNull TradeDto newTradeDto) {
+	public Trade toUpdatedTrade(@NotNull Trade trade, @NotNull TradeDto newTradeDto) {
+		Verifier.checkNullFields(newTradeDto);
+
 		trade.setTradeType(newTradeDto.getAskBid());
 		trade.setChange(newTradeDto.getChange());
 		trade.setPrice(newTradeDto.getTradePrice());

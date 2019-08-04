@@ -1,7 +1,6 @@
 package com.moebius.backend.domain.members;
 
 import com.moebius.backend.domain.commons.Base;
-import com.mongodb.lang.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
 import java.util.HashSet;
@@ -21,6 +21,7 @@ import java.util.Set;
 public class Member extends Base {
 	@Id
 	private ObjectId id;
+	@Nullable
 	private Level level;
 	private String name;
 	@Email

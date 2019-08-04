@@ -2,6 +2,7 @@ package com.moebius.backend.service.tracker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moebius.backend.assembler.TradeAssembler;
+import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.trades.Trade;
 import com.moebius.backend.domain.trades.TradeRepository;
 import com.moebius.backend.dto.exchange.TradeDto;
@@ -51,6 +52,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 
 					try {
 						TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
+						tradeDto.setExchange(Exchange.UPBIT);
 						accumulateTrade(tradeDto);
 						// maybe need to use upsertTrade rather accumulateTrade.
 						// upsertTrade(tradeDto);
@@ -90,7 +92,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 	}
 
 	private Mono<Trade> updateTrade(Trade trade, TradeDto tradeDto) {
-		return Mono.just(tradeAssembler.updateTrade(trade, tradeDto))
+		return Mono.just(tradeAssembler.toUpdatedTrade(trade, tradeDto))
 			.subscribeOn(COMPUTE.scheduler())
 			.publishOn(IO.scheduler())
 			.flatMap(tradeRepository::save);

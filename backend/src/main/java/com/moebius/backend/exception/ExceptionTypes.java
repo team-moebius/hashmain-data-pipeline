@@ -22,7 +22,7 @@ public enum ExceptionTypes {
 			return data + " is already verified.";
 		}
 	},
-	DUPLICATED_DATA("The data already exists.") {
+	DUPLICATE_DATA("The data already exists.") {
 		@Override
 		public String getMessage(String data) {
 			return data + " already exists.";
@@ -33,10 +33,6 @@ public enum ExceptionTypes {
 		public String getMessage(String data) {
 			return data + " is not found.";
 		}
-	},
-	NULL_DATA("The data is null.") {
-		@Override
-		public String getMessage(String object) { return object + " has null data."; }
 	};
 
 	private String message;
