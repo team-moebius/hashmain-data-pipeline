@@ -40,17 +40,19 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
   }
 
   isDuplicatedId = async (id: string) => {
-    let isDuplicated = false;
-    await this.setState({ pending: true }, () => {
-      ajax
-        .get(`/members/duplicate/${id}`)
-        .then(response => {
-          isDuplicated = true;
-        })
-        .finally(() => this.setState({ pending: false }));
-    });
+    let isDuplicatedId = false;
+    await this.setState({ pending: true });
+    await ajax
+      .get(`/members/duplicate/${id}`)
+      .then(() => {
+        isDuplicatedId = true;
+      })
+      .catch(() => {
+        isDuplicatedId = false;
+      });
+    await this.setState({ pending: false });
 
-    return isDuplicated;
+    return isDuplicatedId;
   };
 
   onSubmitSignIn = (data: object) => {
