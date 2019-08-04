@@ -9,12 +9,44 @@ const ajax = axios.create({
   responseType: 'json',
 });
 
+interface interceptorsList {
+  request?: number;
+  response?: number;
+}
+
+const interceptors: interceptorsList = {
+  request: undefined,
+  response: undefined,
+};
+
 const setAjaxJwtHeader = (jwtHeader: String) => {
   ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtHeader}`;
 };
 
-const addSignOutInterceptor = (dispatchFunc: any, signOutFunc: any) => {
-  ajax.interceptors.response.use(
+const addJwtTokenInterceptor = (jwtToken: any) => {
+  const curInterceptor = interceptors.request;
+  if (curInterceptor && Number.isInteger(curInterceptor))
+    ajax.interceptors.request.eject(curInterceptor);
+
+  const newInterceptor = ajax.interceptors.request.use(
+    config => {
+      console.log(jwtToken);
+      ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    }
+  );
+  interceptors.request = newInterceptor;
+};
+
+const addSignOutInterceptor = (signOutFunc: any) => {
+  const curInterceptor = interceptors.response;
+  if (curInterceptor && Number.isInteger(curInterceptor))
+    ajax.interceptors.response.eject(curInterceptor);
+
+  const newInterceptor = ajax.interceptors.response.use(
     response => {
       return response;
     },
@@ -28,13 +60,14 @@ const addSignOutInterceptor = (dispatchFunc: any, signOutFunc: any) => {
       ) {
         // 로그인을 제외한 일반적인 401 error시에는 login form으로 forward
         alert('세션 만료. 재로그인 해주세요.');
-        dispatchFunc(signOutFunc());
+        signOutFunc();
         push('http://localhost:3000/sign');
       }
       return Promise.reject(error);
     }
   );
+  interceptors.response = newInterceptor;
 };
 
-export { setAjaxJwtHeader, addSignOutInterceptor };
+export { setAjaxJwtHeader, addSignOutInterceptor, addJwtTokenInterceptor };
 export default ajax;

@@ -11,7 +11,7 @@ import Tabs from 'components/atoms/Tabs';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
-import ajax, { setAjaxJwtHeader } from 'utils/Ajax';
+import ajax from 'utils/Ajax';
 import { ReduxState } from 'utils/GlobalReducer';
 
 import 'assets/scss/SignPage.scss';
@@ -21,7 +21,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  signInSuccess: () => void;
+  signInSuccess: (token: string) => void;
 }
 
 interface SignPageProps extends StateProps, DispatchProps {
@@ -60,15 +60,13 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
       ajax
         .post('/members', data)
         .then(response => {
-          console.log(response);
-          setAjaxJwtHeader(response.data.token);
+          this.props.signInSuccess(response.data.token);
           this.setState({ pending: false });
-          this.props.signInSuccess();
           this.props.alert.success('로그인 성공');
         })
         .catch(error => {
           this.setState({ pending: false });
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.props.alert.error('해당 계정은 이메일 인증이 완료되지 않았습니다.');
           } else {
             this.props.alert.error('로그인 실패. ID 혹은 Password를 확인하세요.');
@@ -146,7 +144,7 @@ const mapStateToProps = (state: ReduxState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
-  signInSuccess: () => dispatch(pageActions.signInSuccess()),
+  signInSuccess: (token: string) => dispatch(pageActions.signInSuccess({ token })),
 });
 
 export default connect(

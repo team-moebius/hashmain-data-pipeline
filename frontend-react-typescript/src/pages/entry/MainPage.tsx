@@ -15,7 +15,7 @@ import CoinInfo from 'pages/contents/CoinInfo';
 import UseGuide from 'pages/contents/UseGuide';
 import Profile from 'pages/contents/Profile';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
-import ajax from 'utils/Ajax';
+import ajax, { addSignOutInterceptor, addJwtTokenInterceptor, setAjaxJwtHeader } from 'utils/Ajax';
 import { ReduxState } from 'utils/GlobalReducer';
 
 import bgImage from 'assets/images/bg.png';
@@ -24,6 +24,7 @@ import 'assets/scss/MainPage.scss';
 
 interface StateProps {
   signing: boolean;
+  token: string;
 }
 
 interface DispatchProps {
@@ -52,10 +53,15 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
     this.state = {
       index: 0,
     };
+
+    console.log(this.props.token);
+    addSignOutInterceptor(this.props.signOut);
+    addJwtTokenInterceptor(this.props.token);
+    setAjaxJwtHeader(this.props.token);
   }
 
   onClickAlertSample? = (e: React.MouseEvent<HTMLElement>) => {
-    console.log(ajax.defaults.headers.common['Authorization']);
+    console.log('Alert' + ajax.defaults.headers.common['Authorization']);
     ajax
       .get('/members')
       .then(response => {})
@@ -129,6 +135,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
 
 const mapStateToProps = (state: ReduxState) => ({
   signing: state.page.signing,
+  token: state.page.token,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
