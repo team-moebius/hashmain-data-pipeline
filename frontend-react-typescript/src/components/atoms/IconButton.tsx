@@ -19,7 +19,6 @@ const IconButton: React.FC<IconButtonProps> = props => {
 
 IconButton.defaultProps = {
   size: 'small',
-  color: 'inherit',
 };
 
 export default IconButton;
