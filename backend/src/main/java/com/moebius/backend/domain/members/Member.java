@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import java.util.Set;
 public class Member extends Base {
 	@Id
 	private ObjectId id;
+	@Nullable
 	private Level level;
 	private String name;
 	@Email
@@ -28,7 +30,8 @@ public class Member extends Base {
 	private String password;
 
 	private boolean isActive = false;
+	@Nullable
+	private String verificationCode;
 
-	private Set<ApiKey> apiKeys = new HashSet<>();
 	private Set<Role> roles = new HashSet<>();
 }

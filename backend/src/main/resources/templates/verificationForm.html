@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Cryptobox verification email</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+
+  <body>
+    <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#0d1e34"
+           style="max-width:673px; font-family: Malgun Gothic,맑은 고딕,sans-serif">
+      <tbody>
+        <tr>
+          <td>
+            <!-- header -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td width="673" height="69" style="margin:0;padding:0;text-align:center;">
+                  <img th:src="${protocol} + '://' + ${host} + '/static/images/mail-header.jpg'" border="0" style="margin:0;padding:0;width:673px;height:69px;"
+                       alt="Crypto box global">
+                </td>
+              </tr>
+            </table>
+            <!-- // header -->
+            <!-- content -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td width="80"></td>
+                <td>
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td height="100"></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <table border="0" cellspacing="0" cellpadding="0" width="100%">
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <span
+                                style="font-size:30px; font-weight: bold; color:#1b74b9; margin:0; line-height:1;padding-bottom: 10px;border-bottom: 2px solid #1b74b9">회원가입
+                                이메일 주소 인증</span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="60"></td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;"><span th:text="${name}"></span>님 안녕하세요.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;">아래 내용을 참고하여 이메일 인증을 진행하시기 바랍니다.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="35"></td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="font-size:17px; font-weight: bold; color:#cad0e9; margin:0; line-height:26px;">이메일 인증과정</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="font-size:14px; color:#cad0e9; margin:0; line-height:26px;">1. 하단 회원가입 이메일 인증하기 버튼 클릭</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="font-size:14px; color:#cad0e9; margin:0; line-height:26px;">2. 크립토 박스 글로벌 웹 사이트 방문 후 로그인 완료</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="35"></td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;">이메일 인증 후 크립토 박스에서 제공하는 모든 서비스를 이용하실 수 있습니다.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="font-size:16px; color:#cad0e9; margin:0; line-height:26px;">감사합니다.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="35"></td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <a th:href="${protocol} + '://' + ${host} + '/api/members/verification?email=' + ${email} + '&code=' + ${code}"
+                                 style="text-decoration: none; font-size:18px;font-weight: bold;color:#1b74b9;border-radius: 3px;">
+                                <table cellpadding="0" cellspacing="0" style="border: 1px solid #3390b7;" width="100%">
+                                  <tr>
+                                    <td height="50" align="center" style="text-align: center;">
+                                      <p style="border:none;text-decoration: none;font-size:18px;font-weight: bold;color:#1b74b9;line-height:1;">회원가입
+                                        이메일 인증하기</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="80"></td>
+              </tr>
+              <tr>
+                <td height="100" colspan="3"></td>
+              </tr>
+            </table>
+            <!-- // content -->
+            <!-- footer -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td bgcolor="#091a2e">
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td height="30"></td>
+                    </tr>
+                    <tr>
+                      <td style="vertical-align:top;text-align:center">
+                        <p style="font-size:11px; color:#cad0e9; margin:0; line-height:21px;text-align:center">
+                          ⓒ 2018 - 2019 ICORE Inc. All rights reserved.<br />
+                        </p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td height="20"></td>
+                    </tr>
+                    <!--                                    <tr>-->
+                    <!--                                        <td style="font-size:12px;color:#cad0e9;text-align:center">-->
+                    <!--                                            <a style="color:#cad0e9;text-decoration: none;" href="#" target="_blank">회사소개</a> | -->
+                    <!--                                            <a style="color:#cad0e9;text-decoration: none;" href="#" target="_blank">자주하는 질문</a> | -->
+                    <!--                                            <a style="color:#cad0e9;text-decoration: none;" href="#" target="_blank">이용약관</a> |-->
+                    <!--                                            <a style="color:#cad0e9;text-decoration: none;" href="#" target="_blank">개인 정보 정책</a>-->
+                    <!--                                        </td>-->
+                    <!--                                    </tr>-->
+                    <!--                                    <tr><td height="15"></td></tr>-->
+                    <!--                                    <tr>-->
+                    <!--                                        <td width="301" height="27" style="margin:0;padding:0;text-align:center;">-->
+                    <!--                                            <img src="assets/images/mail-logo2.jpg" border="0" style="margin:0;padding:0;width:301px;height:27px;" alt="Crypto box global">-->
+                    <!--                                        </td>-->
+                    <!--                                    </tr>-->
+                    <!--                                    <tr><td height="10"></td></tr>-->
+                    <!--                                    <tr>-->
+                    <!--                                        <td style="text-align:center">-->
+                    <!--                                            <a style="padding:0 2px;" href="#" target="_blank"><img src="assets/images/mail-sns01.jpg" border="0" style="margin:0;padding:0;width:28px;height:28px;" alt="페이스북"></a> -->
+                    <!--                                            <a style="padding:0 2px;" href="#" target="_blank"><img src="assets/images/mail-sns02.jpg" border="0" style="margin:0;padding:0;width:28px;height:28px;" alt="텔레그램"></a> -->
+                    <!--                                            <a style="padding:0 2px;" href="#" target="_blank"><img src="assets/images/mail-sns03.jpg" border="0" style="margin:0;padding:0;width:28px;height:28px;" alt="인스타그램"></a> -->
+                    <!--                                            <a style="padding:0 2px;" href="#" target="_blank"><img src="assets/images/mail-sns04.jpg" border="0" style="margin:0;padding:0;width:28px;height:28px;" alt="트위터"></a> -->
+                    <!--                                            <a style="padding:0 2px;" href="#" target="_blank"><img src="assets/images/mail-sns05.jpg" border="0" style="margin:0;padding:0;width:28px;height:28px;" alt="유튜브"></a> -->
+                    <!--                                            <a style="padding:0 2px;" href="#" target="_blank"><img src="assets/images/mail-sns06.jpg" border="0" style="margin:0;padding:0;width:28px;height:28px;" alt="이메일"></a> -->
+                    <!--                                            <a style="padding:0 2px;" href="#" target="_blank"><img src="assets/images/mail-sns07.jpg" border="0" style="margin:0;padding:0;width:28px;height:28px;" alt="카카오톡"></a> -->
+                    <!--                                        </td>-->
+                    <!--                                    </tr>-->
+                    <!--                                    <tr><td height="30"></td></tr>-->
+                  </table>
+                </td>
+              </tr>
+            </table>
+            <!-- // footer -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </body>
+
+</html>

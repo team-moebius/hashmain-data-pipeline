@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active: develop
+
+server:
+  port: 80
+  tomcat:
+    basedir: /var/log/moebius
+    accesslog:
+      enabled: true
+      directory: tomcat
+logging:
+  level:
+    root: INFO
+    com.moebius: DEBUG
+  file: /var/log/moebius/app.log
+
+moebius:
+  protocol: http
+  host: 52.79.86.26
