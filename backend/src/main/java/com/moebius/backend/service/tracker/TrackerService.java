@@ -27,7 +27,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
  */
 @Slf4j
 @Service
-@Profile("!local")
+@Profile("tracker")
 @RequiredArgsConstructor
 public class TrackerService implements ApplicationListener<ApplicationReadyEvent> {
 	private final WebSocketClient webSocketClient;

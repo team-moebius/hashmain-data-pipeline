@@ -2,12 +2,6 @@ spring:
   profiles:
     active: local
 
-server:
-  port: 80
-  tomcat:
-    accesslog:
-      enabled: true
-      directory: /var/log/moebius/tomcat
 logging:
   level:
     root: INFO
