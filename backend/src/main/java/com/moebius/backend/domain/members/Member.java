@@ -29,7 +29,7 @@ public class Member extends Base {
 	private String email;
 	private String password;
 
-	private boolean isActive = false;
+	private boolean active = false;
 	@Nullable
 	private String verificationCode;
 

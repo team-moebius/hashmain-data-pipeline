@@ -9,6 +9,7 @@ import com.moebius.backend.exception.VerificationFailedException;
 import com.moebius.backend.utils.Verifier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -59,13 +60,15 @@ public class EmailService {
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(verificationDto.getEmail())))))
 			.filter(member -> !member.isActive() && member.getVerificationCode() != null)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(verificationDto.getEmail())))))
-			.filter(member -> member.getVerificationCode().equals(verificationDto.getCode()))
+			.filter(member -> member.getVerificationCode() != null && member.getVerificationCode().equals(verificationDto.getCode()))
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.INVALID_CODE.getMessage()))))
 			.flatMap(this::updateMember)
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
 	private Mono<Member> updateVerificationCode(Member member) {
+		log.info("[Email] update verification code of member. [{}]", member);
+
 		return Mono.fromCallable(() -> {
 			member.setVerificationCode(Verifier.generateCode());
 			return member;
@@ -75,11 +78,13 @@ public class EmailService {
 	}
 
 	/**
-	 * FIXME : Should be refactored by extracting MimeMessagePreparator from EmailService.
+	 * FIXME : Refactor it by extracting MimeMessagePreparator from EmailService.
 	 * @param member
 	 * @return
 	 */
 	private Mono<ResponseEntity<String>> sendVerificationEmail(Member member) {
+		log.info("[Email] start to send verification mail. [{}]", member.getEmail());
+
 		return Mono.fromCallable(() -> {
 			MimeMessagePreparator messagePreparator = mimeMessage -> {
 				MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
@@ -94,21 +99,21 @@ public class EmailService {
 				context.setVariable("name", member.getName());
 				context.setVariable("email", member.getEmail());
 
+				log.info("[Email] Start to processing email form.");
 				String content = templateEngine.process("verificationForm", context);
 				messageHelper.setText(content, true);
 			};
 			try {
 				emailSender.send(messagePreparator);
-				return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+				return ResponseEntity.ok("Succeeded in verification. Welcome to cryptobox global.");
 			} catch (MailException me) {
 				return ResponseEntity.badRequest().body(me.getMessage());
 			}
-		}).subscribeOn(COMPUTE.scheduler());
+		}).doOnSuccess(stringResponseEntity -> log.info("[Email] succeeded in sending verification email"))
+			.subscribeOn(COMPUTE.scheduler());
 	}
 
 	private Mono<Member> updateMember(Member member) {
-		Hooks.onOperatorDebug();
-
 		return Mono.fromCallable(() -> {
 			member.setActive(true);
 			member.setVerificationCode(null);
@@ -116,7 +121,6 @@ public class EmailService {
 			return member;
 		}).subscribeOn(COMPUTE.scheduler())
 			.publishOn(IO.scheduler())
-			.log()
 			.flatMap(memberRepository::save);
 	}
 }

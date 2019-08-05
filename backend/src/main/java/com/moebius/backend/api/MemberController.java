@@ -75,7 +75,7 @@ public class MemberController {
 	})
 	@PostMapping("/signup")
 	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
-		return memberService.createAccount(signupDto);
+		return memberService.createMember(signupDto);
 	}
 
 	@ApiOperation(

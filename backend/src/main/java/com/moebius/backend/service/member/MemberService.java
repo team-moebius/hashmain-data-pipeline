@@ -46,14 +46,19 @@ public class MemberService {
 				ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)));
 	}
 
-	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
+	public Mono<ResponseEntity<?>> createMember(SignupDto signupDto) {
+		log.info("[Member] Start to create member. [{}]", signupDto);
+
 		return memberRepository.save(memberAssembler.toMember(signupDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
 				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(signupDto.getEmail())) :
 				exception)
-			.flatMap(member -> emailService.requestToVerifyEmail(member.getEmail()));
+			.flatMap(member -> {
+				log.info("[Member] Succeeded in creating member. [{}]", member);
+				return emailService.requestToVerifyEmail(member.getEmail());
+			});
 	}
 
 	public Mono<ResponseEntity<?>> login(LoginDto loginDto) {
