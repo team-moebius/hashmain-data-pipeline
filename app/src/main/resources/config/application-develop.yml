@@ -10,7 +10,7 @@ logging:
 
 moebius:
   protocol: http
-  host: 52.79.86.26
+  host: api-dev.cryptoboxglobal.com
 
 reactor:
   netty:
