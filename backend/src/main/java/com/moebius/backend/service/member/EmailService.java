@@ -48,7 +48,7 @@ public class EmailService {
 			.filter(member -> !member.isActive())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(email)))))
 			.flatMap(this::updateVerificationCode)
-			.flatMap(this::sendVerificationEmail);
+			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
 	public Mono<ResponseEntity<?>> verifyEmail(@NonNull VerificationDto verificationDto) {
@@ -70,6 +70,7 @@ public class EmailService {
 		log.info("[Email] update verification code of member. [{}]", member);
 
 		return Mono.fromCallable(() -> {
+			sendVerificationEmail(member).subscribe();
 			member.setVerificationCode(Verifier.generateCode());
 			return member;
 		}).subscribeOn(COMPUTE.scheduler())
@@ -77,13 +78,8 @@ public class EmailService {
 			.flatMap(memberRepository::save);
 	}
 
-	/**
-	 * FIXME : Refactor it by extracting MimeMessagePreparator from EmailService.
-	 * @param member
-	 * @return
-	 */
-	private Mono<ResponseEntity<String>> sendVerificationEmail(Member member) {
-		log.info("[Email] start to send verification mail. [{}]", member.getEmail());
+	private Mono<String> sendVerificationEmail(Member member) {
+		log.info("[Email] Start to send verification mail. [{}]", member.getEmail());
 
 		return Mono.fromCallable(() -> {
 			MimeMessagePreparator messagePreparator = mimeMessage -> {
@@ -99,18 +95,18 @@ public class EmailService {
 				context.setVariable("name", member.getName());
 				context.setVariable("email", member.getEmail());
 
-				log.info("[Email] Start to processing email form.");
 				String content = templateEngine.process("verificationForm", context);
 				messageHelper.setText(content, true);
 			};
 			try {
 				emailSender.send(messagePreparator);
-				return ResponseEntity.ok("Succeeded in verification. Welcome to cryptobox global.");
+				return HttpStatus.OK.getReasonPhrase();
 			} catch (MailException me) {
-				return ResponseEntity.badRequest().body(me.getMessage());
+				log.error("[Email] MailException occurred.", me);
+				throw me;
 			}
-		}).doOnSuccess(stringResponseEntity -> log.info("[Email] succeeded in sending verification email"))
-			.subscribeOn(COMPUTE.scheduler());
+		}).doOnSuccess(stringResponseEntity -> log.info("[Email] Succeeded in sending verification email. [{}]", member.getEmail()))
+			.subscribeOn(IO.scheduler());
 	}
 
 	private Mono<Member> updateMember(Member member) {

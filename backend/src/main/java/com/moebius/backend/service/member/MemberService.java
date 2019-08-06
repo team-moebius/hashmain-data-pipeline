@@ -9,10 +9,7 @@ import com.moebius.backend.dto.frontend.LoginDto;
 import com.moebius.backend.dto.frontend.MemberDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.dto.frontend.response.LoginResponseDto;
-import com.moebius.backend.exception.DataNotFoundException;
-import com.moebius.backend.exception.DataNotVerifiedException;
-import com.moebius.backend.exception.DuplicateDataException;
-import com.moebius.backend.exception.ExceptionTypes;
+import com.moebius.backend.exception.*;
 import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,15 +62,12 @@ public class MemberService {
 		return memberRepository.findByEmail(loginDto.getEmail())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(
-				Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
+			.filter(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_PASSWORD.getMessage()))))
 			.filter(Member::isActive)
-			.switchIfEmpty(
-				Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
-			.map(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()) ?
-				ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))) :
-				ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionTypes.WRONG_PASSWORD.getMessage())
-			);
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
+			.map(member -> ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))));
 	}
 
 	public Mono<ResponseEntity<MemberDto>> getMember(String id) {
