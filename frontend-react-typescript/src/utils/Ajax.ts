@@ -1,10 +1,13 @@
 import axios from 'axios';
 import { push } from 'connected-react-router';
 
-const BASE_URL = 'http://52.79.86.26/api';
+// please refer ip directly rather dns cause of price issue.
+const DEVELOP_API_URL = 'http://52.79.86.26/api';
+const PRODUCTION_API_URL = 'http://52.78.49.241/api';
 
 const ajax = axios.create({
-  baseURL: BASE_URL,
+  baseURL: DEVELOP_API_URL,
+  // baseURL: 'http://api-dev.cryptoboxglobal.com/api/',
   responseType: 'json',
 });
 
@@ -61,7 +64,7 @@ const addSignOutInterceptor = (signOutFunc: any) => {
     },
     error => {
       const isSignInRequest =
-        error.config.url === `${BASE_URL}/members` && error.config.method === 'post';
+        error.config.url === `${PRODUCTION_API_URL}/members` && error.config.method === 'post';
       if (
         error.response &&
         error.response.status === 401 &&
