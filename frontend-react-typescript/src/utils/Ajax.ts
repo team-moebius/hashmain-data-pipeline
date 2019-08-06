@@ -18,6 +18,16 @@ const interceptors: interceptorsList = {
   response: undefined,
 };
 
+const ejectInterceptors = () => {
+  const requestInterceptor = interceptors.request;
+  if (requestInterceptor && Number.isInteger(requestInterceptor))
+    ajax.interceptors.request.eject(requestInterceptor);
+
+  const responseInterceptor = interceptors.response;
+  if (responseInterceptor && Number.isInteger(responseInterceptor))
+    ajax.interceptors.response.eject(responseInterceptor);
+};
+
 const setAjaxJwtHeader = (jwtHeader: String) => {
   ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtHeader}`;
 };
@@ -68,5 +78,5 @@ const addSignOutInterceptor = (signOutFunc: any) => {
   interceptors.response = newInterceptor;
 };
 
-export { setAjaxJwtHeader, addSignOutInterceptor, addJwtTokenInterceptor };
+export { setAjaxJwtHeader, addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors };
 export default ajax;

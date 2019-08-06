@@ -15,7 +15,12 @@ import CoinInfo from 'pages/contents/CoinInfo';
 import UseGuide from 'pages/contents/UseGuide';
 import Profile from 'pages/contents/Profile';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
-import ajax, { addSignOutInterceptor, addJwtTokenInterceptor, setAjaxJwtHeader } from 'utils/Ajax';
+import ajax, {
+  addSignOutInterceptor,
+  addJwtTokenInterceptor,
+  setAjaxJwtHeader,
+  ejectInterceptors,
+} from 'utils/Ajax';
 import { ReduxState } from 'utils/GlobalReducer';
 
 import bgImage from 'assets/images/bg.png';
@@ -54,21 +59,17 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
       index: 0,
     };
 
-    console.log(this.props.token);
     addSignOutInterceptor(this.props.signOut);
     addJwtTokenInterceptor(this.props.token);
-    setAjaxJwtHeader(this.props.token);
+    // setAjaxJwtHeader(this.props.token);
   }
 
   onClickAlertSample? = (e: React.MouseEvent<HTMLElement>) => {
-    console.log('Alert' + ajax.defaults.headers.common['Authorization']);
-    ajax
-      .get('/members')
-      .then(response => {})
-      .catch(error => {});
+    console.log('Alert ' + ajax.defaults.headers.common['Authorization']);
   };
 
   onClickSignOut = () => {
+    ejectInterceptors();
     this.props.signOut();
   };
 
