@@ -8,6 +8,7 @@ import MuiTypography from '@material-ui/core/Typography';
 
 import Paper from 'components/atoms/Paper';
 import Tabs from 'components/atoms/Tabs';
+import Loader from 'components/atoms/Loader';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
@@ -79,7 +80,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         .post('/members/signup', data)
         .then(() => {
           this.setState({ index: 0, pending: false });
-          this.props.alert.success('회원 가입 성공. 인증 메일을 보냈으니 확인하세요.');
+          this.props.alert.success('회원 가입 성공. 인증 메일을 확인하세요.');
         })
         .catch(error => {
           this.setState({ pending: false });
@@ -96,6 +97,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
     if (this.props.signing) return <Redirect to="/" />;
     return (
       <Paper className="sign-page">
+        {this.state.pending && <Loader />}
         <Paper className="sign-page__wrapper" square>
           <Tabs.HorizontalTabs
             centered

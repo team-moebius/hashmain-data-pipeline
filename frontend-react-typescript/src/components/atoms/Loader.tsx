@@ -13,31 +13,30 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     top: 'calc(50% - 50px)',
     width: '100%',
+    zIndex: 1,
   },
   helperText: { marginTop: '15px', color: theme.palette.primary.contrastText },
 }));
 
-export interface CircularLoaderProps {
-  className?: string;
+export interface LoaderProps {
+  textClassName?: string;
   helperText?: string;
   iconSize?: number;
 }
 
-const CircularLoader: React.FC<CircularLoaderProps> = props => {
+const Loader: React.FC<LoaderProps> = props => {
   const classes = useStyles();
   return (
     <div className={classes.wrapper}>
-      <CircularProgress disableShrink size={props.iconSize} />
+      <CircularProgress color="secondary" disableShrink size={props.iconSize} />
       {props.helperText && (
-        <span className={classNames(classes.helperText, props.className)}>{props.helperText}</span>
+        <span className={classNames(classes.helperText, props.textClassName)}>
+          {props.helperText}
+        </span>
       )}
       {props.children}
     </div>
   );
 };
 
-CircularLoader.defaultProps = {
-  helperText: 'Loading...',
-};
-
-export default CircularLoader;
+export default Loader;
