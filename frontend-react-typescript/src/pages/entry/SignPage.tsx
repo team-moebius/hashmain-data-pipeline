@@ -60,8 +60,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
       ajax
         .post('/members', data)
         .then(response => {
-          this.props.signInSuccess(response.data.token);
-          this.setState({ pending: false });
+          this.setState({ pending: false }, () => this.props.signInSuccess(response.data.token));
         })
         .catch(error => {
           this.setState({ pending: false });
