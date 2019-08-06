@@ -16,9 +16,10 @@ const ApiKeyRegistBox: React.FC<ApiKeyRegistBoxProps> = props => {
   const secretKeyRef = React.createRef<any>();
   const onClickRegistApiKeyButton = (data: object) => {
     props.onClickRegistApiKeyButton({
-      botName: botNameRef.current.value,
       accessKey: accessKeyRef.current.value,
       secretKey: secretKeyRef.current.value,
+      name: botNameRef.current.value,
+      exchange: 'UPBIT',
     });
   };
   return (

@@ -62,7 +62,6 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         .then(response => {
           this.props.signInSuccess(response.data.token);
           this.setState({ pending: false });
-          this.props.alert.success('로그인 성공');
         })
         .catch(error => {
           this.setState({ pending: false });
@@ -81,7 +80,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         .post('/members/signup', data)
         .then(() => {
           this.setState({ index: 0, pending: false });
-          this.props.alert.success('회원 가입 성공');
+          this.props.alert.success('회원 가입 성공. 인증 메일을 보냈으니 확인하세요.');
         })
         .catch(error => {
           this.setState({ pending: false });

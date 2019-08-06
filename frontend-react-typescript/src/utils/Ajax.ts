@@ -5,7 +5,6 @@ const BASE_URL = 'http://52.79.86.26/api';
 
 const ajax = axios.create({
   baseURL: BASE_URL,
-  // baseURL: 'http://api-dev.cryptoboxglobal.com/api/',
   responseType: 'json',
 });
 

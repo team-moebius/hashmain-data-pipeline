@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withAlert, AlertManager } from 'react-alert';
 
-import ApiKeyRegistBox from 'components/anti/ApiKeyRegistBox';
+import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import Paper from 'components/atoms/Paper';
 import ajax from 'utils/Ajax';
 
@@ -17,7 +17,7 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
   onClickApiRegistButton = (data: object) => {
     console.log(data);
     ajax
-      .post('', data)
+      .post('/api-keys', data)
       .then(reponse => {
         this.props.alert.success('등록 성공');
       })
