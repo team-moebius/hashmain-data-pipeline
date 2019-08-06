@@ -2,48 +2,36 @@ import axios from 'axios';
 import { push } from 'connected-react-router';
 
 // please refer ip directly rather dns cause of price issue.
-const DEVELOP_API_URL = 'http://52.79.86.26/api';
-const PRODUCTION_API_URL = 'http://52.78.49.241/api';
+const CONNECTION_INFO = {
+  develop: 'http://52.79.86.26/api',
+  production: 'http://52.78.49.241/api',
+};
 
 const ajax = axios.create({
-  baseURL: DEVELOP_API_URL,
+  baseURL: CONNECTION_INFO.develop,
   // baseURL: 'http://api-dev.cryptoboxglobal.com/api/',
   responseType: 'json',
 });
 
-interface interceptorsList {
-  request?: number;
-  response?: number;
-}
-
-const interceptors: interceptorsList = {
-  request: undefined,
-  response: undefined,
+const interceptors = {
+  request: 0,
+  response: 0,
 };
 
 const ejectInterceptors = () => {
-  const requestInterceptor = interceptors.request;
-  if (requestInterceptor && Number.isInteger(requestInterceptor))
-    ajax.interceptors.request.eject(requestInterceptor);
-
-  const responseInterceptor = interceptors.response;
-  if (responseInterceptor && Number.isInteger(responseInterceptor))
-    ajax.interceptors.response.eject(responseInterceptor);
-};
-
-const setAjaxJwtHeader = (jwtHeader: String) => {
-  ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtHeader}`;
+  const { request, response } = interceptors;
+  ajax.interceptors.request.eject(request);
+  ajax.interceptors.response.eject(response);
 };
 
 const addJwtTokenInterceptor = (jwtToken: any) => {
   const curInterceptor = interceptors.request;
-  if (curInterceptor && Number.isInteger(curInterceptor))
-    ajax.interceptors.request.eject(curInterceptor);
+  if (curInterceptor) ajax.interceptors.request.eject(curInterceptor);
 
   const newInterceptor = ajax.interceptors.request.use(
     config => {
-      console.log(jwtToken);
       ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
+      console.log(ajax.defaults.headers.common['Authorization']);
       return config;
     },
     error => {
@@ -55,8 +43,7 @@ const addJwtTokenInterceptor = (jwtToken: any) => {
 
 const addSignOutInterceptor = (signOutFunc: any) => {
   const curInterceptor = interceptors.response;
-  if (curInterceptor && Number.isInteger(curInterceptor))
-    ajax.interceptors.response.eject(curInterceptor);
+  if (curInterceptor) ajax.interceptors.response.eject(curInterceptor);
 
   const newInterceptor = ajax.interceptors.response.use(
     response => {
@@ -64,7 +51,8 @@ const addSignOutInterceptor = (signOutFunc: any) => {
     },
     error => {
       const isSignInRequest =
-        error.config.url === `${PRODUCTION_API_URL}/members` && error.config.method === 'post';
+        error.config.url === `${CONNECTION_INFO.develop}/members` && error.config.method === 'post';
+
       if (
         error.response &&
         error.response.status === 401 &&
@@ -81,5 +69,5 @@ const addSignOutInterceptor = (signOutFunc: any) => {
   interceptors.response = newInterceptor;
 };
 
-export { setAjaxJwtHeader, addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors };
+export { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors };
 export default ajax;
