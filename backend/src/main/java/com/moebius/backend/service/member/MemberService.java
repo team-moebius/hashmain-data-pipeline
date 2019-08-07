@@ -2,7 +2,6 @@ package com.moebius.backend.service.member;
 
 import com.moebius.backend.assembler.MemberAssembler;
 import com.moebius.backend.configuration.security.JwtUtil;
-import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
@@ -65,7 +64,10 @@ public class MemberService {
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
 			.filter(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()))
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_PASSWORD.getMessage()))))
-			.filter(Member::isActive)
+			.filter(member -> {
+				log.info("[Member] member : {}", member);
+				return member.isActive();
+			})
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
 			.map(member -> ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))));
 	}

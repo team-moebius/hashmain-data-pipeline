@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import java.security.Principal;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor

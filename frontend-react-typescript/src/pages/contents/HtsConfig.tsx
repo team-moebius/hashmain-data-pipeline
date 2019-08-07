@@ -17,7 +17,7 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
   onClickApiRegistButton = (data: object) => {
     console.log(data);
     ajax
-      .post('/api-keys', data)
+      .post('/api/api-keys', data)
       .then(reponse => {
         this.props.alert.success('등록 성공');
       })
@@ -28,7 +28,7 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
 
   onClickViewMyApkKeyButton = () => {
     ajax
-      .get('')
+      .get('/api')
       .then(reponse => {
         // this.props.alert.success('등록 성공');
       })

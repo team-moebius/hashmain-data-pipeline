@@ -3,13 +3,14 @@ import { push } from 'connected-react-router';
 
 // please refer ip directly rather dns cause of price issue.
 const CONNECTION_INFO = {
-  develop: 'http://52.79.86.26/api',
-  production: 'http://52.78.49.241/api',
+  local: 'http://127.0.0.1',
+  develop: 'http://52.79.86.26',
+  production: 'http://52.78.49.241',
 };
 
 const ajax = axios.create({
-  baseURL: CONNECTION_INFO.develop,
-  // baseURL: 'http://api-dev.cryptoboxglobal.com/api/',
+  baseURL: CONNECTION_INFO.local,
+  // baseURL: 'http://api-dev.cryptoboxglobal.com/',
   responseType: 'json',
 });
 

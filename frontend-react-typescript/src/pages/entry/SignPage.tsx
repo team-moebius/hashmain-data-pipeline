@@ -44,7 +44,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
     let isDuplicatedId = false;
     await this.setState({ pending: true });
     await ajax
-      .get(`/members/duplicate/${id}`)
+      .get(`/api/members/duplicate/${id}`)
       .then(() => {
         isDuplicatedId = true;
       })
@@ -59,7 +59,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
   onSubmitSignIn = (data: object) => {
     this.setState({ pending: true }, () => {
       ajax
-        .post('/members', data)
+        .post('/api/members', data)
         .then(response => {
           this.setState({ pending: false }, () => this.props.signInSuccess(response.data.token));
         })
@@ -77,7 +77,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
   onSubmitSignUp = (data: object) => {
     this.setState({ pending: true }, () => {
       ajax
-        .post('/members/signup', data)
+        .post('/api/members/signup', data)
         .then(() => {
           this.setState({ index: 0, pending: false });
           this.props.alert.success('회원 가입 성공. 인증 메일을 확인하세요.');
