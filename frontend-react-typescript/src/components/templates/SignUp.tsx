@@ -1,19 +1,24 @@
 import * as React from 'react';
+import _ from 'lodash';
 
-import MuiTypography from '@material-ui/core/Typography';
 import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
+import Text from 'components/atoms/Text';
+import TextForButton from 'components/atoms/TextForButton';
 import FormValidator from 'utils/FormValidator';
 
 interface SignUpProps {
-  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
-  isDuplicatedId?: (id: string) => boolean;
+  // TODO: change object type to specific type
+  pending: boolean;
+  onSubmit: (data: object) => void;
+  isDuplicatedId: (id: string) => Promise<boolean>;
 }
 
 interface SignUpState {
   errors: { [key: string]: string | undefined };
+  isCheckPermitTerms: boolean;
 }
 
 // TODO: Refactoring input validation code
@@ -28,18 +33,27 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
   constructor(props: SignUpProps) {
     super(props);
-    this.state = { errors: {} };
+    this.state = { errors: {}, isCheckPermitTerms: false };
   }
 
-  validateId = () => {
+  onChangePermitTerms = () => {
+    this.setState({ isCheckPermitTerms: !this.state.isCheckPermitTerms }, () => {
+      this.validatePermitTerms();
+    });
+  };
+
+  validateId = async () => {
     const id = this.idRef.current.value;
     let errorText = undefined;
     if (!FormValidator.isExistInput(id)) errorText = '아이디를 입력 해주세요.';
     else if (!FormValidator.validateEmail(id)) errorText = 'ID는 E-mail 형태로 입력하세요.';
-    else if (this.props.isDuplicatedId && this.props.isDuplicatedId(id))
-      errorText = '중복된 ID입니다.';
 
-    this.setState({ errors: { ...this.state.errors, id: errorText } });
+    // 입력 ID form이 올바르다면, 중복 여부 제출
+    if (!errorText && (await this.props.isDuplicatedId(id))) errorText = '중복된 ID 입니다.';
+
+    if (errorText) await this.setState({ errors: { ...this.state.errors, id: errorText } });
+    else await this.setState({ errors: _.omit(this.state.errors, 'id') });
+
     return errorText ? false : true;
   };
 
@@ -48,7 +62,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     let errorText = undefined;
     if (!FormValidator.isExistInput(name)) errorText = '이름을 입력 해주세요.';
 
-    this.setState({ errors: { ...this.state.errors, userName: errorText } });
+    this.setErrorState('userName', errorText);
     return errorText ? false : true;
   };
 
@@ -59,7 +73,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     else if (!FormValidator.validatePhoneNumber(phoneNumber))
       errorText = '핸드폰 번호가 올바르지 않습니다.(- 제외하고 입력하세요)';
 
-    this.setState({ errors: { ...this.state.errors, phoneNumber: errorText } });
+    this.setErrorState('phoneNumber', errorText);
     return errorText ? false : true;
   };
 
@@ -70,7 +84,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     else if (!FormValidator.validatePassword(password))
       errorText = '패스워드 패턴이 올바르지 않습니다.(영문,숫자 포함 8자 이상, 30자 이하)';
 
-    this.setState({ errors: { ...this.state.errors, password: errorText } });
+    this.setErrorState('password', errorText);
     return errorText ? false : true;
   };
 
@@ -81,50 +95,59 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     else if (passwordConfirm !== this.passwordRef.current.value)
       errorText = '패스워드 확인란이 패스워드란과 동일하지 않습니다';
 
-    this.setState({ errors: { ...this.state.errors, passwordConfirm: errorText } });
+    this.setErrorState('passwordConfirm', errorText);
     return errorText ? false : true;
   };
 
-  validate = async () => {
-    let valid = false;
-    valid = await this.validateId();
-    valid = await this.validatePassword();
-    valid = await this.validatePasswordConfirm();
-    valid = await this.validatePhoneNumber();
-    valid = await this.validateUserName();
+  validatePermitTerms = () => {
+    const errorText = this.state.isCheckPermitTerms ? undefined : '이용약관에 동의해주세요';
 
-    return valid;
+    this.setErrorState('permitTerms', errorText);
+    return this.state.isCheckPermitTerms;
   };
 
-  onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  validate = async () => {
+    // ID는 중복 값 Check logic 존재 하나, 제출 직전 한번 더 검사합니다.
+    return Object.keys(this.state.errors).length === 0 && (await this.validateId());
+  };
+
+  onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (this.validate() && this.props.onSubmit) this.props.onSubmit(e);
+
+    if (await this.validate()) {
+      const data = {
+        email: this.idRef.current.value,
+        name: this.nameRef.current.value,
+        password: this.passwordRef.current.value,
+      };
+      this.props.onSubmit(data);
+    }
   };
 
   render() {
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
-          <Input
-            autoComplete="off"
-            autoFocus
-            error={this.state.errors.id ? true : false}
-            helperText={this.state.errors.id}
-            inputRef={this.idRef}
-            name="id"
-            onBlur={this.validateId}
-            placeholder="E-Mail(User ID)"
-          />
-          <Input
-            autoComplete="off"
-            error={this.state.errors.userName ? true : false}
-            helperText={this.state.errors.userName}
-            inputRef={this.nameRef}
-            name="userName"
-            onBlur={this.validateUserName}
-            placeholder="User Name"
-          />
-          <Input
+      <form onSubmit={this.onSubmit}>
+        <Input
+          autoComplete="off"
+          autoFocus
+          error={this.state.errors.id ? true : false}
+          helperText={this.state.errors.id}
+          inputRef={this.idRef}
+          name="email"
+          onBlur={this.validateId}
+          placeholder="E-Mail(User ID)"
+        />
+        <Input
+          autoComplete="off"
+          error={this.state.errors.userName ? true : false}
+          helperText={this.state.errors.userName}
+          inputRef={this.nameRef}
+          name="name"
+          onBlur={this.validateUserName}
+          placeholder="User Name"
+        />
+        {/* TODO: Activate bloew after impelments phone number in backend */}
+        {/* <Input
             autoComplete="off"
             error={this.state.errors.phoneNumber ? true : false}
             helperText={this.state.errors.phoneNumber}
@@ -132,53 +155,71 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             name="phoneNumber"
             onBlur={this.validatePhoneNumber}
             placeholder="Phone number('-' 없이 10자 이상 입력)"
-          />
-          <ul>
-            <li style={{ marginTop: '10px' }}>
-              <MuiTypography variant="body1" gutterBottom>
-                - <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
-                <em>계정 인증용 메일</em>이 전송됩니다.
-              </MuiTypography>
-            </li>
-            <li>
-              <MuiTypography variant="body1" gutterBottom>
-                - 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
-                <em>스팸 메일함을 확인</em> 하시기 바랍니다.
-              </MuiTypography>
-            </li>
-          </ul>
-          <Input
-            error={this.state.errors.password ? true : false}
-            helperText={this.state.errors.password}
-            inputRef={this.passwordRef}
-            name="password"
-            onBlur={this.validatePassword}
-            type="password"
-            placeholder="Password(영문 숫자포함 8자 이상)"
-          />
-          <Input
-            error={this.state.errors.passwordConfirm ? true : false}
-            helperText={this.state.errors.passwordConfirm}
-            inputRef={this.passwordConfirmRef}
-            name="passwordConfirm"
-            onBlur={this.validatePasswordConfirm}
-            type="password"
-            placeholder="Password confirm(영문 숫자포함 8자 이상)"
-          />
-          <Checkbox
-            label={
-              <MuiTypography variant="body1" gutterBottom>
-                <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
-              </MuiTypography>
-            }
-          />
-          <MuiButton color="secondary" fullWidth size="large" type="submit" variant="contained">
-            <MuiTypography variant="h5">회원가입</MuiTypography>
-          </MuiButton>
-        </form>
-      </div>
+          /> */}
+        <ul>
+          <li>
+            <Text variant="body1" gutterBottom>
+              * <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
+              <em>계정 인증용 메일</em>이 전송됩니다.
+            </Text>
+          </li>
+          <li>
+            <Text variant="body1" gutterBottom>
+              * 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
+              <em>스팸 메일함을 확인</em> 하시기 바랍니다.
+            </Text>
+          </li>
+        </ul>
+        <Input
+          error={this.state.errors.password ? true : false}
+          helperText={this.state.errors.password}
+          inputRef={this.passwordRef}
+          name="password"
+          onBlur={this.validatePassword}
+          type="password"
+          placeholder="Password(영문 숫자포함 8자 이상)"
+        />
+        <Input
+          error={this.state.errors.passwordConfirm ? true : false}
+          helperText={this.state.errors.passwordConfirm}
+          inputRef={this.passwordConfirmRef}
+          name="passwordConfirm"
+          onBlur={this.validatePasswordConfirm}
+          type="password"
+          placeholder="Password confirm(영문 숫자포함 8자 이상)"
+        />
+        <Checkbox
+          name="permitTerms"
+          onChange={this.onChangePermitTerms}
+          label={
+            <Text variant="body1" gutterBottom>
+              <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
+            </Text>
+          }
+        />
+        {this.state.errors.permitTerms && (
+          <Text variant="body1" gutterBottom color="error">
+            {this.state.errors.permitTerms}
+          </Text>
+        )}
+        <MuiButton
+          color="secondary"
+          disabled={this.props.pending}
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+        >
+          <TextForButton variant="h6">회원가입</TextForButton>
+        </MuiButton>
+      </form>
     );
   }
+
+  private setErrorState = (field: string, errorText?: string) => {
+    if (errorText) this.setState({ errors: { ...this.state.errors, [field]: errorText } });
+    else this.setState({ errors: _.omit(this.state.errors, field) });
+  };
 }
 
 export default SignUp;
