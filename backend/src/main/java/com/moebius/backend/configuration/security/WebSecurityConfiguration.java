@@ -1,6 +1,7 @@
 package com.moebius.backend.configuration.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,9 +16,11 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @RequiredArgsConstructor
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
+@EnableConfigurationProperties(WebSecurityProperties.class)
 public class WebSecurityConfiguration {
 	private final AuthenticationManager authenticationManager;
 	private final SecurityContextRepository securityContextRepository;
+	private final WebSecurityProperties webSecurityProperties;
 
 	@Bean
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
@@ -28,22 +31,9 @@ public class WebSecurityConfiguration {
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
 			.pathMatchers(HttpMethod.OPTIONS).permitAll()
-			.pathMatchers(
-				"/",
-				"/csrf",
-				"/v2/api-docs",
-				"/swagger",
-				"/swagger-ui.html",
-				"/swagger-resources/**",
-				"/webjars/**",
-				"/api/member/**",
-				"/api/members/**", // TODO : Find out proper way to reduce duplicate patterns
-				"/login",
-				"/static/**").permitAll()
-			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers(
-				"/api/stoplosses/**",
-				"/api/api-keys/**").hasAuthority("MEMBER")
+			.pathMatchers(webSecurityProperties.getAll()).permitAll()
+			.pathMatchers(webSecurityProperties.getAdmin()).hasAuthority("ADMIN")
+			.pathMatchers(webSecurityProperties.getMember()).hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and()
 			.build();

@@ -14,6 +14,16 @@ logging:
 moebius:
   protocol: http
   host: api.cryptoboxglobal.com
+  web-security:
+    all: /,
+      /csrf,
+      /static/*,
+      /api/member/**,
+      /api/members/**,
+      /login
+    admin: /admin
+    member: /api/stoplosses/**,
+      /api/api-keys/**
 
 reactor:
   netty:
