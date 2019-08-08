@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -31,18 +32,14 @@ public class ApiKeyService {
 	private final ApiKeyAssembler apiKeyAssembler;
 	private final ExchangeFactory exchangeFactory;
 
-	public Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(ApiKeyDto apiKeyDto, String memberId) {
+	public Mono<ResponseEntity<ApiKeyResponseDto>> verifyAndCreateApiKey(ApiKeyDto apiKeyDto, String memberId) {
 		Verifier.checkNullFields(apiKeyDto);
 		Verifier.checkBlankString(memberId);
 
-		return apiKeyRepository.save(apiKeyAssembler.toApiKey(apiKeyDto, memberId))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
-			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
-				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(apiKeyDto.getName())) :
-				exception)
-			.map(apiKeyAssembler::toResponseDto)
-			.map(ResponseEntity::ok);
+		return verifyApiKey(apiKeyDto)
+			.subscribeOn(COMPUTE.scheduler())
+			.publishOn(IO.scheduler())
+			.flatMap(clientResponse -> createApiKey(apiKeyDto, memberId));
 	}
 
 	// TODO : Refactor return type as simplified one. (ServerResponse)
@@ -53,7 +50,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key based on memberId(" + memberId + ")")))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ")")))))
 			.map(apiKeyAssembler::toResponseDto)
 			.collectList()
 			.map(ResponseEntity::ok);
@@ -66,24 +63,30 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> {
-				log.error("[ApiKeys] Deletion failed", exception);
-				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key"));
+				log.error("[ApiKey] Deletion failed", exception);
+				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key"));
 			})
 			.map(aLong -> ResponseEntity.ok(id));
 	}
 
-	public Mono<ResponseEntity<String>> verifyApiKey(String id, String memberId) {
-		Verifier.checkNullFields(id);
+	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
+		log.info("[ApiKey] Start to verify api key. [{}]", apiKeyDto);
 
-		return apiKeyRepository.findByIdAndMemberId(new ObjectId(id), new ObjectId(memberId))
+		ExchangeService exchangeService = exchangeFactory.getService(apiKeyDto.getExchange());
+		return exchangeService.getAuthToken(apiKeyDto.getAccessKey(), apiKeyDto.getSecretKey())
+			.flatMap(exchangeService::doHealthCheck);
+	}
+
+	private Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(ApiKeyDto apiKeyDto, String memberId) {
+		log.info("[ApiKey] Start to create api key. [{}]", apiKeyDto);
+
+		return apiKeyRepository.save(apiKeyAssembler.toApiKey(apiKeyDto, memberId))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKeys] Api key")))))
-			.flatMap(apiKey -> {
-				ExchangeService exchangeService = exchangeFactory.getService(apiKey.getExchange());
-				return exchangeService.getAuthToken(apiKey)
-					.flatMap(exchangeService::doHealthCheck);
-			});
+			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
+				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(apiKeyDto.getName())) :
+				exception)
+			.map(apiKeyAssembler::toResponseDto)
+			.map(ResponseEntity::ok);
 	}
 }

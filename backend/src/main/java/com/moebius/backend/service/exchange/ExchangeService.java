@@ -1,14 +1,13 @@
 package com.moebius.backend.service.exchange;
 
-import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.Exchange;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
 
 public interface ExchangeService {
 	Exchange getExchange();
 
-	Mono<String> getAuthToken(ApiKey apiKey);
+	Mono<String> getAuthToken(String accessKey, String secretKey);
 
-	Mono<ResponseEntity<String>> doHealthCheck(String authToken);
+	Mono<ClientResponse> doHealthCheck(String authToken);
 }

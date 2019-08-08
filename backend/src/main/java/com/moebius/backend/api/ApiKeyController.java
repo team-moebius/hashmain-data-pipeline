@@ -26,18 +26,19 @@ public class ApiKeyController {
 	private final ApiKeyService apiKeyService;
 
 	@ApiOperation(
-		value = "Api key 생성",
+		value = "Api key 검증 및 생성",
 		httpMethod = "POST",
-		notes = "거래에 사용될 Api key를 등록한다."
+		notes = "거래에 사용될 Api key를 검증 후 등록한다."
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = String.class),
+		@ApiResponse(code = 400, message = "Api key is not verified", response = DataNotVerifiedException.class),
 		@ApiResponse(code = 400, message = "Api key already exists", response = DuplicateDataException.class),
 	})
 	@PostMapping("")
 	public Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(@RequestBody @Valid ApiKeyDto apiKeyDto, Principal principal) {
-		return apiKeyService.createApiKey(apiKeyDto, principal.getName());
+		return apiKeyService.verifyAndCreateApiKey(apiKeyDto, principal.getName());
 	}
 
 	@ApiOperation(
@@ -68,21 +69,5 @@ public class ApiKeyController {
 	@DeleteMapping("/{id}")
 	public Mono<ResponseEntity<String>> deleteApiKey(@PathVariable String id, Principal principal) {
 		return apiKeyService.deleteApiKeyById(id, principal.getName());
-	}
-
-	@ApiOperation(
-		value = "Api key 검증",
-		httpMethod = "POST",
-		notes = "거래에 사용되는 Api key를 검증한다. Api key 소유자의 Access token을 보내지 않으면 Api key를 찾지 못한다."
-	)
-	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
-	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success", response = String.class),
-		@ApiResponse(code = 400, message = "Api key is not verified", response = DataNotVerifiedException.class),
-		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
-	})
-	@PostMapping("/{id}/verification")
-	public Mono<ResponseEntity<String>> verifyApiKey(@PathVariable String id, Principal principal) {
-		return apiKeyService.verifyApiKey(id, principal.getName());
 	}
 }
