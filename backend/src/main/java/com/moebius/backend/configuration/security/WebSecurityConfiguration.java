@@ -1,10 +1,9 @@
-package com.moebius.backend.configuration;
+package com.moebius.backend.configuration.security;
 
-import com.moebius.backend.configuration.security.AuthenticationManager;
-import com.moebius.backend.configuration.security.SecurityContextRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -28,6 +27,7 @@ public class WebSecurityConfiguration {
 			.authenticationManager(authenticationManager)
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
+			.pathMatchers(HttpMethod.OPTIONS).permitAll()
 			.pathMatchers(
 				"/",
 				"/csrf",
