@@ -14,67 +14,52 @@ const ajax = axios.create({
   responseType: 'json',
 });
 
-const interceptors = {
+const curInterceptors = {
   request: 0,
   response: 0,
 };
 
 const ejectInterceptors = () => {
-  const { request, response } = interceptors;
+  const { request, response } = curInterceptors;
   ajax.interceptors.request.eject(request);
   ajax.interceptors.response.eject(response);
 };
 
 const addJwtTokenInterceptor = (jwtToken: any) => {
-  // FIXME
-  // const curInterceptor = interceptors.request;
-  // if (curInterceptor) ajax.interceptors.request.eject(curInterceptor);
+  const curInterceptor = curInterceptors.request;
+  ajax.interceptors.request.eject(curInterceptor);
 
-  // const newInterceptor = ajax.interceptors.request.use(
-  //   config => {
-  //     ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
-  //     return config;
-  //   },
-  //   error => {
-  //     return Promise.reject(error);
-  //   }
-  // );
-  // interceptors.request = newInterceptor;
-
-  ajax.interceptors.request.use(
-    request => {
-      request.headers['Authorization'] = `Bearer ${jwtToken}`;
-      return request;
+  curInterceptors.request = ajax.interceptors.request.use(
+    config => {
+      config.headers['Authorization'] = `Bearer ${jwtToken}`;
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
     }
   );
 };
 
 const addSignOutInterceptor = (signOutFunc: any) => {
-  const curInterceptor = interceptors.response;
-  if (curInterceptor) ajax.interceptors.response.eject(curInterceptor);
-
-  const newInterceptor = ajax.interceptors.response.use(
+  const curInterceptor = curInterceptors.response;
+  ajax.interceptors.response.eject(curInterceptor);
+  curInterceptors.response = ajax.interceptors.response.use(
     response => {
       return response;
     },
     error => {
       const isSignInRequest =
-        error.config.url === `${CONNECTION_INFO.develop}/members` && error.config.method === 'post';
+        error.config.url === `${CONNECTION_INFO.develop}/api/members` &&
+        error.config.method === 'post';
 
-      if (
-        error.response &&
-        error.response.status === 401 &&
-        !isSignInRequest // Login
-      ) {
-        // 로그인을 제외한 일반적인 401 error시에는 login form으로 forward
-        alert('세션 만료. 재로그인 해주세요.');
+      if (error.response && error.response.status === 401 && !isSignInRequest) {
         signOutFunc();
+        alert('세션 만료. 재로그인 해주세요.');
         push('http://localhost:3000/sign');
       }
       return Promise.reject(error);
     }
   );
-  interceptors.response = newInterceptor;
 };
 
 export { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors };

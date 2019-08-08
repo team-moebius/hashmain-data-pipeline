@@ -8,14 +8,14 @@ import MuiTypography from '@material-ui/core/Typography';
 
 import AppBar from 'components/molecules/AppBar';
 import VerticalTabs from 'components/molecules/VerticalTabs';
-import HtsConfig from 'pages/contents/HtsConfig';
-import AssetManagement from 'pages/contents/AssetManagement';
-import Idea from 'pages/contents/Idea';
-import CoinInfo from 'pages/contents/CoinInfo';
-import UseGuide from 'pages/contents/UseGuide';
-import Profile from 'pages/contents/Profile';
+import HtsConfig from 'pages/menu-contents/HtsConfig';
+import AssetManagement from 'pages/menu-contents/AssetManagement';
+import Idea from 'pages/menu-contents/Idea';
+import CoinInfo from 'pages/menu-contents/CoinInfo';
+import UseGuide from 'pages/menu-contents/UseGuide';
+import Profile from 'pages/menu-contents/Profile';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
-import ajax, { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors } from 'utils/Ajax';
+import { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors } from 'utils/Ajax';
 import { ReduxState } from 'utils/GlobalReducer';
 
 import bgImage from 'assets/images/bg.png';
