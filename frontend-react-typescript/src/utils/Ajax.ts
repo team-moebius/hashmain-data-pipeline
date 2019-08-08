@@ -26,20 +26,27 @@ const ejectInterceptors = () => {
 };
 
 const addJwtTokenInterceptor = (jwtToken: any) => {
-  const curInterceptor = interceptors.request;
-  if (curInterceptor) ajax.interceptors.request.eject(curInterceptor);
+  // FIXME
+  // const curInterceptor = interceptors.request;
+  // if (curInterceptor) ajax.interceptors.request.eject(curInterceptor);
 
-  const newInterceptor = ajax.interceptors.request.use(
-    config => {
-      ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
-      console.log(ajax.defaults.headers.common['Authorization']);
-      return config;
-    },
-    error => {
-      return Promise.reject(error);
+  // const newInterceptor = ajax.interceptors.request.use(
+  //   config => {
+  //     ajax.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
+  //     return config;
+  //   },
+  //   error => {
+  //     return Promise.reject(error);
+  //   }
+  // );
+  // interceptors.request = newInterceptor;
+
+  ajax.interceptors.request.use(
+    request => {
+      request.headers['Authorization'] = `Bearer ${jwtToken}`;
+      return request;
     }
   );
-  interceptors.request = newInterceptor;
 };
 
 const addSignOutInterceptor = (signOutFunc: any) => {

@@ -9,6 +9,7 @@ import 'assets/scss/HtsConfig.scss';
 
 interface HtsConfigProps {
   alert: AlertManager;
+  token: string;
 }
 
 interface HtsConfigState {}
@@ -18,7 +19,7 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
     console.log(data);
     ajax
       .post('/api/api-keys', data)
-      .then(reponse => {
+      .then(response => {
         this.props.alert.success('등록 성공');
       })
       .catch(error => {
@@ -51,4 +52,5 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
   }
 }
 
+// @ts-ignore
 export default withAlert()(HtsConfig);
