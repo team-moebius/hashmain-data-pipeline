@@ -9,7 +9,6 @@ import 'assets/scss/HtsConfig.scss';
 
 interface HtsConfigProps {
   alert: AlertManager;
-  token: string;
 }
 
 interface HtsConfigState {}
