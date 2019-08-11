@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Component
 public class ApiKeyAssembler {
@@ -21,6 +22,8 @@ public class ApiKeyAssembler {
 		apiKey.setName(apiKeyDto.getName());
 		apiKey.setAccessKey(apiKeyDto.getAccessKey());
 		apiKey.setSecretKey(apiKeyDto.getSecretKey());
+		apiKey.setCreatedAt(LocalDateTime.now());
+		apiKey.setUpdatedAt(LocalDateTime.now());
 
 		return apiKey;
 	}

@@ -28,13 +28,13 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
  */
 @Slf4j
 @Service
-@Profile("tracker")
+@Profile("local")
 @RequiredArgsConstructor
 public class TrackerService implements ApplicationListener<ApplicationReadyEvent> {
 	private final WebSocketClient webSocketClient;
 	private final TradeRepository tradeRepository;
 	private final TradeAssembler tradeAssembler;
-	private final String message = "[{\"ticket\":\"moebius-test\"},{\"type\":\"trade\",\"codes\":[\"KRW-BTC\",\"KRW-BCH\",\"KRW-XRP\",\"KRW-EOS\",\"KRW-ETH\"]},{\"format\":\"SIMPLE\"}]";
+	private final String message = "[{\"ticket\":\"moebius-tracker\"},{\"type\":\"trade\",\"codes\":[\"KRW-BTC\",\"KRW-BCH\",\"KRW-XRP\",\"KRW-EOS\",\"KRW-ETH\"]},{\"format\":\"SIMPLE\"}]";
 	@Value("${exchange.upbit.websocket.uri}")
 	private String uri;
 
@@ -53,7 +53,8 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 					try {
 						TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
 						tradeDto.setExchange(Exchange.UPBIT);
-						accumulateTrade(tradeDto);
+						log.info("[Tracker] {}", tradeDto);
+						//						accumulateTrade(tradeDto);
 						// maybe need to use upsertTrade rather accumulateTrade.
 						// upsertTrade(tradeDto);
 					} catch (IOException e) {
@@ -62,7 +63,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 					return webSocketMessage;
 				}))
 				.then())
-			.doOnSuccess(aVoid -> trackTrades())
+			.doOnTerminate(this::trackTrades)
 			.subscribe();
 	}
 
