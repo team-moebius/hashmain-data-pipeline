@@ -19,3 +19,10 @@ Moebius is a platform for supporting crypto currency trades conveniently, safely
 ## Features
 * User management based on json web token & spring security
 * Flexible Stoploss in trades
+
+
+## Vm options
+```
+-Dspring.profiles.active=${profile}
+-Dreactor.netty.http.server.accessLogEnabled=true
+```

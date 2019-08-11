@@ -1,10 +1,10 @@
-package com.moebius.backend.configuration;
+package com.moebius.backend.configuration.security;
 
-import com.moebius.backend.configuration.security.AuthenticationManager;
-import com.moebius.backend.configuration.security.SecurityContextRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -16,9 +16,11 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @RequiredArgsConstructor
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
+@EnableConfigurationProperties(WebSecurityProperties.class)
 public class WebSecurityConfiguration {
 	private final AuthenticationManager authenticationManager;
 	private final SecurityContextRepository securityContextRepository;
+	private final WebSecurityProperties webSecurityProperties;
 
 	@Bean
 	SecurityWebFilterChain webFilterChain(ServerHttpSecurity http) {
@@ -28,20 +30,10 @@ public class WebSecurityConfiguration {
 			.authenticationManager(authenticationManager)
 			.securityContextRepository(securityContextRepository)
 			.authorizeExchange()
-			.pathMatchers(
-				"/",
-				"/csrf",
-				"/api/member/**",
-				"/api/members/**", // TODO : Find out proper way to reduce duplicate patterns
-				"/login",
-				"/static/**").permitAll()
-			.pathMatchers("/admin").hasAuthority("ADMIN")
-			.pathMatchers("/api/stoplosses/**",
-				"/v2/api-docs",
-				"/swagger",
-				"/swagger-ui.html",
-				"/swagger-resources/**",
-				"/webjars/**").hasAuthority("MEMBER")
+			.pathMatchers(HttpMethod.OPTIONS).permitAll()
+			.pathMatchers(webSecurityProperties.getAll()).permitAll()
+			.pathMatchers(webSecurityProperties.getAdmin()).hasAuthority("ADMIN")
+			.pathMatchers(webSecurityProperties.getMember()).hasAuthority("MEMBER")
 			.anyExchange().authenticated()
 			.and()
 			.build();

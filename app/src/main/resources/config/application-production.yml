@@ -1,17 +1,10 @@
 spring:
   profiles:
     active: production
-
-server:
-  port: 80
-  tomcat:
-    basedir: /var/log/moebius
-    accesslog:
-      enabled: true
-      directory: tomcat
   error:
     whitelabel:
       enabled: false
+
 logging:
   level:
     root: INFO
@@ -20,4 +13,20 @@ logging:
 
 moebius:
   protocol: http
-  host: 52.79.86.26
+  host: api.cryptoboxglobal.com
+  web-security:
+    all: /,
+      /csrf,
+      /static/*,
+      /api/member/**,
+      /api/members/**,
+      /login
+    admin: /admin
+    member: /api/stoplosses/**,
+      /api/api-keys/**
+
+reactor:
+  netty:
+    http:
+      server:
+        AccessLog: INFO

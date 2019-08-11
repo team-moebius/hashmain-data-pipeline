@@ -2,17 +2,13 @@ package com.moebius.backend.service.member;
 
 import com.moebius.backend.assembler.MemberAssembler;
 import com.moebius.backend.configuration.security.JwtUtil;
-import com.moebius.backend.domain.members.Member;
 import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.domain.members.MoebiusPrincipal;
 import com.moebius.backend.dto.frontend.LoginDto;
 import com.moebius.backend.dto.frontend.MemberDto;
 import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.dto.frontend.response.LoginResponseDto;
-import com.moebius.backend.exception.DataNotFoundException;
-import com.moebius.backend.exception.DataNotVerifiedException;
-import com.moebius.backend.exception.DuplicateDataException;
-import com.moebius.backend.exception.ExceptionTypes;
+import com.moebius.backend.exception.*;
 import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,34 +37,39 @@ public class MemberService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
-			.map(isDuplicated -> isDuplicated ?
+			.map(duplicated -> duplicated ?
 				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()) :
 				ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)));
 	}
 
-	public Mono<ResponseEntity<?>> createAccount(SignupDto signupDto) {
+	public Mono<ResponseEntity<?>> createMember(SignupDto signupDto) {
+		log.info("[Member] Start to create member. [{}]", signupDto);
+
 		return memberRepository.save(memberAssembler.toMember(signupDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
 				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(signupDto.getEmail())) :
 				exception)
-			.flatMap(member -> emailService.requestToVerifyEmail(member.getEmail()));
+			.flatMap(member -> {
+				log.info("[Member] Succeeded in creating member. [{}]", member);
+				return emailService.requestToVerifyEmail(member.getEmail());
+			});
 	}
 
 	public Mono<ResponseEntity<?>> login(LoginDto loginDto) {
 		return memberRepository.findByEmail(loginDto.getEmail())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(
-				Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
-			.filter(Member::isActive)
-			.switchIfEmpty(
-				Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
-			.map(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()) ?
-				ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))) :
-				ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionTypes.WRONG_PASSWORD.getMessage())
-			);
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
+			.filter(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_PASSWORD.getMessage()))))
+			.filter(member -> {
+				log.info("[Member] member : {}", member);
+				return member.isActive();
+			})
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
+			.map(member -> ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))));
 	}
 
 	public Mono<ResponseEntity<MemberDto>> getMember(String id) {

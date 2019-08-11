@@ -2,13 +2,6 @@ spring:
   profiles:
     active: develop
 
-server:
-  port: 80
-  tomcat:
-    basedir: /var/log/moebius
-    accesslog:
-      enabled: true
-      directory: tomcat
 logging:
   level:
     root: INFO
@@ -17,4 +10,25 @@ logging:
 
 moebius:
   protocol: http
-  host: 52.79.86.26
+  host: api-dev.cryptoboxglobal.com
+  web-security:
+    all: /,
+      /csrf,
+      /static/*,
+      /v2/api-docs,
+      /swagger,
+      /swagger-ui.html,
+      /swagger-resources/**,
+      /webjars/**,
+      /api/member/**,
+      /api/members/**,
+      /login
+    admin: /admin
+    member: /api/stoplosses/**,
+      /api/api-keys/**
+
+reactor:
+  netty:
+    http:
+      server:
+        AccessLog: INFO

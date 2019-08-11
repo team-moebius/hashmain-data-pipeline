@@ -22,6 +22,9 @@ spring:
           starttls:
             enable: true
 
+server:
+  port: 80
+
 exchange:
   upbit:
     websocket:

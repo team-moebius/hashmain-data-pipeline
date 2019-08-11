@@ -2,7 +2,7 @@ import React from 'react';
 
 import MuiTypography from '@material-ui/core/Typography';
 
-import Tabs from 'components/molecules/Tabs';
+import Tabs from 'components/atoms/Tabs';
 
 interface MenuProps {
   className: string;
@@ -11,8 +11,8 @@ interface MenuProps {
   onChange: (e: React.ChangeEvent<{}>, value: any) => void;
 }
 
-const Menu: React.FC<MenuProps> = props => (
-  <Tabs.VerticalTabs
+const HorizontalTabs: React.FC<MenuProps> = props => (
+  <Tabs.HorizontalTabs
     className={props.className}
     indicatorColor="secondary"
     textColor="secondary"
@@ -20,9 +20,9 @@ const Menu: React.FC<MenuProps> = props => (
     onChange={props.onChange}
   >
     {props.items.map((item, index) => (
-      <Tabs.VerticalTab key={index} label={<MuiTypography variant="h6">{item}</MuiTypography>} />
+      <Tabs.HorizontalTab key={index} label={<MuiTypography variant="h6">{item}</MuiTypography>} />
     ))}
-  </Tabs.VerticalTabs>
+  </Tabs.HorizontalTabs>
 );
 
-export default Menu;
+export default HorizontalTabs;
