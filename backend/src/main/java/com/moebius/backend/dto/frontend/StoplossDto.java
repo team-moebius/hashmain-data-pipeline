@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
 @Getter
@@ -16,11 +16,11 @@ import javax.validation.constraints.PositiveOrZero;
 @ToString
 public class StoplossDto {
 	private Exchange exchange;
-	@NotBlank
+	@NotNull
 	private Symbol symbol;
-	@NotBlank
+	@NotNull
 	private TradeType tradeType;
-	@NotBlank
+	@NotNull
 	private OrderType orderType;
 	@PositiveOrZero
 	private double price;

@@ -15,7 +15,7 @@ public class StoplossAssembler {
 		List<Stoploss> stoplosses = new ArrayList<>();
 		stoplossDtos.forEach(dto -> {
 			Stoploss stoploss = new Stoploss();
-			stoploss.setApiKey(apiKey);
+			stoploss.setApiKeyId(apiKey.getId());
 			stoploss.setExchange(dto.getExchange());
 			stoploss.setSymbol(dto.getSymbol());
 			stoploss.setTradeType(dto.getTradeType());

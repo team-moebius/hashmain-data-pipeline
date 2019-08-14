@@ -1,7 +1,9 @@
 package com.moebius.backend.service.stoploss;
 
+import com.moebius.backend.assembler.MarketAssembler;
 import com.moebius.backend.assembler.StoplossAssembler;
 import com.moebius.backend.domain.apikeys.ApiKeyRepository;
+import com.moebius.backend.domain.markets.MarketRepository;
 import com.moebius.backend.domain.stoplosses.Stoploss;
 import com.moebius.backend.domain.stoplosses.StoplossRepository;
 import com.moebius.backend.dto.frontend.StoplossDto;
@@ -26,15 +28,19 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 public class StoplossService {
 	private final StoplossRepository stoplossRepository;
 	private final ApiKeyRepository apiKeyRepository;
+	private final MarketRepository marketRepository;
 	private final StoplossAssembler stoplossAssembler;
+	private final MarketAssembler marketAssembler;
 
 	public Flux<ResponseEntity<?>> createStoplosses(ObjectId apiKeyId, List<StoplossDto> stoplossDtos) {
 		return apiKeyRepository.findById(apiKeyId)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] " + apiKeyId.toString())))))
+			.switchIfEmpty(Mono.defer(
+				() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] " + apiKeyId.toString())))))
 			.flatMapIterable(apiKey -> stoplossAssembler.toStoplosses(apiKey, stoplossDtos))
-			.compose(this::saveStoplosses);
+			.compose(this::saveStoplosses)
+			.flatMap(this::saveMarket);
 	}
 
 	public Flux<ResponseEntity<StoplossDto>> getStoplossesByApiKey(ObjectId apiKeyId) {
@@ -47,16 +53,25 @@ public class StoplossService {
 	}
 
 	public Mono<ResponseEntity<String>> deleteStoplossById(ObjectId id) {
-		return stoplossRepository.deleteById(id)
+		return stoplossRepository.findById(id)
+			.flatMap(stoploss -> marketRepository.deleteByExchangeAndSymbol(stoploss.getExchange(), stoploss.getSymbol()))
+			.map(aVoid -> stoplossRepository.deleteById(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.map(aVoid -> ResponseEntity.ok(id.toHexString()));
 	}
 
-	private Flux<ResponseEntity<?>> saveStoplosses(Flux<Stoploss> stoplossFlux) {
-		return stoplossRepository.saveAll(stoplossFlux)
+	private Flux<Stoploss> saveStoplosses(Flux<Stoploss> stoplosses) {
+		return stoplossRepository.saveAll(stoplosses)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
+	private Mono<ResponseEntity<?>> saveMarket(Stoploss stoploss) {
+		return marketRepository.save(marketAssembler.toMarketFromStoploss(stoploss))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(stoploss -> ResponseEntity.ok(stoploss.getId()));
+			.map(market -> ResponseEntity.ok(stoploss.getId()));
 	}
+
 }
