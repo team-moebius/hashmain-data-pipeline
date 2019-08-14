@@ -29,14 +29,13 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
  */
 @Slf4j
 @Service
-@Profile("local")
+@Profile("!production")
 @RequiredArgsConstructor
 public class UpbitTrackerService implements ApplicationListener<ApplicationReadyEvent> {
 	private final WebSocketClient webSocketClient;
 	private final TradeRepository tradeRepository;
 	private final MarketRepository marketRepository;
 	private final TradeAssembler tradeAssembler;
-	private final String message = "[{\"ticket\":\"moebius-tracker\"},{\"type\":\"trade\",\"codes\":[\"KRW-BTC\",\"KRW-BCH\",\"KRW-XRP\",\"KRW-EOS\",\"KRW-ETH\"]},{\"format\":\"SIMPLE\"}]";
 	@Value("${exchange.upbit.websocket.uri}")
 	private String uri;
 
@@ -51,30 +50,29 @@ public class UpbitTrackerService implements ApplicationListener<ApplicationReady
 		marketRepository.findAllByExchangeAndActive(Exchange.UPBIT, true)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(market -> {
-				log.info("[TRACKER] tracked market : {} / {}", market.getExchange(), market.getSymbol());
-				return "\"" + market.getSymbol().toString() + "\"";
-			})
+			.map(market -> "\"" + market.getSymbol().toString() + "\"")
 			.reduce((prevSymbol, nextSymbol) -> prevSymbol + "," + nextSymbol)
-			.doOnSuccess(symbols -> log.info("[Tracker] Start to track trades. - target symbols : {}", symbols))
-			.map(message -> webSocketClient.execute(URI.create(uri),
-				session -> session.send(Mono.just(session.textMessage(message)))
-					.thenMany(session.receive().map(webSocketMessage -> {
-						try {
-							TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
-							tradeDto.setExchange(Exchange.UPBIT);
-							log.info("[Tracker] {}", tradeDto);
-							//						accumulateTrade(tradeDto);
-							// maybe need to use upsertTrade rather accumulateTrade.
-							// upsertTrade(tradeDto);
-						} catch (IOException e) {
-							log.error(e.getMessage());
-						}
-						return webSocketMessage;
-					}))
-					.then())
-				.doOnTerminate(this::trackTrades)
-				.subscribe()
+			.map(rawMessage -> "[{\"ticket\":\"moebius-tracker\"},{\"type\":\"trade\",\"codes\":[" + rawMessage + "]},{\"format\":\"SIMPLE\"}]")
+			.map(message -> {
+					log.info("[Tracker] Start to track trades. - message : {}", message);
+					return webSocketClient.execute(URI.create(uri),
+						session -> session.send(Mono.just(session.textMessage(message)))
+							.thenMany(session.receive().map(webSocketMessage -> {
+								try {
+									TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
+									tradeDto.setExchange(Exchange.UPBIT);
+									accumulateTrade(tradeDto);
+									// maybe need to use upsertTrade rather accumulateTrade.
+									// upsertTrade(tradeDto);
+								} catch (IOException e) {
+									log.error(e.getMessage());
+								}
+								return webSocketMessage;
+							}))
+							.then())
+						.doOnTerminate(this::trackTrades)
+						.subscribe();
+				}
 			).subscribe();
 	}
 
