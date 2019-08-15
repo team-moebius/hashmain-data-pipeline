@@ -17,7 +17,7 @@ moebius:
   web-security:
     all: /,
       /csrf,
-      /static/*,
+      /static/**,
       /api/member/**,
       /api/members/**,
       /login
