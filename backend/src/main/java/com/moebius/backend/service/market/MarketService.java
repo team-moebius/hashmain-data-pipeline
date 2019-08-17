@@ -34,7 +34,10 @@ public class MarketService {
 		return marketRepository.deleteById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(aVoid -> ResponseEntity.ok().build());
+			.map(aVoid -> {
+				log.info("[Market] The market has been deleted. [id : {}]", id);
+				return ResponseEntity.ok().build();
+			});
 	}
 
 	public Mono<Market> getMarket(Exchange exchange, Symbol symbol) {
@@ -43,20 +46,14 @@ public class MarketService {
 			.publishOn(COMPUTE.scheduler());
 	}
 
-	public Mono<Market> updateMarketActivation(Exchange exchange, Symbol symbol, boolean active) {
+	public Mono<Market> createMarketIfNotExist(Exchange exchange, Symbol symbol) {
 		return marketRepository.findByExchangeAndSymbol(exchange, symbol)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> {
-				log.info("[Market] {} / {} is not found.", exchange, symbol);
-				return Mono.empty();
-			}))
-			.map(market -> {
-				log.info("[Market] Update the market activation. [{} / {} : {}]", exchange, symbol, active);
-				market.setActive(active);
-				return market;
-			})
-			.flatMap(this::saveMarket);
+				log.info("[Market] {} / {} is not found, The new market will be saved.", exchange, symbol);
+				return saveMarket(marketAssembler.toMarket(exchange, symbol));
+			}));
 	}
 
 	private Mono<Market> saveMarket(Market market) {

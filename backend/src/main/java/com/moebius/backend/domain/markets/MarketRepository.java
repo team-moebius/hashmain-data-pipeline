@@ -10,9 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface MarketRepository extends ReactiveMongoRepository<Market, ObjectId> {
-	Flux<Market> findAllByExchangeAndActive(Exchange exchange, boolean active);
+	Flux<Market> findAllByExchange(Exchange exchange);
 
 	Mono<Market> findByExchangeAndSymbol(Exchange exchange, Symbol symbol);
-
-	Mono<Void> deleteByExchangeAndSymbol(Exchange exchange, Symbol symbol);
 }

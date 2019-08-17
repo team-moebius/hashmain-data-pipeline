@@ -12,5 +12,5 @@ public interface ApiKeyRepository extends ReactiveMongoRepository<ApiKey, Object
 
 	Mono<ApiKey> findByIdAndMemberId(ObjectId id, ObjectId memberId);
 
-	Mono<Long> deleteByIdAndMemberId(ObjectId id, ObjectId memberId);
+	Mono<Void> deleteByIdAndMemberId(ObjectId id, ObjectId memberId);
 }

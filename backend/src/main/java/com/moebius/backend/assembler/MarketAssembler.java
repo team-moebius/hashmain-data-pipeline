@@ -1,5 +1,7 @@
 package com.moebius.backend.assembler;
 
+import com.moebius.backend.domain.commons.Exchange;
+import com.moebius.backend.domain.commons.Symbol;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.dto.MarketDto;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,14 @@ public class MarketAssembler {
 		Market market = new Market();
 		market.setExchange(marketDto.getExchange());
 		market.setSymbol(marketDto.getSymbol());
-		market.setActive(marketDto.isActive());
+
+		return market;
+	}
+
+	public Market toMarket(@NotNull Exchange exchange, @NotNull Symbol symbol) {
+		Market market = new Market();
+		market.setExchange(exchange);
+		market.setSymbol(symbol);
 
 		return market;
 	}

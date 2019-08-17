@@ -14,7 +14,7 @@ moebius:
   web-security:
     all: /,
       /csrf,
-      /static/*,
+      /static/**,
       /v2/api-docs,
       /swagger,
       /swagger-ui.html,

@@ -3,6 +3,7 @@ package com.moebius.backend.assembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.stoplosses.Stoploss;
 import com.moebius.backend.dto.frontend.StoplossDto;
+import com.moebius.backend.dto.frontend.response.StoplossResponseDto;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -27,14 +28,16 @@ public class StoplossAssembler {
 		return stoplosses;
 	}
 
-	public StoplossDto toDto(@NotNull Stoploss stoploss) {
-		StoplossDto dto = new StoplossDto();
-		dto.setExchange(stoploss.getExchange());
-		dto.setSymbol(stoploss.getSymbol());
-		dto.setTradeType(stoploss.getTradeType());
-		dto.setOrderType(stoploss.getOrderType());
-		dto.setPrice(stoploss.getPrice());
-		dto.setVolume(stoploss.getVolume());
-		return dto;
+	public StoplossResponseDto toRespoonseDto(@NotNull Stoploss stoploss) {
+		StoplossResponseDto responseDto = new StoplossResponseDto();
+		responseDto.setId(stoploss.getId().toHexString());
+		responseDto.setExchange(stoploss.getExchange());
+		responseDto.setSymbol(stoploss.getSymbol());
+		responseDto.setTradeType(stoploss.getTradeType());
+		responseDto.setOrderType(stoploss.getOrderType());
+		responseDto.setPrice(stoploss.getPrice());
+		responseDto.setVolume(stoploss.getVolume());
+
+		return responseDto;
 	}
 }

@@ -19,5 +19,4 @@ public class Market extends Base {
 	private ObjectId id;
 	private Exchange exchange;
 	private Symbol symbol;
-	private boolean active;
 }

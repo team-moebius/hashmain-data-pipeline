@@ -12,5 +12,4 @@ public class MarketDto {
 	private Exchange exchange;
 	@NotNull
 	private Symbol symbol;
-	private boolean active;
 }
