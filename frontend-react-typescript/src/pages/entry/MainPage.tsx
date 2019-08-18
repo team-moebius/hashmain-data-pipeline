@@ -20,7 +20,6 @@ import { ReduxState } from 'utils/GlobalReducer';
 
 import bgImage from 'assets/images/bg.png';
 import logo from 'assets/images/logo.png';
-import htsConfigIcon from 'assets/images/menu-hts-config.svg';
 import 'assets/scss/MainPage.scss';
 
 interface StateProps {
