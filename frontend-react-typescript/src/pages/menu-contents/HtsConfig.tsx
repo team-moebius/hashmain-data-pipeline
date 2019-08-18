@@ -19,7 +19,7 @@ interface HtsConfigState {
 }
 
 class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
-  private static TAB_LABELS = ['Test1', 'Test2'];
+  private static TAB_HEADERS = [<>Test1</>, <>Test2</>];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: HtsConfigProps) {
     super(props);
@@ -62,7 +62,7 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
           <PageTemplate
             index={this.state.index}
             onChangeTab={this.onChangeTabIndex}
-            tabLabels={HtsConfig.TAB_LABELS}
+            tabHeaders={HtsConfig.TAB_HEADERS}
             tabContents={HtsConfig.TAB_ITEMS}
           />
         </Paper>

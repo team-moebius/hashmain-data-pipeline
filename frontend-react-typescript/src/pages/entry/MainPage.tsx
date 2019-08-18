@@ -7,7 +7,7 @@ import MuiButton from '@material-ui/core/Button';
 import MuiTypography from '@material-ui/core/Typography';
 
 import AppBar from 'components/molecules/AppBar';
-import VerticalTabs from 'components/molecules/VerticalTabs';
+import MainTabs from 'components/organisms/MainTabs';
 import HtsConfig from 'pages/menu-contents/HtsConfig';
 import AssetManagement from 'pages/menu-contents/AssetManagement';
 import Idea from 'pages/menu-contents/Idea';
@@ -20,6 +20,7 @@ import { ReduxState } from 'utils/GlobalReducer';
 
 import bgImage from 'assets/images/bg.png';
 import logo from 'assets/images/logo.png';
+import htsConfigIcon from 'assets/images/menu-hts-config.svg';
 import 'assets/scss/MainPage.scss';
 
 interface StateProps {
@@ -34,24 +35,24 @@ interface DispatchProps {
 interface MainPageProps extends StateProps, DispatchProps {}
 
 interface MainPageState {
-  index: number;
+  tabIndex: number;
 }
 
 // TODO: Refactoring for usable icons later
 class MainPage extends React.Component<MainPageProps, MainPageState> {
-  static readonly MENU_ITEMS: string[] = [
-    'HTS 설정',
-    '자산관리',
-    '아이디어',
-    '코인정보',
-    '이용안내',
-    '프로필',
+  static readonly MENU_ITEMS: JSX.Element[] = [
+    <>HTS 설정</>,
+    <>자산관리</>,
+    <>아이디어</>,
+    <>코인정보</>,
+    <>이용안내</>,
+    <>프로필</>,
   ];
 
   constructor(props: MainPageProps) {
     super(props);
     this.state = {
-      index: 0,
+      tabIndex: 0,
     };
 
     addSignOutInterceptor(this.props.signOut);
@@ -66,7 +67,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   };
 
   onChangeMenuIndex = (e: React.ChangeEvent<{}>, value: any) => {
-    this.setState({ index: value });
+    this.setState({ tabIndex: value });
   };
 
   render() {
@@ -106,19 +107,19 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
           }}
         </AppBar>
         <div className="layout-contents">
-          <VerticalTabs
+          <MainTabs
             className="layout-contents__menu"
-            index={this.state.index}
+            value={this.state.tabIndex}
             items={MainPage.MENU_ITEMS}
             onChange={this.onChangeMenuIndex}
           />
           <div className="layout-contents__item-wrapper">
-            {this.state.index === 0 && <HtsConfig />}
-            {this.state.index === 1 && <AssetManagement />}
-            {this.state.index === 2 && <Idea />}
-            {this.state.index === 3 && <CoinInfo />}
-            {this.state.index === 4 && <UseGuide />}
-            {this.state.index === 5 && <Profile />}
+            {this.state.tabIndex === 0 && <HtsConfig />}
+            {this.state.tabIndex === 1 && <AssetManagement />}
+            {this.state.tabIndex === 2 && <Idea />}
+            {this.state.tabIndex === 3 && <CoinInfo />}
+            {this.state.tabIndex === 4 && <UseGuide />}
+            {this.state.tabIndex === 5 && <Profile />}
           </div>
         </div>
       </div>

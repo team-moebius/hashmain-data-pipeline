@@ -1,9 +1,9 @@
 import * as React from 'react';
-import HorizontalTabs from 'components/molecules/HorizontalTabs';
+import BasicTabs from 'components/molecules/BasicTabs';
 
 interface PageTemplateProps {
   index: number;
-  tabLabels: string[];
+  tabHeaders: JSX.Element[];
   tabContents: JSX.Element[];
   onChangeTab: (e: React.ChangeEvent<{}>, value: any) => void;
 }
@@ -11,10 +11,11 @@ interface PageTemplateProps {
 const PageTemplate: React.FC<PageTemplateProps> = props => {
   return (
     <div>
-      <HorizontalTabs
+      <BasicTabs
         className="layout-contents__menu"
-        index={props.index}
-        items={props.tabLabels}
+        value={props.index}
+        items={props.tabHeaders}
+        orientation="horizontal"
         onChange={props.onChangeTab}
       />
       <div>{props.tabContents[props.index]}</div>

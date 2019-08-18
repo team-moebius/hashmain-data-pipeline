@@ -4,11 +4,10 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { withAlert, AlertManager } from 'react-alert';
 
-import MuiTypography from '@material-ui/core/Typography';
-
 import Paper from 'components/atoms/Paper';
-import Tabs from 'components/atoms/Tabs';
 import Loader from 'components/atoms/Loader';
+import Text from 'components/atoms/Text';
+import BasicTabs from 'components/molecules/BasicTabs';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
@@ -35,6 +34,15 @@ interface SignPageState {
 }
 
 class SignPage extends React.Component<SignPageProps, SignPageState> {
+  static readonly MENU_ITEMS: JSX.Element[] = [
+    <Text variant="h6" gutterBottom>
+      로그인
+    </Text>,
+    <Text variant="h6" gutterBottom>
+      회원가입
+    </Text>,
+  ];
+
   constructor(props: SignPageProps) {
     super(props);
     this.state = { index: 0, pending: false };
@@ -99,28 +107,13 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
       <Paper className="sign-page">
         {this.state.pending && <Loader />}
         <Paper className="sign-page__wrapper" square>
-          <Tabs.HorizontalTabs
+          <BasicTabs
             centered
-            indicatorColor="secondary"
-            textColor="secondary"
+            orientation="horizontal"
+            items={SignPage.MENU_ITEMS}
             value={this.state.index}
             onChange={this.onChangeTabs}
-          >
-            <Tabs.Tab
-              label={
-                <MuiTypography variant="h6" gutterBottom>
-                  로그인
-                </MuiTypography>
-              }
-            />
-            <Tabs.Tab
-              label={
-                <MuiTypography variant="h6" gutterBottom>
-                  회원가입
-                </MuiTypography>
-              }
-            />
-          </Tabs.HorizontalTabs>
+          />
           <div className="sign-page__contents">
             {this.state.index === 0 && (
               <SignIn pending={this.state.pending} onSubmit={this.onSubmitSignIn} />
