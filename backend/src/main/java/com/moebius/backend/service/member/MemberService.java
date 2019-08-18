@@ -37,7 +37,7 @@ public class MemberService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
-			.map(isDuplicated -> isDuplicated ?
+			.map(duplicated -> duplicated ?
 				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()) :
 				ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)));
 	}

@@ -11,3 +11,18 @@ logging:
 moebius:
   protocol: http
   host: 127.0.0.1
+  web-security:
+    all: /,
+      /csrf,
+      /static/**,
+      /v2/api-docs,
+      /swagger,
+      /swagger-ui.html,
+      /swagger-resources/**,
+      /webjars/**,
+      /api/member/**,
+      /api/members/**,
+      /login
+    admin: /admin
+    member: /api/stoplosses/**,
+      /api/api-keys/**
