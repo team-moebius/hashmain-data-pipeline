@@ -101,7 +101,6 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         <Paper className="sign-page__wrapper" square>
           <BasicTabs
             centered
-            orientation="horizontal"
             items={SignPage.MENU_ITEMS}
             value={this.state.index}
             onChange={this.onChangeTabs}

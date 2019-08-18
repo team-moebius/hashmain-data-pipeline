@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 
-import Tabs from 'components/atoms/Tabs';
+import { makeStyles } from '@material-ui/core/styles';
+import MuiTabs from '@material-ui/core/Tabs';
+import MuiTab from '@material-ui/core/Tab';
 
 interface MainTabsProps {
   className: string;
@@ -10,18 +11,19 @@ interface MainTabsProps {
   onChange: (e: React.ChangeEvent<{}>, value: any) => void;
 }
 
-const useTabStyles = makeStyles(theme => ({
-  mainTab: { minWidth: '100%' },
+const useStyles = makeStyles(theme => ({
+  tabs: {},
+  tab: { minWidth: '100%' },
 }));
 
 const MainTabs: React.FC<MainTabsProps> = props => {
-  const classes = useTabStyles();
+  const classes = useStyles();
   return (
-    <Tabs.Tabs orientation="vertical" {...props}>
+    <MuiTabs className={classes.tabs} orientation="vertical" {...props}>
       {props.items.map((item, index) => (
-        <Tabs.Tab className={classes.mainTab} key={index} label={item} />
+        <MuiTab className={classes.tab} key={index} label={item} />
       ))}
-    </Tabs.Tabs>
+    </MuiTabs>
   );
 };
 
