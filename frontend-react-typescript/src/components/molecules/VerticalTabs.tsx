@@ -20,7 +20,7 @@ const VerticalTabs: React.FC<VerticalTabsProps> = props => (
     onChange={props.onChange}
   >
     {props.items.map((item, index) => (
-      <Tabs.VerticalTab key={index} label={<MuiTypography variant="h6">{item}</MuiTypography>} />
+      <Tabs.Tab key={index} label={<MuiTypography variant="h6">{item}</MuiTypography>} />
     ))}
   </Tabs.VerticalTabs>
 );

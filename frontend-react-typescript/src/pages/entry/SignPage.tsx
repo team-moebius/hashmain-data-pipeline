@@ -106,14 +106,14 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
             value={this.state.index}
             onChange={this.onChangeTabs}
           >
-            <Tabs.HorizontalTab
+            <Tabs.Tab
               label={
                 <MuiTypography variant="h6" gutterBottom>
                   로그인
                 </MuiTypography>
               }
             />
-            <Tabs.HorizontalTab
+            <Tabs.Tab
               label={
                 <MuiTypography variant="h6" gutterBottom>
                   회원가입

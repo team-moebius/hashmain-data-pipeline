@@ -20,7 +20,7 @@ const HorizontalTabs: React.FC<MenuProps> = props => (
     onChange={props.onChange}
   >
     {props.items.map((item, index) => (
-      <Tabs.HorizontalTab key={index} label={<MuiTypography variant="h6">{item}</MuiTypography>} />
+      <Tabs.Tab key={index} label={<MuiTypography variant="h6">{item}</MuiTypography>} />
     ))}
   </Tabs.HorizontalTabs>
 );
