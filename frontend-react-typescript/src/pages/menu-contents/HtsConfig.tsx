@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { withAlert, AlertManager } from 'react-alert';
 
-import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import Paper from 'components/atoms/Paper';
+import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import PageTemplate from 'components/templates/PageTemplate';
 import Test1 from 'pages/sub-contents/Test1';
 import Test2 from 'pages/sub-contents/Test2';
@@ -19,7 +19,7 @@ interface HtsConfigState {
 }
 
 class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
-  private static TAB_HEADERS = [<>Test1</>, <>Test2</>];
+  private static TAB_HEADERS = ['멀티거래 모드', 'Test2'];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: HtsConfigProps) {
     super(props);
@@ -58,14 +58,13 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
   render() {
     return (
       <div className="hts-config">
-        <Paper className="hts-config__tab">
-          <PageTemplate
-            index={this.state.index}
-            onChangeTab={this.onChangeTabIndex}
-            tabHeaders={HtsConfig.TAB_HEADERS}
-            tabContents={HtsConfig.TAB_ITEMS}
-          />
-        </Paper>
+        <PageTemplate
+          className="hts-config__tab"
+          index={this.state.index}
+          onChangeTab={this.onChangeTabIndex}
+          tabHeaders={HtsConfig.TAB_HEADERS}
+          tabContents={HtsConfig.TAB_ITEMS}
+        />
         <Paper className="hts-config__sub">
           <ApiKeyRegistBox
             onClickRegistApiKeyButton={this.onClickApiRegistButton}

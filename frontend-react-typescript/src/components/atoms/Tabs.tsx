@@ -8,10 +8,10 @@ import { makeStyles } from '@material-ui/core/styles';
 interface TabProps extends MuiTabProps {}
 interface TabsProps extends MuiTabsProps {}
 
-const Tab: React.FC<TabProps> = props => <MuiTab {...props} />;
+const Tab: React.FC<TabProps> = props => <MuiTab disableRipple {...props} />;
 
 const HorizontalTabs: React.FC<TabsProps> = props => (
-  <MuiTabs {...props} orientation="horizontal">
+  <MuiTabs {...props} orientation="horizontal" TabIndicatorProps={{ children: <div /> }}>
     {props.children}
   </MuiTabs>
 );
@@ -24,7 +24,12 @@ const VerticalTabs: React.FC<TabsProps> = props => {
   const classes = useVerticalTabsStyles();
   const { className, ...rest } = props;
   return (
-    <MuiTabs className={classNames(classes.tabs, className)} {...rest} orientation="vertical">
+    <MuiTabs
+      className={classNames(classes.tabs, className)}
+      orientation="vertical"
+      TabIndicatorProps={{ children: <div /> }}
+      {...rest}
+    >
       {props.children}
     </MuiTabs>
   );

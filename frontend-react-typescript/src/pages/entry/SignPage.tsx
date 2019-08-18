@@ -6,7 +6,6 @@ import { withAlert, AlertManager } from 'react-alert';
 
 import Paper from 'components/atoms/Paper';
 import Loader from 'components/atoms/Loader';
-import Text from 'components/atoms/Text';
 import BasicTabs from 'components/molecules/BasicTabs';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
@@ -34,14 +33,7 @@ interface SignPageState {
 }
 
 class SignPage extends React.Component<SignPageProps, SignPageState> {
-  static readonly MENU_ITEMS: JSX.Element[] = [
-    <Text variant="h6" gutterBottom>
-      로그인
-    </Text>,
-    <Text variant="h6" gutterBottom>
-      회원가입
-    </Text>,
-  ];
+  static readonly MENU_ITEMS: string[] = ['로그인', '회원가입'];
 
   constructor(props: SignPageProps) {
     super(props);

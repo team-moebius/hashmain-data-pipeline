@@ -7,7 +7,7 @@ import MuiButton from '@material-ui/core/Button';
 import MuiTypography from '@material-ui/core/Typography';
 
 import AppBar from 'components/molecules/AppBar';
-import MainTabs from 'components/organisms/MainTabs';
+import MainTabs from 'components/molecules/MainTabs';
 import HtsConfig from 'pages/menu-contents/HtsConfig';
 import AssetManagement from 'pages/menu-contents/AssetManagement';
 import Idea from 'pages/menu-contents/Idea';
