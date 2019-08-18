@@ -1,9 +1,40 @@
 import * as React from 'react';
 
-interface CoinInfoProps {}
+import PageTemplate from 'components/templates/PageTemplate';
 
-const CoinInfo: React.FunctionComponent<CoinInfoProps> = props => {
-  return <div>HtsConfig!</div>;
-};
+interface ContentsProps {
+  className: string;
+}
+
+interface ContentsState {
+  index: number;
+}
+
+class CoinInfo extends React.Component<ContentsProps, ContentsState> {
+  private static TAB_HEADERS = [];
+  private static TAB_ITEMS = [];
+  constructor(props: ContentsProps) {
+    super(props);
+    this.state = {
+      index: 0,
+    };
+  }
+
+  onChangeTabIndex = (e: React.ChangeEvent<{}>, value: any) => {
+    this.setState({ index: value });
+  };
+
+  render() {
+    return (
+      <PageTemplate
+        className={this.props.className}
+        index={this.state.index}
+        onChangeTab={this.onChangeTabIndex}
+        tabHeaders={CoinInfo.TAB_HEADERS}
+        tabContents={CoinInfo.TAB_ITEMS}
+      />
+    );
+  }
+}
 
 export default CoinInfo;

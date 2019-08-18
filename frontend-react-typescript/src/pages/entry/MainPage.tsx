@@ -9,7 +9,7 @@ import MuiTypography from '@material-ui/core/Typography';
 import AppBar from 'components/molecules/AppBar';
 import MainTabs from 'components/molecules/MainTabs';
 import HtsConfig from 'pages/menu-contents/HtsConfig';
-import AssetManagement from 'pages/menu-contents/AssetManagement';
+import Assets from 'pages/menu-contents/Assets';
 import Idea from 'pages/menu-contents/Idea';
 import CoinInfo from 'pages/menu-contents/CoinInfo';
 import UseGuide from 'pages/menu-contents/UseGuide';
@@ -34,7 +34,7 @@ interface DispatchProps {
 interface MainPageProps extends StateProps, DispatchProps {}
 
 interface MainPageState {
-  tabIndex: number;
+  index: number;
 }
 
 // TODO: Refactoring for usable icons later
@@ -51,7 +51,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   constructor(props: MainPageProps) {
     super(props);
     this.state = {
-      tabIndex: 0,
+      index: 0,
     };
 
     addSignOutInterceptor(this.props.signOut);
@@ -66,7 +66,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   };
 
   onChangeMenuIndex = (e: React.ChangeEvent<{}>, value: any) => {
-    this.setState({ tabIndex: value });
+    this.setState({ index: value });
   };
 
   render() {
@@ -108,17 +108,17 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
         <div className="layout-contents">
           <MainTabs
             className="layout-contents__menu"
-            value={this.state.tabIndex}
+            value={this.state.index}
             items={MainPage.MENU_ITEMS}
             onChange={this.onChangeMenuIndex}
           />
           <div className="layout-contents__item-wrapper">
-            {this.state.tabIndex === 0 && <HtsConfig />}
-            {this.state.tabIndex === 1 && <AssetManagement />}
-            {this.state.tabIndex === 2 && <Idea />}
-            {this.state.tabIndex === 3 && <CoinInfo />}
-            {this.state.tabIndex === 4 && <UseGuide />}
-            {this.state.tabIndex === 5 && <Profile />}
+            {this.state.index === 0 && <HtsConfig className="layout-contents__item-contents" />}
+            {this.state.index === 1 && <Assets className="layout-contents__item-contents" />}
+            {this.state.index === 2 && <Idea className="layout-contents__item-contents" />}
+            {this.state.index === 3 && <CoinInfo className="layout-contents__item-contents" />}
+            {this.state.index === 4 && <UseGuide className="layout-contents__item-contents" />}
+            {this.state.index === 5 && <Profile className="layout-contents__item-contents" />}
           </div>
         </div>
       </div>

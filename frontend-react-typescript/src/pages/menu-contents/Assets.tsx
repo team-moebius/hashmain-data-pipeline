@@ -12,8 +12,8 @@ interface ContentsState {
   index: number;
 }
 
-class Profile extends React.Component<ContentsProps, ContentsState> {
-  private static TAB_HEADERS = ['사용자 정보', '회원등급 안내'];
+class Assets extends React.Component<ContentsProps, ContentsState> {
+  private static TAB_HEADERS = ['자산 보유내역', '주문 완료내역'];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: ContentsProps) {
     super(props);
@@ -32,11 +32,11 @@ class Profile extends React.Component<ContentsProps, ContentsState> {
         className={this.props.className}
         index={this.state.index}
         onChangeTab={this.onChangeTabIndex}
-        tabHeaders={Profile.TAB_HEADERS}
-        tabContents={Profile.TAB_ITEMS}
+        tabHeaders={Assets.TAB_HEADERS}
+        tabContents={Assets.TAB_ITEMS}
       />
     );
   }
 }
 
-export default Profile;
+export default Assets;

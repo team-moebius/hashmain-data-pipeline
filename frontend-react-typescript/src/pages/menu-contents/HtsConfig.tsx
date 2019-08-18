@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { withAlert, AlertManager } from 'react-alert';
+import classNames from 'classnames';
 
 import Paper from 'components/atoms/Paper';
 import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
@@ -10,18 +11,19 @@ import ajax from 'utils/Ajax';
 
 import 'assets/scss/HtsConfig.scss';
 
-interface HtsConfigProps {
+interface ContentsProps {
+  className: string;
   alert: AlertManager;
 }
 
-interface HtsConfigState {
+interface ContentsState {
   index: number;
 }
 
-class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
+class HtsConfig extends React.Component<ContentsProps, ContentsState> {
   private static TAB_HEADERS = ['멀티거래 모드', 'Test2'];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
-  constructor(props: HtsConfigProps) {
+  constructor(props: ContentsProps) {
     super(props);
     this.state = {
       index: 0,
@@ -59,7 +61,7 @@ class HtsConfig extends React.Component<HtsConfigProps, HtsConfigState> {
     return (
       <div className="hts-config">
         <PageTemplate
-          className="hts-config__tab"
+          className={classNames('hts-config__tab', this.props.className)}
           index={this.state.index}
           onChangeTab={this.onChangeTabIndex}
           tabHeaders={HtsConfig.TAB_HEADERS}

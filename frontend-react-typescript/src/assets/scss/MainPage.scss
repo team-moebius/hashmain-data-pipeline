@@ -43,7 +43,9 @@ $item-margin: 8px;
     .layout-contents__item-wrapper {
       width: 100%;
       margin-left: $item-margin;
-      // background-color: $primary-bg-color;
+    }
+    .layout-contents__item-contents {
+      height: 100%;
     }
   }
 }
