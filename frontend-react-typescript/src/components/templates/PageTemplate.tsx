@@ -12,7 +12,6 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
   return (
     <div>
       <BasicTabs
-        className="layout-contents__menu"
         value={props.index}
         items={props.tabHeaders}
         orientation="horizontal"

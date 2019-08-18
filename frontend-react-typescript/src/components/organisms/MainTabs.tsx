@@ -1,17 +1,7 @@
 import * as React from 'react';
-
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Tabs from 'components/atoms/Tabs';
-import BasicTabs from 'components/molecules/BasicTabs';
-
-const MainTab = withStyles(theme => ({
-  root: {
-    [theme.breakpoints.up('md')]: {
-      maxWidth: '100px',
-    },
-  },
-}))(Tabs.Tab);
 
 interface MainTabsProps {
   className: string;
@@ -20,13 +10,18 @@ interface MainTabsProps {
   onChange: (e: React.ChangeEvent<{}>, value: any) => void;
 }
 
+const useTabStyles = makeStyles(theme => ({
+  mainTab: { minWidth: '100%' },
+}));
+
 const MainTabs: React.FC<MainTabsProps> = props => {
+  const classes = useTabStyles();
   return (
-    <BasicTabs orientation="vertical" {...props}>
+    <Tabs.Tabs orientation="vertical" {...props}>
       {props.items.map((item, index) => (
-        <MainTab key={index} label={item} />
+        <Tabs.Tab className={classes.mainTab} key={index} label={item} />
       ))}
-    </BasicTabs>
+    </Tabs.Tabs>
   );
 };
 
