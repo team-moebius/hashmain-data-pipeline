@@ -1,6 +1,7 @@
 package com.moebius.backend.service.member;
 
 import com.moebius.backend.assembler.ApiKeyAssembler;
+import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.apikeys.ApiKeyRepository;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
@@ -42,6 +43,14 @@ public class ApiKeyService {
 			.flatMap(clientResponse -> createApiKey(apiKeyDto, memberId));
 	}
 
+	public Mono<ApiKey> getApiKeyById(String id) {
+		Verifier.checkBlankString(id);
+
+		return apiKeyRepository.findById(new ObjectId(id))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
 	// TODO : Refactor return type as simplified one. (ServerResponse)
 	public Mono<ResponseEntity<List<ApiKeyResponseDto>>> getApiKeysByMemberId(String memberId) {
 		Verifier.checkBlankString(memberId);
@@ -57,7 +66,8 @@ public class ApiKeyService {
 	}
 
 	public Mono<ResponseEntity<String>> deleteApiKeyById(String id, String memberId) {
-		Verifier.checkNullFields(id);
+		Verifier.checkBlankString(id);
+		Verifier.checkBlankString(memberId);
 
 		return apiKeyRepository.deleteByIdAndMemberId(new ObjectId(id), new ObjectId(memberId))
 			.subscribeOn(IO.scheduler())
@@ -66,7 +76,7 @@ public class ApiKeyService {
 				log.error("[ApiKey] Deletion failed", exception);
 				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key"));
 			})
-			.map(aLong -> ResponseEntity.ok(id));
+			.map(aVoid -> ResponseEntity.ok(id));
 	}
 
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
