@@ -40,25 +40,21 @@ public class MarketService {
 			});
 	}
 
-	public Mono<Market> getMarket(Exchange exchange, Symbol symbol) {
-		return marketRepository.findByExchangeAndSymbol(exchange, symbol)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
-	public Mono<Market> createMarketIfNotExist(Exchange exchange, Symbol symbol) {
+	public Mono<Boolean> createMarketIfNotExist(Exchange exchange, Symbol symbol) {
 		return marketRepository.findByExchangeAndSymbol(exchange, symbol)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(() -> {
-				log.info("[Market] {} / {} is not found, The new market will be saved.", exchange, symbol);
-				return saveMarket(marketAssembler.toMarket(exchange, symbol));
-			}));
+			.hasElement()
+			.flatMap(exist -> exist ? Mono.just(Boolean.FALSE) : saveMarket(marketAssembler.toMarket(exchange, symbol)));
 	}
 
-	private Mono<Market> saveMarket(Market market) {
+	private Mono<Boolean> saveMarket(Market market) {
 		return marketRepository.save(market)
 			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
+			.publishOn(COMPUTE.scheduler())
+			.map(createdMarket -> {
+				log.info("[Market] {} / {} is not found, The new market will be saved.", market.getExchange(), market.getSymbol());
+				return true;
+			});
 	}
 }

@@ -47,9 +47,11 @@ public class StoplossService {
 				responseDtos.add(stoplossAssembler.toRespoonseDto(stoploss));
 				return marketService.createMarketIfNotExist(stoploss.getExchange(), stoploss.getSymbol());
 			})
-			.collectList()
-			.map(markets -> {
-				trackerService.reTrackTrades().subscribe();
+			.hasElement(true)
+			.map(created -> {
+				if (created) {
+					trackerService.reTrackTrades().subscribe();
+				}
 				return ResponseEntity.ok(responseDtos);
 			});
 	}

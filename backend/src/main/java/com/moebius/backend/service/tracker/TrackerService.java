@@ -55,7 +55,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 			});
 			openedSessions.clear();
 			trackTrades();
-			return null;
+			return Mono.empty();
 		}).subscribeOn(COMPUTE.scheduler())
 			.then();
 	}
