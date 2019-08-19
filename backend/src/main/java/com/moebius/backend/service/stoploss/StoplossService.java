@@ -35,7 +35,7 @@ public class StoplossService {
 	private final TrackerService trackerService;
 
 	public Mono<ResponseEntity<List<StoplossResponseDto>>> createStoplosses(String apiKeyId, List<StoplossDto> stoplossDtos) {
-		List<String> ids = new ArrayList<>();
+		List<StoplossResponseDto> responseDtos = new ArrayList<>();
 
 		return apiKeyService.getApiKeyById(apiKeyId)
 			.subscribeOn(COMPUTE.scheduler())
@@ -43,13 +43,13 @@ public class StoplossService {
 				() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] " + apiKeyId)))))
 			.flatMapIterable(apiKey -> stoplossAssembler.toStoplosses(apiKey, stoplossDtos))
 			.compose(this::saveStoplosses)
-			.map(stoploss -> {
-				marketService.createMarketIfNotExist(stoploss.getExchange(), stoploss.getSymbol()).subscribe(); // FIXME : Move this logic to batch.
-				return stoplossAssembler.toRespoonseDto(stoploss);
+			.flatMap(stoploss -> {
+				responseDtos.add(stoplossAssembler.toRespoonseDto(stoploss));
+				return marketService.createMarketIfNotExist(stoploss.getExchange(), stoploss.getSymbol());
 			})
 			.collectList()
-			.map(responseDtos -> {
-				trackerService.reTrackTrades().subscribe(); // FIXME : Move this logic to batch.
+			.map(markets -> {
+				trackerService.reTrackTrades().subscribe();
 				return ResponseEntity.ok(responseDtos);
 			});
 	}
