@@ -15,8 +15,15 @@ public enum Symbol {
     KRW_LTC,
     @JsonProperty("KRW-BCH")
     KRW_BCH,
+    @JsonProperty("KRW-BSV")
+    KRW_BSV,
     @JsonProperty("KRW-TRX")
     KRW_TRX,
     @JsonProperty("KRW-XLM")
     KRW_XLM;
+
+    @Override
+    public String toString() {
+        return name().replace("_", "-");
+    }
 }

@@ -1,7 +1,8 @@
-package com.moebius.backend.domain.apikeys;
+package com.moebius.backend.domain.markets;
 
 import com.moebius.backend.domain.commons.Base;
 import com.moebius.backend.domain.commons.Exchange;
+import com.moebius.backend.domain.commons.Symbol;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
@@ -11,14 +12,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@Document(collection = "apikeys")
-@CompoundIndex(def = "{'memberId': 1, 'exchange': 1}", unique = true)
-public class ApiKey extends Base {
-    @Id
-    private ObjectId id;
-    private ObjectId memberId;
-    private Exchange exchange;
-    private String name;
-    private String accessKey;
-    private String secretKey;
+@Document(collection = "markets")
+@CompoundIndex(def = "{'exchange': 1, 'symbol': 1}", unique = true)
+public class Market extends Base {
+	@Id
+	private ObjectId id;
+	private Exchange exchange;
+	private Symbol symbol;
 }

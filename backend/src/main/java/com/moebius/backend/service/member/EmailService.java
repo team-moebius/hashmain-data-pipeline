@@ -70,8 +70,8 @@ public class EmailService {
 		log.info("[Email] update verification code of member. [{}]", member);
 
 		return Mono.fromCallable(() -> {
-			sendVerificationEmail(member).subscribe();
 			member.setVerificationCode(Verifier.generateCode());
+			sendVerificationEmail(member).subscribe();
 			return member;
 		}).subscribeOn(COMPUTE.scheduler())
 			.publishOn(IO.scheduler())
