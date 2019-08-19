@@ -14,11 +14,13 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
@@ -29,13 +31,14 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
  */
 @Slf4j
 @Service
-@Profile("local")
+@Profile("!production")
 @RequiredArgsConstructor
-public class UpbitTrackerService implements ApplicationListener<ApplicationReadyEvent> {
+public class TrackerService implements ApplicationListener<ApplicationReadyEvent> {
 	private final WebSocketClient webSocketClient;
 	private final TradeRepository tradeRepository;
 	private final MarketRepository marketRepository;
 	private final TradeAssembler tradeAssembler;
+	private final Map<String, WebSocketSession> openedSessions;
 	@Value("${exchange.upbit.websocket.uri}")
 	private String uri;
 
@@ -44,10 +47,23 @@ public class UpbitTrackerService implements ApplicationListener<ApplicationReady
 		trackTrades();
 	}
 
+	public Mono<Void> reTrackTrades() {
+		return Mono.defer(() -> {
+			openedSessions.forEach((sessionId, session) -> {
+				log.info("[Tracker] Try to close session. [id : {}]", sessionId);
+				session.close().subscribe();
+			});
+			openedSessions.clear();
+			trackTrades();
+			return Mono.empty();
+		}).subscribeOn(COMPUTE.scheduler())
+			.then();
+	}
+
 	private void trackTrades() {
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		marketRepository.findAllByExchangeAndActive(Exchange.UPBIT, true)
+		marketRepository.findAllByExchange(Exchange.UPBIT)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.map(market -> "\"" + market.getSymbol().toString() + "\"")
@@ -56,12 +72,15 @@ public class UpbitTrackerService implements ApplicationListener<ApplicationReady
 			.map(message -> {
 					log.info("[Tracker] Start to track trades. - message : {}", message);
 					return webSocketClient.execute(URI.create(uri),
-						session -> session.send(Mono.just(session.textMessage(message)))
+						session -> {
+							log.info("[Tracker] Save opened session. [id : {}]", session.getId());
+							openedSessions.put(session.getId(), session);
+							return session.send(Mono.just(session.textMessage(message)))
 								.thenMany(session.receive().map(webSocketMessage -> {
 									try {
 										TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
 										tradeDto.setExchange(Exchange.UPBIT);
-										//									accumulateTrade(tradeDto);
+										accumulateTrade(tradeDto);
 										// maybe need to use upsertTrade rather accumulateTrade.
 										// upsertTrade(tradeDto);
 									} catch (IOException e) {
@@ -69,8 +88,8 @@ public class UpbitTrackerService implements ApplicationListener<ApplicationReady
 									}
 									return webSocketMessage;
 								}))
-								.then())
-						.doOnTerminate(this::trackTrades)
+								.then();
+						})
 						.subscribe();
 				}
 			).subscribe();
