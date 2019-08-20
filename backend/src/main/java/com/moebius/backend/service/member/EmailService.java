@@ -10,6 +10,7 @@ import com.moebius.backend.utils.Verifier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +46,12 @@ public class EmailService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)))))
-			.filter(member -> !member.isActive())
+			.filter(targetMember -> !targetMember.isActive() && StringUtils.isNoneBlank(targetMember.getVerificationCode()))
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(email)))))
-			.flatMap(this::updateVerificationCode)
-			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
+			.map(targetMember -> {
+				sendVerificationEmail(targetMember).subscribe();
+				return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+			});
 	}
 
 	public Mono<ResponseEntity<?>> verifyEmail(@NonNull VerificationDto verificationDto) {
@@ -64,18 +67,6 @@ public class EmailService {
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.INVALID_CODE.getMessage()))))
 			.flatMap(this::updateMember)
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
-	}
-
-	private Mono<Member> updateVerificationCode(Member member) {
-		log.info("[Email] update verification code of member. [{}]", member);
-
-		return Mono.fromCallable(() -> {
-			member.setVerificationCode(Verifier.generateCode());
-			sendVerificationEmail(member).subscribe();
-			return member;
-		}).subscribeOn(COMPUTE.scheduler())
-			.publishOn(IO.scheduler())
-			.flatMap(memberRepository::save);
 	}
 
 	private Mono<String> sendVerificationEmail(Member member) {
