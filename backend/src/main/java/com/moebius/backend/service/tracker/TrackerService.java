@@ -90,6 +90,10 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 								}))
 								.then();
 						})
+						.doOnError(error -> {
+							log.error("[Tracker] Error occurred.", error);
+							trackTrades();
+						})
 						.subscribe();
 				}
 			).subscribe();
