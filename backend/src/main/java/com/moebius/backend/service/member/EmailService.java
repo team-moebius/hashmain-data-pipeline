@@ -46,12 +46,10 @@ public class EmailService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)))))
-			.filter(targetMember -> !targetMember.isActive() && StringUtils.isNoneBlank(targetMember.getVerificationCode()))
+			.filter(member -> !member.isActive() && StringUtils.isNoneBlank(member.getVerificationCode()))
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(email)))))
-			.map(targetMember -> {
-				sendVerificationEmail(targetMember).subscribe();
-				return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-			});
+			.doOnSuccess(member -> sendVerificationEmail(member).subscribe())
+			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
 	public Mono<ResponseEntity<?>> verifyEmail(@NonNull VerificationDto verificationDto) {
