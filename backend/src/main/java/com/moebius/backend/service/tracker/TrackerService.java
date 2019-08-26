@@ -84,15 +84,12 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 										// maybe need to use upsertTrade rather accumulateTrade.
 										// upsertTrade(tradeDto);
 									} catch (IOException e) {
-										log.error(e.getMessage());
+										log.error("[Tracker] Error occurred.", e);
+										reTrackTrades().subscribe();
 									}
 									return webSocketMessage;
 								}))
 								.then();
-						})
-						.doOnError(error -> {
-							log.error("[Tracker] Error occurred.", error);
-							trackTrades();
 						})
 						.subscribe();
 				}
