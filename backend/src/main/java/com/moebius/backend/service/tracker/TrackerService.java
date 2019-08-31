@@ -70,7 +70,6 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 			.reduce((prevSymbol, nextSymbol) -> prevSymbol + "," + nextSymbol)
 			.map(rawMessage -> "[{\"ticket\":\"moebius-tracker\"},{\"type\":\"trade\",\"codes\":[" + rawMessage + "]},{\"format\":\"SIMPLE\"}]")
 			.map(message -> {
-					log.info("[Tracker] Start to track trades. - message : {}", message);
 					return webSocketClient.execute(URI.create(uri),
 						session -> {
 							log.info("[Tracker] Save opened session. [id : {}]", session.getId());
@@ -81,6 +80,7 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 										TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
 										tradeDto.setExchange(Exchange.UPBIT);
 										accumulateTrade(tradeDto);
+										log.info("[Tracker] Succeeded in accumulating trade data. [TradeDto : {}]", tradeDto);
 										// maybe need to use upsertTrade rather accumulateTrade.
 										// upsertTrade(tradeDto);
 									} catch (IOException e) {
