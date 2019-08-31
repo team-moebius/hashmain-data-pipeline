@@ -70,30 +70,30 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 			.reduce((prevSymbol, nextSymbol) -> prevSymbol + "," + nextSymbol)
 			.map(rawMessage -> "[{\"ticket\":\"moebius-tracker\"},{\"type\":\"trade\",\"codes\":[" + rawMessage + "]},{\"format\":\"SIMPLE\"}]")
 			.map(message -> {
-					return webSocketClient.execute(URI.create(uri),
-						session -> {
-							log.info("[Tracker] Save opened session. [id : {}]", session.getId());
-							openedSessions.put(session.getId(), session);
-							return session.send(Mono.just(session.textMessage(message)))
-								.thenMany(session.receive().map(webSocketMessage -> {
-									try {
-										TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
-										tradeDto.setExchange(Exchange.UPBIT);
-										accumulateTrade(tradeDto);
-										log.info("[Tracker] Succeeded in accumulating trade data. [TradeDto : {}]", tradeDto);
-										// maybe need to use upsertTrade rather accumulateTrade.
-										// upsertTrade(tradeDto);
-									} catch (IOException e) {
-										log.error(e.getMessage());
-									}
-									return webSocketMessage;
-								}).doOnError(error -> {
-									log.error("[Tracker] Session Error occurred.", error);
-									reTrackTrades().subscribe();
-								}))
-								.then();
-						})
-						.subscribe();
+				log.info("[Tracker] Start to track trades. [{}]", message);
+				return webSocketClient.execute(URI.create(uri),
+					session -> {
+						log.info("[Tracker] Save opened session. [id : {}]", session.getId());
+						openedSessions.put(session.getId(), session);
+						return session.send(Mono.just(session.textMessage(message)))
+							.thenMany(session.receive().map(webSocketMessage -> {
+								try {
+									TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
+									tradeDto.setExchange(Exchange.UPBIT);
+									accumulateTrade(tradeDto);
+									// maybe need to use upsertTrade rather accumulateTrade.
+									// upsertTrade(tradeDto);
+								} catch (IOException e) {
+									log.error(e.getMessage());
+								}
+								return webSocketMessage;
+							}))
+							.then();
+					}).doOnTerminate(() -> {
+						log.info("[Tracker] Session exited, Start to re-track trades.");
+						reTrackTrades().subscribe();
+					})
+					.subscribe();
 				}
 			).subscribe();
 	}
