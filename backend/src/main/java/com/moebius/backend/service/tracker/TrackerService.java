@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
@@ -57,7 +58,16 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 			trackTrades();
 			return Mono.empty();
 		}).subscribeOn(COMPUTE.scheduler())
-			.then();
+			.then()
+			.doOnError(error -> {
+				if (error instanceof NoSuchElementException) {
+					log.info("[Tracker] Session already closed.");
+				} else {
+					log.error("[Tracker] Error occurred.", error);
+				}
+				openedSessions.clear();
+				trackTrades();
+			});
 	}
 
 	private void trackTrades() {
@@ -70,32 +80,33 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 			.reduce((prevSymbol, nextSymbol) -> prevSymbol + "," + nextSymbol)
 			.map(rawMessage -> "[{\"ticket\":\"moebius-tracker\"},{\"type\":\"trade\",\"codes\":[" + rawMessage + "]},{\"format\":\"SIMPLE\"}]")
 			.map(message -> {
-				log.info("[Tracker] Start to track trades. [{}]", message);
-				return webSocketClient.execute(URI.create(uri),
-					session -> {
-						log.info("[Tracker] Save opened session. [id : {}]", session.getId());
-						openedSessions.put(session.getId(), session);
-						return session.send(Mono.just(session.textMessage(message)))
-							.thenMany(session.receive().map(webSocketMessage -> {
-								try {
-									TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
-									tradeDto.setExchange(Exchange.UPBIT);
-									accumulateTrade(tradeDto);
-									// maybe need to use upsertTrade rather accumulateTrade.
-									// upsertTrade(tradeDto);
-								} catch (IOException e) {
-									log.error(e.getMessage());
-								}
-								return webSocketMessage;
-							}))
-							.then();
-					}).doOnTerminate(() -> {
-						log.info("[Tracker] Session exited, Start to re-track trades.");
-						reTrackTrades().subscribe();
-					})
-					.subscribe();
-				}
-			).subscribe();
+					log.info("[Tracker] Start to track trades. [{}]", message);
+					return webSocketClient.execute(URI.create(uri),
+						session -> {
+							log.info("[Tracker] New session has been opened. [id : {}]", session.getId());
+							openedSessions.put(session.getId(), session);
+							return session.send(Mono.just(session.textMessage(message)))
+								.thenMany(session.receive().map(webSocketMessage -> {
+									try {
+										TradeDto tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto.class);
+										tradeDto.setExchange(Exchange.UPBIT);
+										accumulateTrade(tradeDto);
+										// maybe need to use upsertTrade rather accumulateTrade.
+										// upsertTrade(tradeDto);
+									} catch (IOException e) {
+										log.error(e.getMessage());
+									}
+									return webSocketMessage;
+								}))
+								.then();
+						}).doOnTerminate(() -> {
+							log.info("[Tracker] Session exited, Try to track trades again.");
+							openedSessions.clear();
+							trackTrades();
+						})
+						.subscribe();
+			})
+			.subscribe();
 	}
 
 	private void accumulateTrade(TradeDto tradeDto) {
