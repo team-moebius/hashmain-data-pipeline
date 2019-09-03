@@ -1,57 +1,58 @@
-package com.moebius.backend.service
+package com.moebius.backend.domain.trades
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.moebius.backend.domain.trades.TradeDocument
-import com.moebius.backend.utils.Document
-import org.apache.http.HttpHost
+import com.moebius.backend.domain.commons.DocumentIndex
+import mu.KotlinLogging
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.index.query.RangeQueryBuilder
 import org.elasticsearch.index.query.TermQueryBuilder
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import java.time.LocalDateTime
 
-class TradeDocumentService(host: String) : AutoCloseable {
-    private val client: RestHighLevelClient = RestHighLevelClient(RestClient.builder(HttpHost.create(host)))
-    private val mapper: ObjectMapper = ObjectMapper().registerModule(KotlinModule())
+@Repository
+class TradeDocumentRepositoryImpl(
+        @Autowired val client: RestHighLevelClient
+) : TradeDocumentRepository {
+    private val log = KotlinLogging.logger {}
+    private val index = DocumentIndex.tradeStream
+
+
+    private val mapper = ObjectMapper().registerModule(KotlinModule())
             .registerModule(Jdk8Module())
             .registerModule(JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
-    override fun close() {
-        client.close()
-    }
+    private fun <T> (() -> T).toMono(): Mono<T> = Mono.fromSupplier(this).subscribeOn(Schedulers.parallel()).publishOn(Schedulers.elastic())
 
-    private val index = Document.tradeStream
-
-    private fun <T> (() -> T?).toMono(): Mono<T> = Mono.fromSupplier(this)
-
-    fun get(id: String): TradeDocument? = with(GetRequest(index.searchIndex()).id(id)) {
+    override fun get(id: String): TradeDocument? = with(GetRequest(index.searchIndex()).id(id)) {
         client.get(this, RequestOptions.DEFAULT).run {
             if (this.isExists) mapper.readValue(this.sourceAsBytes, TradeDocument::class.java)
             else null
         }
     }
 
-    fun getAsync(id: String): Mono<TradeDocument?> = { get(id) }.toMono()
+    override fun getAsync(id: String): Mono<TradeDocument?> = { get(id) }.toMono()
 
-    fun save(document: TradeDocument): String? = with(indexRequest(document.id, document)) {
+    override fun save(document: TradeDocument): String = with(indexRequest(document.id, document)) {
         client.index(this, RequestOptions.DEFAULT).run { this.id }
     }
 
-    fun saveAsync(document: TradeDocument): Mono<String> = { save(document) }.toMono()
+    override fun saveAsync(document: TradeDocument): Mono<String> = { save(document) }.toMono()
 
-    fun saveAll(documents: List<TradeDocument>): Boolean = with(BulkRequest()) {
+    override fun saveAll(documents: List<TradeDocument>): Boolean = with(BulkRequest()) {
         val request = documents.map { indexRequest(it.id, it) }.toSet()
         this.add(request)
         return client.bulk(this, RequestOptions.DEFAULT).run {
@@ -59,7 +60,8 @@ class TradeDocumentService(host: String) : AutoCloseable {
         }
     }
 
-    fun saveAllAsync(documents: List<TradeDocument>): Mono<Boolean> = { saveAll(documents) }.toMono()
+    override fun saveAllAsync(documents: List<TradeDocument>): Mono<Boolean> = { saveAll(documents) }.toMono()
+
 
     private fun getTermQuery(name: String, target: Any?): TermQueryBuilder? {
         return target?.let {
@@ -73,6 +75,7 @@ class TradeDocumentService(host: String) : AutoCloseable {
 
     private fun indexRequest(id: String, data: Any): IndexRequest = with(IndexRequest(index.saveIndex())) {
         this.id(id)
+        this.type("_doc")
         this.source(mapper.writeValueAsBytes(data), XContentType.JSON)
     }
 }

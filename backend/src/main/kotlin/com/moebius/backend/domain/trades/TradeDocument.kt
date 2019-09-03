@@ -1,6 +1,10 @@
 package com.moebius.backend.domain.trades
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.moebius.backend.domain.commons.Change
+import com.moebius.backend.domain.commons.Exchange
+import com.moebius.backend.domain.commons.Symbol
+import com.moebius.backend.domain.commons.TradeType
 import java.time.LocalDateTime
 import java.util.*
 
@@ -14,7 +18,7 @@ data class TradeDocument(
         val volume: Double,
         val prevClosingPrice: Double,
         val changePrice: Double,
-        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+        @JsonFormat(shape= JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         val createdAt: LocalDateTime = LocalDateTime.now()
 ) {
 

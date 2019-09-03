@@ -2,10 +2,10 @@ package com.moebius.tracker.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.moebius.backend.domain.trades.Change
-import com.moebius.backend.domain.trades.Exchange
-import com.moebius.backend.domain.trades.Symbol
-import com.moebius.backend.domain.trades.TradeType
+import com.moebius.backend.domain.commons.Change
+import com.moebius.backend.domain.commons.Exchange
+import com.moebius.backend.domain.commons.Symbol
+import com.moebius.backend.domain.commons.TradeType
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TradeDto(

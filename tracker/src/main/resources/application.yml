@@ -1,4 +1,12 @@
-
+spring:
+  profiles:
+    active: local
+  data:
+    elasticsearch:
+      cluster-nodes: http://localhost:9200
+    mongodb:
+      uri: mongodb+srv://moebius:highbal1!@mongodb-rs.cryptoboxglobal.com/?retryWrites=true&streamType=netty&readPreference=secondary&ssl=false # TODO : Change to use ssl
+      database: moebius
 
 exchange:
   upbit:
@@ -8,7 +16,5 @@ exchange:
       public-uri: https://api.upbit.com/
       secret-uri: https://crix-api-endpoint.upbit.com/v1/crix/
       asset: v1/accounts
-spring:
-  data:
-    elasticsearch:
-      cluster-nodes: http://localhost:9200
+
+
