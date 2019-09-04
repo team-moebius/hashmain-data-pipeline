@@ -34,7 +34,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Service
 @Profile("!production")
 @RequiredArgsConstructor
-public class TrackerService implements ApplicationListener<ApplicationReadyEvent> {
+public class TrackerService {
 	private final WebSocketClient webSocketClient;
 	private final TradeRepository tradeRepository;
 	private final MarketRepository marketRepository;
@@ -42,11 +42,6 @@ public class TrackerService implements ApplicationListener<ApplicationReadyEvent
 	private final Map<String, WebSocketSession> openedSessions;
 	@Value("${exchange.upbit.websocket.uri}")
 	private String uri;
-
-	@Override
-	public void onApplicationEvent(ApplicationReadyEvent event) {
-		trackTrades();
-	}
 
 	public Mono<Void> reTrackTrades() {
 		return Mono.defer(() -> {

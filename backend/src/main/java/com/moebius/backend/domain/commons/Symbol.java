@@ -1,29 +1,26 @@
 package com.moebius.backend.domain.commons;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Symbol {
-    @JsonProperty("KRW-BTC")
-    KRW_BTC,
-    @JsonProperty("KRW-ETH")
-    KRW_ETH,
-    @JsonProperty("KRW-XRP")
-    KRW_XRP,
-    @JsonProperty("KRW-EOS")
-    KRW_EOS,
-    @JsonProperty("KRW-LTC")
-    KRW_LTC,
-    @JsonProperty("KRW-BCH")
-    KRW_BCH,
-    @JsonProperty("KRW-BSV")
-    KRW_BSV,
-    @JsonProperty("KRW-TRX")
-    KRW_TRX,
-    @JsonProperty("KRW-XLM")
-    KRW_XLM;
+    KRW_BTC("KRW-BTC"),
+    KRW_ETH("KRW-ETH"),
+    KRW_XRP("KRW-XRP"),
+    KRW_EOS("KRW-EOS"),
+    KRW_LTC("KRW-LTC"),
+    KRW_BCH("KRW-BCH"),
+    KRW_TRX("KRW-TRX"),
+    KRW_XLM("KRW-XLM"),
+    KRW_BSV("KRW-BSV");
 
-    @Override
-    public String toString() {
-        return name().replace("_", "-");
+    private final String value;
+
+    @JsonValue
+    public String value() {
+        return value;
+    }
+
+    Symbol(String value) {
+        this.value = value;
     }
 }
