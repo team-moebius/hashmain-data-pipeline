@@ -86,12 +86,13 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
 
                                     webSocketMessage
                                 }).then()
+                                .doOnTerminate(Runnable {
+                                    log.info("[Tracker] Session exited, Try to track trades again.")
+                                    openedSessions.clear()
+                                    trackTrades()
+                                })
                     }.subscribe()
-                }.doOnTerminate(Runnable {
-                    log.info("[Tracker] Session exited, Try to track trades again.")
-                    openedSessions.clear()
-                    trackTrades()
-                }).subscribe()
+                }.subscribe()
     }
 
     private fun accumulateTrade(tradeDto: TradeDto) {
