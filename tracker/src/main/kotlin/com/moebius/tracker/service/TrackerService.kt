@@ -78,7 +78,6 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                                 .thenMany<WebSocketMessage>(session.receive().map<WebSocketMessage> { webSocketMessage ->
                                     try {
                                         val tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto::class.java)
-                                        log.info { tradeDto }
                                         accumulateTrade(tradeDto)
                                     } catch (e: IOException) {
                                         log.error(e.message)
