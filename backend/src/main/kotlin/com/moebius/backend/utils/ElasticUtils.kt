@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.AggregationBuilder
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object ElasticUtils {
 
@@ -23,6 +24,8 @@ object ElasticUtils {
     }
 
     private const val TIME_ZONE = "GMT+9"
+    private const val ELASTIC_DATE_PARSE_FORMAT = "date_hour_minute_second"
+    private val DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
     val mapper: ObjectMapper = ObjectMapper().registerModule(KotlinModule())
             .registerModule(Jdk8Module())
@@ -34,10 +37,12 @@ object ElasticUtils {
      */
     fun dateTimeRangeQuery(field: String, startDateTime: LocalDateTime, endDateTime: LocalDateTime): QueryBuilder {
         // if don't use to string method, query generator converts local date time string to zoned time type string
+
         return QueryBuilders.rangeQuery(field)
                 .timeZone(TIME_ZONE)
-                .gte(startDateTime.toString())
-                .lte(endDateTime.toString())
+                .format(ELASTIC_DATE_PARSE_FORMAT)
+                .gte(startDateTime.format(DATE_FORMAT))
+                .lte(endDateTime.format(DATE_FORMAT))
     }
 
     fun indexRequest(index: DocumentIndex.ElasticIndex, id: String, data: Any): IndexRequest = with(IndexRequest(index.saveIndex())) {
