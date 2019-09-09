@@ -8,7 +8,7 @@ spring:
       uri: mongodb+srv://moebius:highbal1!@mongodb-rs.cryptoboxglobal.com/?retryWrites=true&streamType=netty&readPreference=secondary&ssl=false # TODO : Change to use ssl
       database: moebius
     elasticsearch:
-      cluster-nodes: http://ec2-52-78-128-79.ap-northeast-2.compute.amazonaws.com:9200
+      cluster-nodes: http://internal-moebius-es-1636081679.ap-northeast-2.elb.amazonaws.com
   thymeleaf:
     reactive:
       max-chunk-size: 8192

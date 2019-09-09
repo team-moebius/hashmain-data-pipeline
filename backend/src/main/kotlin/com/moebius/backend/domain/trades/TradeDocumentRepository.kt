@@ -1,12 +1,8 @@
 package com.moebius.backend.domain.trades
 
-import reactor.core.publisher.Mono
+import com.moebius.backend.domain.ElasticDocumentRepository
+import java.time.LocalDateTime
 
-interface TradeDocumentRepository {
-    fun get(id: String): TradeDocument?
-    fun getAsync(id: String): Mono<TradeDocument?>
-    fun save(document: TradeDocument): String
-    fun saveAsync(document: TradeDocument): Mono<String>
-    fun saveAll(documents: List<TradeDocument>): Boolean
-    fun saveAllAsync(document: List<TradeDocument>): Mono<Boolean>
+interface TradeDocumentRepository : ElasticDocumentRepository<TradeDocument> {
+    fun getByDateTimeRange(startDateTime: LocalDateTime, endDateTime: LocalDateTime): List<TradeDocument>
 }

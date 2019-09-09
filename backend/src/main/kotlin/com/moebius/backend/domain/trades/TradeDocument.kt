@@ -1,6 +1,7 @@
 package com.moebius.backend.domain.trades
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.moebius.backend.domain.ElasticDocument
 import com.moebius.backend.domain.commons.Change
 import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.commons.Symbol
@@ -18,12 +19,12 @@ data class TradeDocument(
         val volume: Double,
         val prevClosingPrice: Double,
         val changePrice: Double,
-        @JsonFormat(shape= JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         val createdAt: Date = Date.from(Instant.now())
-) {
+) : ElasticDocument {
+    override fun getDocumentId(): String = id
 
     companion object {
-        @JvmStatic
         fun of(exchange: Exchange,
                symbol: Symbol,
                tradeType: TradeType,
