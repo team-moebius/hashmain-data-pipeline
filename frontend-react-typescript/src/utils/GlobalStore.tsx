@@ -6,12 +6,8 @@ import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 
 import createRootReducer from 'utils/GlobalReducer';
 
-/** Create browser history for react-router */
+// Create browser history for react-router
 export const routeHistory = createBrowserHistory();
-/**
- * 아래 코드로 인해 Redux store가 생성되며,
- * react-router, redux-devttol, redux-saga 등의 middleware들을 적용해 준 상태입니다.
- */
 const store = createStore(
   createRootReducer(routeHistory),
   // connectRouter(routeHistory)(createRootReducer) /* preload state */,

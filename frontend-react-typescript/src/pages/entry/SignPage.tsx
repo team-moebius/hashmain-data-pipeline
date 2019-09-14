@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { withAlert, AlertManager } from 'react-alert';
 
 import Paper from 'components/atoms/Paper';
-import Loader from 'components/atoms/Loader';
+import CircularLoader from 'components/molecules/CircularLoader';
 import BasicTabs from 'components/molecules/BasicTabs';
 import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
@@ -97,18 +97,11 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
     if (this.props.signing) return <Redirect to="/" />;
     return (
       <Paper className="sign-page">
-        {this.state.pending && <Loader />}
+        {this.state.pending && <CircularLoader />}
         <Paper className="sign-page__wrapper" square>
-          <BasicTabs
-            centered
-            items={SignPage.MENU_ITEMS}
-            value={this.state.index}
-            onChange={this.onChangeTabs}
-          />
+          <BasicTabs centered items={SignPage.MENU_ITEMS} value={this.state.index} onChange={this.onChangeTabs} />
           <div className="sign-page__contents">
-            {this.state.index === 0 && (
-              <SignIn pending={this.state.pending} onSubmit={this.onSubmitSignIn} />
-            )}
+            {this.state.index === 0 && <SignIn pending={this.state.pending} onSubmit={this.onSubmitSignIn} />}
             {this.state.index === 1 && (
               <SignUp
                 isDuplicatedId={this.isDuplicatedId}

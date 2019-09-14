@@ -6,25 +6,11 @@ interface PrivateRouteProps extends RouteProps {
   signing: boolean;
 }
 
-const PrivateRoute: React.SFC<PrivateRouteProps> = ({
-  component,
-  signing,
-  redirectPath,
-  ...rest
-}) => {
-  const renderFn = (Component: any) => (props: RouteProps) => {
-    if (signing) return <Component {...props} />;
+const PrivateRoute: React.SFC<PrivateRouteProps> = ({ component, signing, redirectPath, ...rest }) => {
+  const render = (Component: any) => (props: RouteProps) =>
+    signing ? <Component {...props} /> : <Redirect to={{ pathname: redirectPath, state: { from: props.location } }} />;
 
-    const redirectProps = {
-      to: {
-        pathname: redirectPath,
-        state: { from: props.location },
-      },
-    };
-    return <Redirect {...redirectProps} />;
-  };
-
-  return <Route {...rest} render={renderFn(component)} />;
+  return <Route {...rest} render={render(component)} />;
 };
 
 export default PrivateRoute;

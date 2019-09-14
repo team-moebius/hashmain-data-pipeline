@@ -3,9 +3,7 @@ import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-
 import { withStyles } from '@material-ui/core/styles';
 
 const CustomIconButton = withStyles(theme => ({
-  sizeSmall: {
-    padding: '4px',
-  },
+  sizeSmall: { padding: '4px' },
 }))(MuiIconButton);
 
 export interface IconButtonProps extends MuiIconButtonProps {

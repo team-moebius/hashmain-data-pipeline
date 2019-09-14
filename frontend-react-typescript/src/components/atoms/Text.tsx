@@ -1,19 +1,10 @@
-import * as React from 'react';
-import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Typography, { TypographyProps as MuiTypographyProps } from '@material-ui/core/Typography';
-
-interface TextProps extends MuiTypographyProps {}
-
-const useStyles = makeStyles(theme => ({
-  root: { color: theme.palette.primary.contrastText },
-}));
-
-const Text: React.FC<TextProps> = props => {
-  const { className, ...rest } = props;
-  const classes = useStyles();
-  return <Typography className={classNames(classes.root, className)} {...rest} />;
-};
+const Text = withStyles(theme => ({
+  root: {
+    color: theme.palette.primary.contrastText,
+  },
+}))(Typography);
 
 export default Text;

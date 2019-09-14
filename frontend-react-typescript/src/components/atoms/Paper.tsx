@@ -1,19 +1,10 @@
-import * as React from 'react';
-import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+import MuiPaper from '@material-ui/core/Paper';
 
-import { makeStyles } from '@material-ui/core/styles';
-import MuiPaper, { PaperProps as MuiPaperProps } from '@material-ui/core/Paper';
-
-interface PaperProps extends MuiPaperProps {}
-
-const useStyles = makeStyles(theme => ({
-  root: { backgroundColor: theme.palette.primary.main },
-}));
-
-const Paper: React.FC<PaperProps> = props => {
-  const { className, ...rest } = props;
-  const classes = useStyles();
-  return <MuiPaper className={classNames(classes.root, className)} {...rest} />;
-};
+const Paper = withStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.primary.main,
+  },
+}))(MuiPaper);
 
 export default Paper;
