@@ -2,7 +2,6 @@ package com.moebius.backend.dto.frontend;
 
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.commons.OrderType;
-import com.moebius.backend.domain.commons.Symbol;
 import com.moebius.backend.domain.commons.TradeType;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +17,7 @@ public class StoplossDto {
 	@NotNull
 	private Exchange exchange;
 	@NotNull
-	private Symbol symbol;
+	private String symbol;
 	@NotNull
 	private TradeType tradeType;
 	@NotNull

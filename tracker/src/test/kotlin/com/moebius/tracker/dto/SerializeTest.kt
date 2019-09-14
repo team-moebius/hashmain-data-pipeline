@@ -7,7 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.moebius.backend.domain.commons.Change
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.commons.Symbol
 import com.moebius.backend.domain.commons.TradeType
 import com.moebius.backend.domain.trades.TradeDocument
 import mu.KotlinLogging
@@ -32,7 +31,7 @@ class SerializeTest {
 
     @Test
     fun serialize_exchangeRequestDto_test() {
-        val symbols = Symbol.values().toList()
+        val symbols = listOf("KRW-BTC", "KRW-ETH", "KRW-BCH", "KRW-XRP", "KRW-EOS")
         val test = mapper.writeValueAsString(listOf(ExchangeRequestDto.Ticket, ExchangeRequestDto.TypeCodes(codes = symbols), ExchangeRequestDto.Format))
         log.info { test }
         val subject = ExchangeRequestDto(symbols = symbols)
@@ -45,7 +44,7 @@ class SerializeTest {
     @Test
     fun test() {
         val subject = TradeDocument.of(Exchange.UPBIT,
-                Symbol.KRW_BTC,
+                "KRW_BTC",
                 TradeType.ASK,
                 Change.RISE,
                 2.toDouble(),

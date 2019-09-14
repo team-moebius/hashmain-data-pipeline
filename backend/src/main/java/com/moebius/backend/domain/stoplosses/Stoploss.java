@@ -15,7 +15,7 @@ public class Stoploss extends Base {
     private ObjectId id;
     private ObjectId apiKeyId;
     private Exchange exchange;
-    private Symbol symbol;
+    private String symbol;
     private TradeType tradeType;
     private OrderType orderType;
     private double price;

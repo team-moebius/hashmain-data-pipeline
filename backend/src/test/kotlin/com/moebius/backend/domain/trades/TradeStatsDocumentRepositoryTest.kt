@@ -1,10 +1,6 @@
 package com.moebius.backend.domain.trades
 
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.commons.Symbol
-import com.moebius.backend.domain.trades.TradeStatsDocument
-import com.moebius.backend.domain.trades.TradeStatsDocumentRepository
-import com.moebius.backend.domain.trades.TradeStatsDocumentRepositoryImpl
 import com.moebius.backend.utils.ElasticUtils
 import org.apache.http.HttpHost
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +30,7 @@ class TradeStatsDocumentRepositoryTest {
     fun test() {
         val target = TradeStatsDocument.of(
                 Exchange.UPBIT,
-                Symbol.KRW_BTC,
+                "KRW-BTC",
                 ElasticUtils.AggregationInterval.EVERY_MINUTES,
                 1,
                 2.toDouble(),

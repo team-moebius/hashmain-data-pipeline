@@ -2,7 +2,6 @@ package com.moebius.backend.service.market;
 
 import com.moebius.backend.assembler.MarketAssembler;
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.domain.commons.Symbol;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.domain.markets.MarketRepository;
 import com.moebius.backend.dto.MarketDto;
@@ -40,7 +39,7 @@ public class MarketService {
 			});
 	}
 
-	public Mono<Boolean> createMarketIfNotExist(Exchange exchange, Symbol symbol) {
+	public Mono<Boolean> createMarketIfNotExist(Exchange exchange, String symbol) {
 		return marketRepository.findByExchangeAndSymbol(exchange, symbol)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
