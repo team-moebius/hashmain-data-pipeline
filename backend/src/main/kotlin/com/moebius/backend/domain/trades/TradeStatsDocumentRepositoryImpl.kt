@@ -65,7 +65,7 @@ class TradeStatsDocumentRepositoryImpl(@Autowired override val client: RestHighL
 
         private fun statsTermsAggregation(): Array<AggregationBuilder> = arrayOf(
                 AggregationBuilders.terms(AGGNAMES.EXCHANGE.name).field("exchange").size(Exchange.values().size),
-                AggregationBuilders.terms(AGGNAMES.SYMBOL.name).field("symbol").size(30), // FIXME : maybe need to change the size
+                AggregationBuilders.terms(AGGNAMES.SYMBOL.name).field("symbol").size(SYMBOL_SIZE),
                 AggregationBuilders.terms(AGGNAMES.TRADE_TYPE.name).field("tradeType").size(TradeType.values().size)
         )
 
@@ -139,5 +139,9 @@ class TradeStatsDocumentRepositoryImpl(@Autowired override val client: RestHighL
             val response = client.search(query, RequestOptions.DEFAULT)
             return deserializeResponse(response)
         }
+    }
+
+    companion object {
+        private const val SYMBOL_SIZE = 30
     }
 }

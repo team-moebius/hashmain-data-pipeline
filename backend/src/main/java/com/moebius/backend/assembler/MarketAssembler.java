@@ -5,6 +5,7 @@ import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.dto.MarketDto;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Component
@@ -17,7 +18,7 @@ public class MarketAssembler {
 		return market;
 	}
 
-	public Market toMarket(@NotNull Exchange exchange, String symbol) {
+	public Market toMarket(@NotNull Exchange exchange, @NotBlank String symbol) {
 		Market market = new Market();
 		market.setExchange(exchange);
 		market.setSymbol(symbol);
