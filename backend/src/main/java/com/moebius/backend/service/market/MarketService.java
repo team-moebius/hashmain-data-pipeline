@@ -5,11 +5,14 @@ import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.domain.markets.MarketRepository;
 import com.moebius.backend.dto.MarketDto;
+import com.moebius.backend.dto.exchange.MarketsDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
@@ -19,6 +22,12 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Service
 @RequiredArgsConstructor
 public class MarketService {
+	@Value("${exchange.upbit.rest.public-uri}")
+	private String publicUri;
+	@Value("${exchange.upbit.rest.market}")
+	private String marketUri;
+
+	private final WebClient webClient;
 	private final MarketRepository marketRepository;
 	private final MarketAssembler marketAssembler;
 
@@ -39,7 +48,23 @@ public class MarketService {
 			});
 	}
 
-	public Mono<Boolean> createMarketIfNotExist(Exchange exchange, String symbol) {
+	public Mono<ResponseEntity<?>> updateMarketsByExchange(Exchange exchange) {
+		return webClient.get()
+			.uri(publicUri + marketUri)
+			.retrieve()
+			.bodyToMono(MarketsDto.class)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.map(marketsDto -> marketAssembler.toMarkets(exchange, marketsDto))
+			.map(markets -> {
+				markets.stream()
+					.filter(market -> market.getSymbol().startsWith("KRW"))
+					.forEach(market -> createMarketIfNotExist(market.getExchange(), market.getSymbol()).subscribe());
+				return ResponseEntity.ok().build();
+			});
+	}
+
+	private Mono<Boolean> createMarketIfNotExist(Exchange exchange, String symbol) {
 		return marketRepository.findByExchangeAndSymbol(exchange, symbol)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())

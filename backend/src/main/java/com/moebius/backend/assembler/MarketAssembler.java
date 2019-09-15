@@ -3,10 +3,14 @@ package com.moebius.backend.assembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.dto.MarketDto;
+import com.moebius.backend.dto.exchange.MarketsDto;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class MarketAssembler {
@@ -24,5 +28,11 @@ public class MarketAssembler {
 		market.setSymbol(symbol);
 
 		return market;
+	}
+
+	public List<Market> toMarkets(@NotNull Exchange exchange, @NotEmpty MarketsDto marketsDto) {
+		return marketsDto.stream()
+			.map(marketDto -> toMarket(exchange, marketDto.getMarket()))
+			.collect(Collectors.toList());
 	}
 }

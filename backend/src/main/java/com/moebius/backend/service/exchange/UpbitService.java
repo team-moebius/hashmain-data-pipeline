@@ -23,7 +23,6 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Service
 @RequiredArgsConstructor
 public class UpbitService implements ExchangeService {
-	private static final String AUTH_PREFIX = "Bearer ";
 	@Value("${exchange.upbit.rest.public-uri}")
 	private String publicUri;
 	@Value("${exchange.upbit.rest.asset}")
