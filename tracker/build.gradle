@@ -1,3 +1,6 @@
+apply plugin: 'org.springframework.boot'
+
+
 dependencies {
     compile project(':backend')
     implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')

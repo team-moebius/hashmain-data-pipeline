@@ -1,31 +1,31 @@
 package com.moebius.backend.domain.trades
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.moebius.backend.domain.ElasticDocument
 import com.moebius.backend.domain.commons.Change
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.commons.Symbol
 import com.moebius.backend.domain.commons.TradeType
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.*
 
 data class TradeDocument(
         val id: String,
         val exchange: Exchange,
-        val symbol: Symbol,
+        val symbol: String,
         val tradeType: TradeType,
         val change: Change,
         val price: Double,
         val volume: Double,
         val prevClosingPrice: Double,
         val changePrice: Double,
-        @JsonFormat(shape= JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-        val createdAt: LocalDateTime = LocalDateTime.now()
-) {
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+        val createdAt: Date = Date.from(Instant.now())
+) : ElasticDocument {
+    override fun getDocumentId(): String = id
 
     companion object {
-        @JvmStatic
         fun of(exchange: Exchange,
-               symbol: Symbol,
+               symbol: String,
                tradeType: TradeType,
                change: Change,
                price: Double,

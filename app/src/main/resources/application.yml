@@ -7,6 +7,8 @@ spring:
     mongodb:
       uri: mongodb+srv://moebius:highbal1!@mongodb-rs.cryptoboxglobal.com/?retryWrites=true&streamType=netty&readPreference=secondary&ssl=false # TODO : Change to use ssl
       database: moebius
+    elasticsearch:
+      cluster-nodes: http://internal-moebius-es-1636081679.ap-northeast-2.elb.amazonaws.com
   thymeleaf:
     reactive:
       max-chunk-size: 8192
@@ -21,6 +23,16 @@ spring:
           auth: true
           starttls:
             enable: true
+
+exchange:
+  upbit:
+    websocket:
+      uri: wss://api.upbit.com/websocket/v1
+    rest:
+      public-uri: https://api.upbit.com/
+      secret-uri: https://crix-api-endpoint.upbit.com/v1/crix/
+      asset: v1/accounts
+
 
 server:
   port: 80
