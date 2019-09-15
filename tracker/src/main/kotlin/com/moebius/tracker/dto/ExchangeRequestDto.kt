@@ -1,7 +1,6 @@
 package com.moebius.tracker.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.moebius.backend.domain.commons.Symbol
 
 
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
@@ -11,7 +10,7 @@ data class ExchangeRequestDto(
         val format: Format
 ) {
 
-    constructor(symbols: List<Symbol>) : this(Ticket, TypeCodes(codes = symbols), Format)
+    constructor(symbols: List<String>) : this(Ticket, TypeCodes(codes = symbols), Format)
 
     object Ticket {
         val ticket: String = "moebius-tracker"
@@ -19,7 +18,7 @@ data class ExchangeRequestDto(
 
     data class TypeCodes(
             val type: String = "trade",
-            val codes: List<Symbol>
+            val codes: List<String>
     )
 
     object Format {

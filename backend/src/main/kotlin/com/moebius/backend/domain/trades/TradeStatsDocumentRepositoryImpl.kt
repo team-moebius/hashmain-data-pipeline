@@ -3,7 +3,6 @@ package com.moebius.backend.domain.trades
 import com.moebius.backend.domain.ElasticDocumentRepositoryImpl
 import com.moebius.backend.domain.commons.DocumentIndex
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.commons.Symbol
 import com.moebius.backend.domain.commons.TradeType
 import com.moebius.backend.utils.ElasticUtils
 import org.elasticsearch.action.search.SearchRequest
@@ -66,7 +65,7 @@ class TradeStatsDocumentRepositoryImpl(@Autowired override val client: RestHighL
 
         private fun statsTermsAggregation(): Array<AggregationBuilder> = arrayOf(
                 AggregationBuilders.terms(AGGNAMES.EXCHANGE.name).field("exchange").size(Exchange.values().size),
-                AggregationBuilders.terms(AGGNAMES.SYMBOL.name).field("symbol").size(Symbol.values().size),
+                AggregationBuilders.terms(AGGNAMES.SYMBOL.name).field("symbol").size(SYMBOL_SIZE),
                 AggregationBuilders.terms(AGGNAMES.TRADE_TYPE.name).field("tradeType").size(TradeType.values().size)
         )
 
@@ -107,7 +106,7 @@ class TradeStatsDocumentRepositoryImpl(@Autowired override val client: RestHighL
 
         private fun parseSymbol(aggSymbol: Terms.Bucket): TradeStatsDocument.Builder {
             println("symbol: ${aggSymbol.keyAsString} doc-count: ${aggSymbol.docCount}")
-            val symbol = Symbol.valueOfJson(aggSymbol.keyAsString)
+            val symbol = aggSymbol.keyAsString
             val docCount = aggSymbol.docCount
             val aggTradeTypes = aggSymbol.aggregations.get<ParsedStringTerms>(AGGNAMES.TRADE_TYPE.name)
             val document = TradeStatsDocument.Builder().symbol(symbol).timeUnit(interval)
@@ -140,5 +139,9 @@ class TradeStatsDocumentRepositoryImpl(@Autowired override val client: RestHighL
             val response = client.search(query, RequestOptions.DEFAULT)
             return deserializeResponse(response)
         }
+    }
+
+    companion object {
+        private const val SYMBOL_SIZE = 30 // TODO : Need to set proper size for aggregation per exchanges
     }
 }

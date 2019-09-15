@@ -3,7 +3,6 @@ package com.moebius.backend.domain.trades
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.moebius.backend.domain.ElasticDocument
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.commons.Symbol
 import com.moebius.backend.utils.ElasticUtils
 import java.time.Instant
 import java.time.LocalDateTime
@@ -26,7 +25,7 @@ data class TradeStatsDocument(
          */
         val id: String,
         val exchange: Exchange,
-        val symbol: Symbol,
+        val symbol: String,
         val timeUnit: ElasticUtils.AggregationInterval,
         val totalAskCount: Long,
         val totalAskPrice: Double,
@@ -44,7 +43,7 @@ data class TradeStatsDocument(
 
     companion object {
         fun of(exchange: Exchange,
-               symbol: Symbol,
+               symbol: String,
                timeUnit: ElasticUtils.AggregationInterval,
                totalAskCount: Long,
                totalAskPrice: Double,
@@ -98,7 +97,7 @@ data class TradeStatsDocument(
 
     class Builder {
         private var exchange: Exchange? = null
-        private var symbol: Symbol? = null
+        private var symbol: String? = null
         private var timeUnit: ElasticUtils.AggregationInterval? = null
         private var totalAskCount: Long = 0
         private var totalAskPrice: Double = 0.0
@@ -109,7 +108,7 @@ data class TradeStatsDocument(
         private var statsDate: LocalDateTime? = null
 
         fun exchange(exchange: Exchange) = apply { this.exchange = exchange }
-        fun symbol(symbol: Symbol) = apply { this.symbol = symbol }
+        fun symbol(symbol: String) = apply { this.symbol = symbol }
         fun timeUnit(timeUnit: ElasticUtils.AggregationInterval) = apply { this.timeUnit = timeUnit }
         fun totalAskCount(totalAskCount: Long) = apply { this.totalAskCount = totalAskCount }
         fun totalAskPrice(totalAskPrice: Double) = apply { this.totalAskPrice = totalAskPrice }

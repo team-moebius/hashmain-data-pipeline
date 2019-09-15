@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.moebius.backend.domain.ElasticDocument
 import com.moebius.backend.domain.commons.Change
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.commons.Symbol
 import com.moebius.backend.domain.commons.TradeType
 import java.time.Instant
 import java.util.*
@@ -12,7 +11,7 @@ import java.util.*
 data class TradeDocument(
         val id: String,
         val exchange: Exchange,
-        val symbol: Symbol,
+        val symbol: String,
         val tradeType: TradeType,
         val change: Change,
         val price: Double,
@@ -26,7 +25,7 @@ data class TradeDocument(
 
     companion object {
         fun of(exchange: Exchange,
-               symbol: Symbol,
+               symbol: String,
                tradeType: TradeType,
                change: Change,
                price: Double,
