@@ -28,7 +28,7 @@ public class StoplossAssembler {
 		return stoplosses;
 	}
 
-	public StoplossResponseDto toRespoonseDto(@NotNull Stoploss stoploss) {
+	public StoplossResponseDto toResponseDto(@NotNull Stoploss stoploss) {
 		StoplossResponseDto responseDto = new StoplossResponseDto();
 		responseDto.setId(stoploss.getId().toHexString());
 		responseDto.setExchange(stoploss.getExchange());

@@ -25,7 +25,6 @@ import org.springframework.web.reactive.socket.WebSocketMessage
 import org.springframework.web.reactive.socket.WebSocketSession
 import org.springframework.web.reactive.socket.client.WebSocketClient
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import java.io.IOException
 import java.net.URI
 
@@ -71,32 +70,34 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                 .map {
                     objectMapper.writeValueAsString(ExchangeRequestDto(it))
                 }.map { message ->
-                    log.info("[Tracker] Start to track trades. - message : {}", message)
+                    log.info("[Tracker] Start to track trades. [{}]", message)
                     webSocketClient.execute(URI.create(uri)) { session ->
-                        log.info("[Tracker] Save opened session. [id : {}]", session.id)
+                        log.info("[Tracker] New session has been opened. [id : {}]", session.id)
                         openedSessions[session.id] = session
                         session.send(Mono.just(session.textMessage(message)))
                                 .thenMany<WebSocketMessage>(session.receive().map<WebSocketMessage> { webSocketMessage ->
                                     try {
                                         val tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto::class.java)
-                                        log.info { tradeDto }
                                         accumulateTrade(tradeDto)
-                                        // maybe need to use upsertTrade rather accumulateTrade.
-                                        // upsertTrade(tradeDto);
                                     } catch (e: IOException) {
                                         log.error(e.message)
                                     }
 
                                     webSocketMessage
                                 }).then()
+                                .doOnTerminate(Runnable {
+                                    log.info("[Tracker] Session exited, Try to track trades again.")
+                                    openedSessions.clear()
+                                    trackTrades()
+                                })
                     }.subscribe()
                 }.subscribe()
     }
 
     private fun accumulateTrade(tradeDto: TradeDto) {
         Mono.fromCallable { tradeAssembler.toTradeDocument(tradeDto) }
-                .subscribeOn(Schedulers.parallel())
-                .publishOn(Schedulers.elastic())
+                .subscribeOn(COMPUTE.scheduler())
+                .publishOn(IO.scheduler())
                 .flatMap { tradeDocumentRepository.saveAsync(it) }
                 .subscribe()
     }

@@ -43,6 +43,8 @@ subprojects {
 	project.version = '0.0.1-RELEASE'
 	sourceCompatibility = 1.8
 
+	ext['elasticsearch.version'] = '7.1.1'
+
 	dependencies {
         implementation('org.hsqldb:hsqldb')
         implementation('org.springframework.boot:spring-boot-starter-webflux')

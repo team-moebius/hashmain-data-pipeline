@@ -2,7 +2,6 @@ package com.moebius.backend.domain.markets;
 
 import com.moebius.backend.domain.commons.Base;
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.domain.commons.Symbol;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
@@ -18,5 +17,5 @@ public class Market extends Base {
 	@Id
 	private ObjectId id;
 	private Exchange exchange;
-	private Symbol symbol;
+	private String symbol;
 }

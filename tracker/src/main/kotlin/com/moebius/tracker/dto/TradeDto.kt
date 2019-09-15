@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.moebius.backend.domain.commons.Change
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.commons.Symbol
 import com.moebius.backend.domain.commons.TradeType
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,7 +11,7 @@ data class TradeDto(
         @JsonProperty("ty")
         val type: String,
         @JsonProperty("cd")
-        val symbol: Symbol,
+        val symbol: String,
         @JsonProperty("ttms")
         val tradeTimestamp: Long,
         @JsonProperty("tp")
