@@ -12,4 +12,6 @@ public interface MarketRepository extends ReactiveMongoRepository<Market, Object
 	Flux<Market> findAllByExchange(Exchange exchange);
 
 	Mono<Market> findByExchangeAndSymbol(Exchange exchange, String symbol);
+
+	Mono<Long> countByExchange(Exchange exchange);
 }
