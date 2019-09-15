@@ -7,6 +7,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Symbol is pure String type cause of changes in real-time by external exchanges.
+ */
 @Getter
 @Setter
 @Document(collection = "stoplosses")

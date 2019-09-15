@@ -9,7 +9,6 @@ import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.market.MarketService;
 import com.moebius.backend.service.member.ApiKeyService;
-import com.moebius.backend.service.tracker.TrackerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
@@ -32,28 +30,17 @@ public class StoplossService {
 	private final StoplossAssembler stoplossAssembler;
 	private final ApiKeyService apiKeyService;
 	private final MarketService marketService;
-	private final TrackerService trackerService;
 
 	public Mono<ResponseEntity<List<StoplossResponseDto>>> createStoplosses(String apiKeyId, List<StoplossDto> stoplossDtos) {
-		List<StoplossResponseDto> responseDtos = new ArrayList<>();
-
 		return apiKeyService.getApiKeyById(apiKeyId)
 			.subscribeOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(
 				() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] " + apiKeyId)))))
 			.flatMapIterable(apiKey -> stoplossAssembler.toStoplosses(apiKey, stoplossDtos))
 			.compose(this::saveStoplosses)
-			.flatMap(stoploss -> {
-				responseDtos.add(stoplossAssembler.toRespoonseDto(stoploss));
-				return marketService.createMarketIfNotExist(stoploss.getExchange(), stoploss.getSymbol());
-			})
-			.hasElement(true)
-			.map(created -> {
-				if (created) {
-					trackerService.reTrackTrades().subscribe();
-				}
-				return ResponseEntity.ok(responseDtos);
-			});
+			.map(stoplossAssembler::toResponseDto)
+			.collectList()
+			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<List<StoplossResponseDto>>> getStoplossesByApiKey(String apiKeyId) {
@@ -62,7 +49,7 @@ public class StoplossService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Stoploss] Stoploss information based on  " + apiKeyId)))))
-			.map(stoplossAssembler::toRespoonseDto)
+			.map(stoplossAssembler::toResponseDto)
 			.collectList()
 			.map(ResponseEntity::ok);
 	}
