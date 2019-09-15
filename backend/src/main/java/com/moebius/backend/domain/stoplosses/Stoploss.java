@@ -15,7 +15,8 @@ public class Stoploss extends Base {
     private ObjectId id;
     private ObjectId apiKeyId;
     private Exchange exchange;
-    private Symbol symbol;
+    // Symbol has been changed to String from Enum cause of real time changes in external exchanges.
+    private String symbol;
     private TradeType tradeType;
     private OrderType orderType;
     private double price;

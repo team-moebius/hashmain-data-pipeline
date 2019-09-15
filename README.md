@@ -4,24 +4,23 @@
 Moebius is a platform for supporting crypto currency trades conveniently, safely.
  
 ## Structure
-1. Moebius-backend (api, domain, service ...)
-2. Moebius-frontend (mvc)
+1. Moebius-backend (api, domain, service)
+2. Moebius-frontend
 3. Moebius-batch
 
-## Technical specification
+## Technical specification (backend)
 * Spring boot 2
 * Spring webflux
 * Spring security
-* Spring data mongodb
-* Mongodb reactive stream
-* Mongodb atlas (Mongo 4.0.6)
+* Spring data with mongodb
+* Reactive stream based on [Project Reactor](https://projectreactor.io)
+* Mongodb 4.0.12
 
 ## Features
 * User management based on json web token & spring security
 * Flexible Stoploss in trades
 
-
-## Vm options
+## Vm options (backend)
 ```
 -Dspring.profiles.active=${profile}
 -Dreactor.netty.http.server.accessLogEnabled=true
