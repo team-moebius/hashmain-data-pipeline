@@ -37,7 +37,6 @@ interface MainPageState {
   index: number;
 }
 
-// TODO: Refactoring for usable icons later
 class MainPage extends React.Component<MainPageProps, MainPageState> {
   static readonly MENU_ITEMS: JSX.Element[] = [
     <>HTS 설정</>,

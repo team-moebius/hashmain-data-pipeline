@@ -1,3 +1,4 @@
+// 해당 파일은 Moebius 의 비즈니스 컴포넌트이기에 organsisms에 위치합니다.
 import * as React from 'react';
 
 import Input from 'components/atoms/Input';
@@ -14,7 +15,7 @@ const ApiKeyRegistBox: React.FC<ApiKeyRegistBoxProps> = props => {
   const botNameRef = React.createRef<any>();
   const accessKeyRef = React.createRef<any>();
   const secretKeyRef = React.createRef<any>();
-  const onClickRegistApiKeyButton = (data: object) => {
+  const onClickRegistApiKeyButton = () => {
     props.onClickRegistApiKeyButton({
       accessKey: accessKeyRef.current.value,
       secretKey: secretKeyRef.current.value,
