@@ -1,16 +1,10 @@
 package com.moebius.backend.domain
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.moebius.backend.domain.commons.DocumentIndex
 import com.moebius.backend.utils.ElasticUtils
 import com.moebius.backend.utils.ElasticUtils.indexRequest
 import mu.KotlinLogging
 import org.elasticsearch.action.bulk.BulkRequest
-import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -18,7 +12,6 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
-import java.time.LocalDateTime
 
 open class ElasticDocumentRepositoryImpl<T>(
         open val client: RestHighLevelClient,
