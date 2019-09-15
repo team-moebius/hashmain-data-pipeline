@@ -1,6 +1,8 @@
 package com.moebius.backend.configuration
 
 
+import com.moebius.backend.domain.commons.Exchange
+import com.moebius.backend.domain.markets.MarketRepository
 import mu.KotlinLogging
 import org.apache.http.HttpHost
 import org.apache.http.auth.AuthScope
@@ -9,6 +11,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClientBuilder
 import org.elasticsearch.client.RestHighLevelClient
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -22,6 +25,9 @@ class ElasticsearchConfiguration(
 ) {
 
     private val log = KotlinLogging.logger {}
+
+    @Autowired
+    private lateinit var marketRepository: MarketRepository
 
     @Bean
     fun restClientBuilder(): RestClientBuilder {
@@ -44,4 +50,8 @@ class ElasticsearchConfiguration(
         return RestHighLevelClient(restClientBuilder)
     }
 
+    @Bean
+    fun marketCount(): Long {
+        return marketRepository.countByExchange(Exchange.UPBIT).block()!!
+    }
 }
