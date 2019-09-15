@@ -11,7 +11,7 @@ import SignIn from 'components/templates/SignIn';
 import SignUp from 'components/templates/SignUp';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
 import ajax from 'utils/Ajax';
-import { ReduxState } from 'utils/GlobalReducer';
+import { ReduxState } from 'infra/redux/GlobalState';
 
 import 'assets/scss/SignPage.scss';
 

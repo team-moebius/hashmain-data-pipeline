@@ -1,67 +1,17 @@
 import React from 'react';
-import { ConnectedRouter } from 'connected-react-router';
-import { transitions, positions, Provider as AlertProvider, AlertComponentPropsWithStyle } from 'react-alert';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-
-import Notice from 'components/molecules/Notice';
+import AlertProvider from 'infra/provider/AlertProvider';
+import ThemeProvider from 'infra/provider/ThemeProvider';
+import ReduxProvider from 'infra/provider/ReduxProvider';
 import PageContainer from 'pages/PageContainer';
-import setReduxStore, { routeHistory } from 'utils/GlobalStore';
 
-/** Material-ui theme setting */
-const defaultTheme = createMuiTheme({
-  palette: {
-    type: 'dark',
-    primary: {
-      main: '#13253F',
-      light: '#173456',
-      contrastText: '#C9CFE8',
-    },
-    secondary: {
-      main: '#1E8CDE',
-    },
-  },
-  typography: {
-    fontSize: 12,
-    body1: { fontSize: 12 },
-    h6: { fontSize: 14 },
-  },
-});
-
-/** Alert setting */
-const alertOptions = {
-  position: positions.TOP_CENTER,
-  timeout: 2500,
-  offset: '30px 0px 15px 0px',
-  transition: transitions.FADE,
-};
-
-/** Alert template */
-const AlertTemplate = ({ style, options, message, close }: AlertComponentPropsWithStyle) => (
-  <div style={style}>
-    <Notice noticeType={options.type || 'info'} message={message} onClose={close} />
-  </div>
-);
-
-/** Get Redux Store */
-const mainStore = setReduxStore();
-
-/** App의 기본 설정들을 위한 Wrapper들을 적용시키는 Functional Component */
+/** App의 기본 설정들을 위한 Provider 를 적용시키는 Functional Component */
 const AppWrapper: React.SFC<{}> = props => (
-  <Provider store={mainStore.store}>
-    <PersistGate loading={null} persistor={mainStore.persistor}>
-      <MuiThemeProvider theme={defaultTheme}>
-        <CssBaseline>
-          <AlertProvider template={AlertTemplate} {...alertOptions}>
-            <ConnectedRouter history={routeHistory}>{props.children}</ConnectedRouter>
-          </AlertProvider>
-        </CssBaseline>
-      </MuiThemeProvider>
-    </PersistGate>
-  </Provider>
+  <ReduxProvider>
+    <ThemeProvider>
+      <AlertProvider>{props.children}</AlertProvider>
+    </ThemeProvider>
+  </ReduxProvider>
 );
 
 const App: React.FC = () => (

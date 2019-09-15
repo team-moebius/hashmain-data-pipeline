@@ -16,7 +16,7 @@ import UseGuide from 'pages/menu-contents/UseGuide';
 import Profile from 'pages/menu-contents/Profile';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
 import { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors } from 'utils/Ajax';
-import { ReduxState } from 'utils/GlobalReducer';
+import { ReduxState } from 'infra/redux/GlobalState';
 
 import bgImage from 'assets/images/bg.png';
 import logo from 'assets/images/logo.png';
@@ -87,18 +87,10 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
             leftSide: <img alt="logo" className="layout-header__logo" src={logo} />,
             rightSide: (
               <>
-                <MuiButton
-                  className="layout-header__button"
-                  size="medium"
-                  onClick={this.onClickAlertSample}
-                >
+                <MuiButton className="layout-header__button" size="medium" onClick={this.onClickAlertSample}>
                   <MuiTypography variant="h6">얼럿 샘플</MuiTypography>
                 </MuiButton>
-                <MuiButton
-                  className="layout-header__button"
-                  size="medium"
-                  onClick={this.onClickSignOut}
-                >
+                <MuiButton className="layout-header__button" size="medium" onClick={this.onClickSignOut}>
                   <MuiTypography variant="h6">로그아웃</MuiTypography>
                 </MuiButton>
               </>

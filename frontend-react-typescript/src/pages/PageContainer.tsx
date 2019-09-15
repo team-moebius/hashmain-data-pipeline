@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 
 import SignPage from 'pages/entry/SignPage';
 import MainPage from 'pages/entry/MainPage';
-import PrivateRoute from 'utils/PrviateRoute';
-import { ReduxState } from 'utils/GlobalReducer';
+import PrivateRoute from 'infra/PrviateRoute';
+import { ReduxState } from 'infra/redux/GlobalState';
 
 interface PageProps {
   signing: boolean;
