@@ -8,11 +8,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import IconButton from 'components/atoms/IconButton';
 import NoticeBox from 'components/atoms/NoticeBox';
 import NoticeIcon from 'components/atoms/NoticeIcon';
+import Text from 'components/atoms/Text';
 
 const useStyles = makeStyles(theme => ({
   icon: {
-    fontSize: 20,
     color: 'white',
+    fontSize: 20,
   },
   noticeIcon: {
     opacity: 0.9,
@@ -48,10 +49,10 @@ const Notice: React.FC<NoticeProps> = props => {
       aria-describedby="client-snackbar"
       noticeType={noticeType}
       message={
-        <span id="client-snackbar" className={classes.message}>
+        <Text id="client-snackbar" className={classes.message} variant="caption">
           <NoticeIcon className={classNames(classes.icon, classes.noticeIcon)} noticeType={noticeType} />
           {message}
-        </span>
+        </Text>
       }
       {...rest}
     />

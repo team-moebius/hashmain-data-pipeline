@@ -33,7 +33,7 @@ interface SignPageState {
 }
 
 class SignPage extends React.Component<SignPageProps, SignPageState> {
-  static readonly MENU_ITEMS: string[] = ['로그인', '회원가입'];
+  static readonly MENU_ITEMS: JSX.Element[] = [<>로그인</>, <>회원가입</>];
 
   constructor(props: SignPageProps) {
     super(props);
@@ -66,9 +66,9 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         .catch(error => {
           this.setState({ pending: false });
           if (error.response && error.response.status === 401) {
-            this.props.alert.error('해당 계정은 이메일 인증이 완료되지 않았습니다.');
+            this.props.alert.error('이메일 인증을 완료하세요.');
           } else {
-            this.props.alert.error('로그인 실패. ID 혹은 Password를 확인하세요.');
+            this.props.alert.error('로그인 실패. ID/Password를 확인하세요.');
           }
         });
     });
@@ -80,7 +80,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         .post('/api/members/signup', data)
         .then(() => {
           this.setState({ index: 0, pending: false });
-          this.props.alert.success('회원 가입 성공. 인증 메일을 확인하세요.');
+          this.props.alert.success('가입 성공. 인증 메일을 확인하세요.');
         })
         .catch(error => {
           this.setState({ pending: false });
@@ -99,7 +99,13 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
       <Paper className="sign-page">
         {this.state.pending && <CircularLoader />}
         <Paper className="sign-page__wrapper" square>
-          <BasicTabs centered items={SignPage.MENU_ITEMS} value={this.state.index} onChange={this.onChangeTabs} />
+          <BasicTabs
+            centered
+            items={SignPage.MENU_ITEMS}
+            value={this.state.index}
+            orientation="horizontal"
+            onChange={this.onChangeTabs}
+          />
           <div className="sign-page__contents">
             {this.state.index === 0 && <SignIn pending={this.state.pending} onSubmit={this.onSubmitSignIn} />}
             {this.state.index === 1 && (

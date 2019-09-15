@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 
 import MuiButton from '@material-ui/core/Button';
-import MuiTypography from '@material-ui/core/Typography';
 
+import Text from 'components/atoms/Text';
 import AppBar from 'components/molecules/AppBar';
-import MainTabs from 'components/molecules/MainTabs';
+import Tab from 'components/molecules/Tab';
 import HtsConfig from 'pages/menu-contents/HtsConfig';
 import Assets from 'pages/menu-contents/Assets';
 import Idea from 'pages/menu-contents/Idea';
@@ -86,24 +86,20 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
           {{
             leftSide: <img alt="logo" className="layout-header__logo" src={logo} />,
             rightSide: (
-              <>
-                <MuiButton className="layout-header__button" size="medium" onClick={this.onClickAlertSample}>
-                  <MuiTypography variant="h6">얼럿 샘플</MuiTypography>
-                </MuiButton>
-                <MuiButton className="layout-header__button" size="medium" onClick={this.onClickSignOut}>
-                  <MuiTypography variant="h6">로그아웃</MuiTypography>
-                </MuiButton>
-              </>
+              <MuiButton className="layout-header__button" size="medium" onClick={this.onClickSignOut}>
+                <Text variant="body1">로그아웃</Text>
+              </MuiButton>
             ),
           }}
         </AppBar>
-        <div className="layout-contents">
-          <MainTabs
-            className="layout-contents__menu"
-            value={this.state.index}
-            items={MainPage.MENU_ITEMS}
-            onChange={this.onChangeMenuIndex}
-          />
+        <Tab
+          rootClassName="layout-contents"
+          tabsClassName="layout-contents__menu"
+          value={this.state.index}
+          items={MainPage.MENU_ITEMS}
+          orientation="vertical"
+          onChange={this.onChangeMenuIndex}
+        >
           <div className="layout-contents__item-wrapper">
             {this.state.index === 0 && <HtsConfig className="layout-contents__item-contents" />}
             {this.state.index === 1 && <Assets className="layout-contents__item-contents" />}
@@ -112,7 +108,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
             {this.state.index === 4 && <UseGuide className="layout-contents__item-contents" />}
             {this.state.index === 5 && <Profile className="layout-contents__item-contents" />}
           </div>
-        </div>
+        </Tab>
       </div>
     );
   }

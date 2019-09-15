@@ -13,7 +13,7 @@ interface ContentsState {
 }
 
 class Assets extends React.Component<ContentsProps, ContentsState> {
-  private static TAB_HEADERS = ['자산 보유내역', '주문 완료내역'];
+  private static TAB_HEADERS = [<>자산 보유내역</>, <>주문 완료내역</>];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: ContentsProps) {
     super(props);

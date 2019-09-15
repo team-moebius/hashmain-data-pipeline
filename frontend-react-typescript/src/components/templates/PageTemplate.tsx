@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 interface PageTemplateProps {
   className?: string;
   index: number;
-  tabHeaders: string[];
+  tabHeaders: JSX.Element[];
   tabContents: JSX.Element[];
   onChangeTab: (e: React.ChangeEvent<{}>, value: any) => void;
 }
@@ -26,7 +26,7 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
   return (
     <div className={classNames(classes.root, props.className)}>
       <Paper className={classes.tabHeader}>
-        <BasicTabs value={props.index} items={props.tabHeaders} onChange={props.onChangeTab} />
+        <BasicTabs value={props.index} items={props.tabHeaders} orientation="horizontal" onChange={props.onChangeTab} />
       </Paper>
       <Paper className={classes.tabContents}>
         <div style={{ marginTop: '4px' }}>{props.tabContents[props.index]}</div>

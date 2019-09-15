@@ -13,7 +13,7 @@ interface ContentsState {
 }
 
 class Profile extends React.Component<ContentsProps, ContentsState> {
-  private static TAB_HEADERS = ['사용자 정보', '회원등급 안내'];
+  private static TAB_HEADERS = [<>사용자 정보</>, <>회원등급 안내</>];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: ContentsProps) {
     super(props);

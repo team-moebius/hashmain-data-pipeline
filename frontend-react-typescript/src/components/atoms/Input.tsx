@@ -1,7 +1,8 @@
+import * as React from 'react';
+import MuiTextField, { TextFieldProps as MuiTextFieldProps } from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
-import MuiTextField from '@material-ui/core/TextField';
 
-const Input = withStyles(theme => ({
+const MoebiusInput = withStyles(theme => ({
   root: {
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
@@ -13,6 +14,8 @@ const Input = withStyles(theme => ({
     margin: '0 0px 8px 0',
   },
 }))(MuiTextField);
+
+const Input: React.FC<MuiTextFieldProps> = props => <MoebiusInput {...props}>{props.children}</MoebiusInput>;
 
 Input.defaultProps = {
   fullWidth: true,

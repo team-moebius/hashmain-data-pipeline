@@ -21,7 +21,7 @@ interface ContentsState {
 }
 
 class HtsConfig extends React.Component<ContentsProps, ContentsState> {
-  private static TAB_HEADERS = ['멀티거래 모드', 'Test2'];
+  private static TAB_HEADERS = [<>멀티거래 모드</>, <>Test2</>];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: ContentsProps) {
     super(props);

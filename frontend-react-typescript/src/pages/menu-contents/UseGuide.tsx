@@ -13,7 +13,7 @@ interface ContentsState {
 }
 
 class UseGuide extends React.Component<ContentsProps, ContentsState> {
-  private static TAB_HEADERS = ['로드맵 소개', '개인 정보 정책'];
+  private static TAB_HEADERS = [<>로드맵 소개</>, <>개인 정보 정책</>];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: ContentsProps) {
     super(props);

@@ -6,19 +6,19 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 const MOBEIUS_THEME = createMuiTheme({
   palette: {
     type: 'dark',
+    background: {
+      paper: '#13253F',
+    },
+    text: {
+      primary: '#C9CFE8',
+    },
     primary: {
       main: '#13253F',
       light: '#173456',
-      contrastText: '#C9CFE8',
     },
     secondary: {
       main: '#1E8CDE',
     },
-  },
-  typography: {
-    fontSize: 12,
-    body1: { fontSize: 12 },
-    h6: { fontSize: 14 },
   },
 });
 

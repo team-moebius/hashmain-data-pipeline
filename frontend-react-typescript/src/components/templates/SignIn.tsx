@@ -4,7 +4,6 @@ import MuiButton from '@material-ui/core/Button';
 
 import Input from 'components/atoms/Input';
 import Text from 'components/atoms/Text';
-import TextForButton from 'components/atoms/TextForButton';
 import FormValidator from 'utils/FormValidator';
 
 interface SignInProps {
@@ -45,8 +44,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     const email = this.emailRef.current.value;
     const password = this.passwordRef.current.value;
 
-    if (this.props.onSubmit && this.validate(email, password))
-      this.props.onSubmit({ email, password });
+    if (this.props.onSubmit && this.validate(email, password)) this.props.onSubmit({ email, password });
   };
 
   render() {
@@ -77,18 +75,18 @@ class SignIn extends React.Component<SignInProps, SignInState> {
           type="submit"
           variant="contained"
         >
-          <TextForButton variant="h6">로그인</TextForButton>
+          <Text variant="button">로그인</Text>
         </MuiButton>
         {/* <Checkbox label="아이디 저장하기" /> */}
         <ul>
           <li>
-            <Text gutterBottom>
-              * 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>
-              에 동의하는 것으로 간주합니다.
+            <Text gutterBottom variant="caption">
+              * 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의하는 것으로
+              간주합니다.
             </Text>
           </li>
           <li>
-            <Text gutterBottom>
+            <Text gutterBottom variant="caption">
               * CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.
             </Text>
           </li>

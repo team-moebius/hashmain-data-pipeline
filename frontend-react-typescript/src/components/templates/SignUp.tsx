@@ -6,7 +6,6 @@ import MuiButton from '@material-ui/core/Button';
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
 import Text from 'components/atoms/Text';
-import TextForButton from 'components/atoms/TextForButton';
 import FormValidator from 'utils/FormValidator';
 
 interface SignUpProps {
@@ -158,15 +157,15 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           /> */}
         <ul>
           <li>
-            <Text variant="body1" gutterBottom>
-              * <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
-              <em>계정 인증용 메일</em>이 전송됩니다.
+            <Text variant="caption" gutterBottom>
+              * <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후 <em>계정 인증용 메일</em>이
+              전송됩니다.
             </Text>
           </li>
           <li>
-            <Text variant="body1" gutterBottom>
-              * 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에{' '}
-              <em>스팸 메일함을 확인</em> 하시기 바랍니다.
+            <Text variant="caption" gutterBottom>
+              * 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에 <em>스팸 메일함을 확인</em> 하시기
+              바랍니다.
             </Text>
           </li>
         </ul>
@@ -191,14 +190,15 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         <Checkbox
           name="permitTerms"
           onChange={this.onChangePermitTerms}
+          style={{ width: '100%' }}
           label={
-            <Text variant="body1" gutterBottom>
+            <Text variant="caption" gutterBottom>
               <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
             </Text>
           }
         />
         {this.state.errors.permitTerms && (
-          <Text variant="body1" gutterBottom color="error">
+          <Text variant="caption" gutterBottom color="error">
             {this.state.errors.permitTerms}
           </Text>
         )}
@@ -206,11 +206,11 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           color="secondary"
           disabled={this.props.pending}
           fullWidth
-          size="large"
+          size="medium"
           type="submit"
           variant="contained"
         >
-          <TextForButton variant="h6">회원가입</TextForButton>
+          <Text variant="button">회원가입</Text>
         </MuiButton>
       </form>
     );
