@@ -1,18 +1,13 @@
 import React from 'react';
 import { ConnectedRouter } from 'connected-react-router';
-import {
-  transitions,
-  positions,
-  Provider as AlertProvider,
-  AlertComponentPropsWithStyle,
-} from 'react-alert';
+import { transitions, positions, Provider as AlertProvider, AlertComponentPropsWithStyle } from 'react-alert';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import AlertContents from 'components/molecules/AlertContents';
+import Notice from 'components/molecules/Notice';
 import PageContainer from 'pages/PageContainer';
 import setReduxStore, { routeHistory } from 'utils/GlobalStore';
 
@@ -47,7 +42,7 @@ const alertOptions = {
 /** Alert template */
 const AlertTemplate = ({ style, options, message, close }: AlertComponentPropsWithStyle) => (
   <div style={style}>
-    <AlertContents variant={options.type || 'info'} message={message} onClose={close} />
+    <Notice noticeType={options.type || 'info'} message={message} onClose={close} />
   </div>
 );
 
