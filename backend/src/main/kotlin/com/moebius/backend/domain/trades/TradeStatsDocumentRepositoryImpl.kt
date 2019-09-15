@@ -142,6 +142,6 @@ class TradeStatsDocumentRepositoryImpl(@Autowired override val client: RestHighL
     }
 
     companion object {
-        private const val SYMBOL_SIZE = 30
+        private const val SYMBOL_SIZE = 30 // TODO : Need to set proper size for aggregation per exchanges
     }
 }

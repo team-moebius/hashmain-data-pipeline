@@ -70,9 +70,9 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                 .map {
                     objectMapper.writeValueAsString(ExchangeRequestDto(it))
                 }.map { message ->
-                    log.info("[Tracker] Start to track trades. - message : {}", message)
+                    log.info("[Tracker] Start to track trades. [{}]", message)
                     webSocketClient.execute(URI.create(uri)) { session ->
-                        log.info("[Tracker] Save opened session. [id : {}]", session.id)
+                        log.info("[Tracker] New session has been opened. [id : {}]", session.id)
                         openedSessions[session.id] = session
                         session.send(Mono.just(session.textMessage(message)))
                                 .thenMany<WebSocketMessage>(session.receive().map<WebSocketMessage> { webSocketMessage ->

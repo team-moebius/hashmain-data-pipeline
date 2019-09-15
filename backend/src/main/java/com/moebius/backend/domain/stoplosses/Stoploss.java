@@ -7,9 +7,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-/**
- * Symbol is pure String type cause of changes in real-time by external exchanges.
- */
 @Getter
 @Setter
 @Document(collection = "stoplosses")
@@ -18,6 +15,7 @@ public class Stoploss extends Base {
     private ObjectId id;
     private ObjectId apiKeyId;
     private Exchange exchange;
+    // Symbol has been changed to String from Enum cause of real time changes in external exchanges.
     private String symbol;
     private TradeType tradeType;
     private OrderType orderType;
