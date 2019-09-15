@@ -2,7 +2,7 @@ package com.moebius.backend.api;
 
 import com.moebius.backend.dto.frontend.StoplossDto;
 import com.moebius.backend.dto.frontend.response.StoplossResponseDto;
-import com.moebius.backend.service.stoploss.StoplossService;
+import com.moebius.backend.service.order.StoplossService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;

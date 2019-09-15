@@ -8,7 +8,7 @@ import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DuplicateDataException;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.service.exchange.ExchangeFactory;
+import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.utils.Verifier;
 import com.mongodb.DuplicateKeyException;
@@ -31,7 +31,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 public class ApiKeyService {
 	private final ApiKeyRepository apiKeyRepository;
 	private final ApiKeyAssembler apiKeyAssembler;
-	private final ExchangeFactory exchangeFactory;
+	private final ExchangeServiceFactory exchangeServiceFactory;
 
 	public Mono<ResponseEntity<ApiKeyResponseDto>> verifyAndCreateApiKey(ApiKeyDto apiKeyDto, String memberId) {
 		Verifier.checkNullFields(apiKeyDto);
@@ -82,7 +82,7 @@ public class ApiKeyService {
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
 		log.info("[ApiKey] Start to verify api key. [{}]", apiKeyDto);
 
-		ExchangeService exchangeService = exchangeFactory.getService(apiKeyDto.getExchange());
+		ExchangeService exchangeService = exchangeServiceFactory.getService(apiKeyDto.getExchange());
 		return exchangeService.getAuthToken(apiKeyDto.getAccessKey(), apiKeyDto.getSecretKey())
 			.flatMap(exchangeService::doHealthCheck);
 	}

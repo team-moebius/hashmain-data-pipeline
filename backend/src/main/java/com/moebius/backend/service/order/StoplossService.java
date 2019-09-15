@@ -1,4 +1,4 @@
-package com.moebius.backend.service.stoploss;
+package com.moebius.backend.service.order;
 
 import com.moebius.backend.assembler.StoplossAssembler;
 import com.moebius.backend.domain.stoplosses.Stoploss;
