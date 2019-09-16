@@ -23,7 +23,8 @@ moebius:
       /api/member/**,
       /api/members/**,
       /login
-    admin: /admin
+    admin: /admin,
+      /api/markets/**
     member: /api/stoplosses/**,
       /api/api-keys/**
 

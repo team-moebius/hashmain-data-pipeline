@@ -22,8 +22,8 @@ moebius:
       /webjars/**,
       /api/member/**,
       /api/members/**,
-      /api/markets/**,
       /login
-    admin: /admin
+    admin: /admin,
+      /api/markets/**
     member: /api/stoplosses/**,
       /api/api-keys/**
