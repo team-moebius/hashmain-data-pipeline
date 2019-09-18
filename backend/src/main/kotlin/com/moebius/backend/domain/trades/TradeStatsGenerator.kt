@@ -51,7 +51,8 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
         )
     }
 
-    private fun statsTransactionSum(): AggregationBuilder = AggregationBuilders.sum(AGGNAMES.TRX_SUM.name).field("price")
+
+    private fun statsTransactionSum(): AggregationBuilder = AggregationBuilders.sum(AGGNAMES.TRX_SUM.name).field("transactionPrice")
 
     private fun statsTermsAggregation(): Array<AggregationBuilder> {
         log.info("Exchange aggregation size : ${Exchange.values().size}")
@@ -83,7 +84,6 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
         val dateHistogram = filter.aggregations.get<ParsedDateHistogram>(AGGNAMES.HISTOGRAM.name)
         return dateHistogram.buckets.map { parseHistogram(it) }.flatten()
     }
-
 
     private fun parseHistogram(aggDate: Histogram.Bucket): List<TradeStatsDocument> {
         log.info("date: ${aggDate.keyAsString} (${aggDate.key}) doc-count: ${aggDate.docCount}")

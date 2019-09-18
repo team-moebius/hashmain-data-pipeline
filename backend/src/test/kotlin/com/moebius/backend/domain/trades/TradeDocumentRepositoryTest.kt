@@ -9,6 +9,7 @@ import org.junit.Ignore
 import org.junit.Test
 import java.time.LocalDateTime
 
+@Ignore
 class TradeDocumentRepositoryTest {
     lateinit var subject: TradeDocumentRepository
 
@@ -19,13 +20,11 @@ class TradeDocumentRepositoryTest {
         )
     }
 
-    @Test @Ignore
+    @Test
     fun getByDateTimeRange_test() {
         val start = LocalDateTime.of(2019, 9, 7, 22, 25)
         val end = LocalDateTime.of(2019, 9, 7, 22, 26)
         val result = subject.getByDateTimeRange(start, end)
         assertThat(result.size).isGreaterThan(0)
     }
-
-
 }

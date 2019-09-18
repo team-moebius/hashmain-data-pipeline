@@ -18,6 +18,7 @@ data class TradeDocument(
         val volume: Double,
         val prevClosingPrice: Double,
         val changePrice: Double,
+        val transactionPrice: Double,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         val createdAt: Date = Date.from(Instant.now())
 ) : ElasticDocument {
@@ -33,6 +34,6 @@ data class TradeDocument(
                prevClosingPrice: Double,
                changePrice: Double
         ): TradeDocument =
-                TradeDocument("${UUID.randomUUID()}", exchange, symbol, tradeType, change, price, volume, prevClosingPrice, changePrice)
+                TradeDocument("${UUID.randomUUID()}", exchange, symbol, tradeType, change, price, volume, prevClosingPrice, changePrice, price * volume)
     }
 }

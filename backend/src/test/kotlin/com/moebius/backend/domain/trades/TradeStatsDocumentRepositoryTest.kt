@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
+@Ignore
 @RunWith(SpringRunner::class)
 class TradeStatsDocumentRepositoryTest {
 
@@ -26,7 +27,7 @@ class TradeStatsDocumentRepositoryTest {
         )
     }
 
-    @Test @Ignore
+    @Test
     fun test() {
         val target = TradeStatsDocument.of(
                 Exchange.UPBIT,
@@ -47,7 +48,7 @@ class TradeStatsDocumentRepositoryTest {
         assertThat(target.id).isEqualTo(stats.id)
     }
 
-    @Test @Ignore
+    @Test
     fun generateStats_test() {
         val result = subject.generateTradeStats(LocalDateTime.of(2019, 9, 7, 22, 25), ElasticUtils.AggregationInterval.EVERY_MINUTES)
         assertThat(result.size).isGreaterThan(0)
