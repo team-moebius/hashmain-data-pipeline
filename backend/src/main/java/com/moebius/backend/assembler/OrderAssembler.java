@@ -35,7 +35,6 @@ public class OrderAssembler {
 		OrderResponseDto responseDto = new OrderResponseDto();
 		responseDto.setId(order.getId().toHexString());
 		responseDto.setEventType(eventType);
-		responseDto.setApiKeyId(order.getApiKeyId());
 		responseDto.setExchange(order.getExchange());
 		responseDto.setSymbol(order.getSymbol());
 		responseDto.setOrderType(order.getOrderType());
