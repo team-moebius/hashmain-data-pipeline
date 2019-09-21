@@ -1,6 +1,9 @@
 package com.moebius.backend.dto.frontend.response;
 
 import com.moebius.backend.domain.commons.EventType;
+import com.moebius.backend.domain.commons.Exchange;
+import com.moebius.backend.domain.orders.OrderPosition;
+import com.moebius.backend.domain.orders.OrderType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
