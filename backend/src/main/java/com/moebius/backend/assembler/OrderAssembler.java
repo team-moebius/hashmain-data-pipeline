@@ -35,6 +35,13 @@ public class OrderAssembler {
 		OrderResponseDto responseDto = new OrderResponseDto();
 		responseDto.setId(order.getId().toHexString());
 		responseDto.setEventType(eventType);
+		responseDto.setApiKeyId(order.getApiKeyId());
+		responseDto.setExchange(order.getExchange());
+		responseDto.setSymbol(order.getSymbol());
+		responseDto.setOrderType(order.getOrderType());
+		responseDto.setOrderPosition(order.getOrderPosition());
+		responseDto.setPrice(order.getPrice());
+		responseDto.setVolume(order.getVolume());
 
 		return responseDto;
 	}
