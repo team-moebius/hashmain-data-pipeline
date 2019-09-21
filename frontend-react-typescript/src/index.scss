@@ -1,8 +1,8 @@
 @import 'assets/scss/Color.scss';
 
 #root {
-  // background-image: 'aseets/images/bg.png';
-  background-color: $main-bg-color;
+  background-image: url(assets/images/bg.png);
+  background-color: #13253f;
   position: relative;
   overflow: auto;
   width: 100%;

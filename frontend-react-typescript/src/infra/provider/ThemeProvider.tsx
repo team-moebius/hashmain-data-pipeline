@@ -7,14 +7,14 @@ const MOBEIUS_THEME = createMuiTheme({
   palette: {
     type: 'dark',
     background: {
-      paper: '#13253F',
+      paper: '#0D1E34',
     },
     text: {
-      primary: '#C9CFE8',
+      primary: '#B3BAD3',
     },
     primary: {
-      main: '#13253F',
-      light: '#173456',
+      main: '#0D1E34',
+      light: '#162C49',
     },
     secondary: {
       main: '#1E8CDE',
