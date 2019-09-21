@@ -1,32 +1,36 @@
 import * as React from 'react';
 import _ from 'lodash';
 
-import MuiButton from '@material-ui/core/Button';
-
 import Input from 'components/atoms/Input';
 import Checkbox from 'components/atoms/Checkbox';
 import Text from 'components/atoms/Text';
-import FormValidator from 'utils/FormValidator';
+import Button from 'components/atoms/Button';
+import InputValidator from 'utils/InputValidator';
+
+type SignUpPayloadType = 'email' | 'name' | 'password';
+type SignUpValidationType = SignUpPayloadType | 'permitTerms' | 'passwordConfirm';
+type SignUpPayload = { [key in SignUpPayloadType]?: string };
+
+interface SignUpChildSlots {
+  idHelp: React.ReactChild;
+  end: React.ReactChild;
+}
 
 interface SignUpProps {
-  // TODO: change object type to specific type
+  children?: SignUpChildSlots;
   pending: boolean;
-  onSubmit: (data: object) => void;
+  onSubmit: (data: SignUpPayload) => void;
   isDuplicatedId: (id: string) => Promise<boolean>;
 }
 
 interface SignUpState {
-  errors: { [key: string]: string | undefined };
+  errors: SignUpPayload;
   isCheckPermitTerms: boolean;
 }
 
-// TODO: Refactoring input validation code
-// Add 'division' prop to molecules/Input, Move validating logic
-// Or, split EmailInput, PasswordInput.etc
 class SignUp extends React.Component<SignUpProps, SignUpState> {
-  private idRef = React.createRef<any>();
+  private emailRef = React.createRef<any>();
   private nameRef = React.createRef<any>();
-  private phoneNumberRef = React.createRef<any>();
   private passwordRef = React.createRef<any>();
   private passwordConfirmRef = React.createRef<any>();
 
@@ -41,47 +45,42 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     });
   };
 
-  validateId = async () => {
-    const id = this.idRef.current.value;
-    let errorText = undefined;
-    if (!FormValidator.isExistInput(id)) errorText = '아이디를 입력 해주세요.';
-    else if (!FormValidator.validateEmail(id)) errorText = 'ID는 E-mail 형태로 입력하세요.';
-
-    // 입력 ID form이 올바르다면, 중복 여부 제출
-    if (!errorText && (await this.props.isDuplicatedId(id))) errorText = '중복된 ID 입니다.';
-
-    if (errorText) await this.setState({ errors: { ...this.state.errors, id: errorText } });
-    else await this.setState({ errors: _.omit(this.state.errors, 'id') });
-
-    return errorText ? false : true;
+  setErrorTextState = (key: SignUpValidationType, text: string) => {
+    if (InputValidator.isBlank(text)) {
+      this.setState({ errors: _.omit(this.state.errors, key) });
+    } else {
+      this.setState({ errors: { ...this.state.errors, [key]: text } });
+    }
   };
 
-  validateUserName = () => {
+  isValidId = async () => {
+    const id = this.emailRef.current.value;
+    let errorText = '';
+
+    if (InputValidator.nonValid('email', id)) {
+      errorText = 'ID를 E-mail 형태로 입력해주세요.';
+    } else if (await this.props.isDuplicatedId(id)) {
+      errorText = '중복된 ID 입니다.';
+    }
+
+    this.setErrorTextState('email', errorText);
+    return InputValidator.isBlank(id);
+  };
+
+  isValidName = () => {
     const name = this.nameRef.current.value;
-    let errorText = undefined;
-    if (!FormValidator.isExistInput(name)) errorText = '이름을 입력 해주세요.';
+    let errorText = '';
+    if (InputValidator.isBlank(name)) errorText = '이름을 입력 해주세요.';
 
     this.setErrorState('userName', errorText);
-    return errorText ? false : true;
-  };
-
-  validatePhoneNumber = () => {
-    const phoneNumber = this.phoneNumberRef.current.value;
-    let errorText = undefined;
-    if (!FormValidator.isExistInput(phoneNumber)) errorText = '핸드폰 번호를 입력 해주세요.';
-    else if (!FormValidator.validatePhoneNumber(phoneNumber))
-      errorText = '핸드폰 번호가 올바르지 않습니다.(- 제외하고 입력하세요)';
-
-    this.setErrorState('phoneNumber', errorText);
-    return errorText ? false : true;
+    return errorText.length === 0;
   };
 
   validatePassword = () => {
     const password = this.passwordRef.current.value;
     let errorText = undefined;
-    if (!FormValidator.isExistInput(password)) errorText = '패스워드를 입력해 주세요.';
-    else if (!FormValidator.validatePassword(password))
-      errorText = '패스워드 패턴이 올바르지 않습니다.(영문,숫자 포함 8자 이상, 30자 이하)';
+    if (InputValidator.nonValid('password', password))
+      errorText = '패스워드를 올바르게 입력해 주세요.(영문,숫자 포함 8자 이상, 30자 이하)';
 
     this.setErrorState('password', errorText);
     return errorText ? false : true;
@@ -90,7 +89,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
   validatePasswordConfirm = () => {
     const passwordConfirm = this.passwordConfirmRef.current.value;
     let errorText = undefined;
-    if (!FormValidator.isExistInput(passwordConfirm)) errorText = '패스워드를 입력해 주세요.';
+    if (InputValidator.isBlank(passwordConfirm)) errorText = '패스워드 확인란을 입력해 주세요.';
     else if (passwordConfirm !== this.passwordRef.current.value)
       errorText = '패스워드 확인란이 패스워드란과 동일하지 않습니다';
 
@@ -107,7 +106,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
   validate = async () => {
     // ID는 중복 값 Check logic 존재 하나, 제출 직전 한번 더 검사합니다.
-    return Object.keys(this.state.errors).length === 0 && (await this.validateId());
+    return Object.keys(this.state.errors).length === 0 && (await this.isValidId());
   };
 
   onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,7 +114,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
     if (await this.validate()) {
       const data = {
-        email: this.idRef.current.value,
+        email: this.emailRef.current.value,
         name: this.nameRef.current.value,
         password: this.passwordRef.current.value,
       };
@@ -127,53 +126,25 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return (
       <form onSubmit={this.onSubmit}>
         <Input
-          autoComplete="off"
           autoFocus
           error={this.state.errors.id ? true : false}
           helperText={this.state.errors.id}
-          inputRef={this.idRef}
-          name="email"
-          onBlur={this.validateId}
+          inputRef={this.emailRef}
+          onBlur={this.isValidId}
           placeholder="E-Mail(User ID)"
         />
+        {this.props.children && this.props.children.idHelp}
         <Input
-          autoComplete="off"
           error={this.state.errors.userName ? true : false}
           helperText={this.state.errors.userName}
           inputRef={this.nameRef}
-          name="name"
-          onBlur={this.validateUserName}
+          onBlur={this.isValidName}
           placeholder="User Name"
         />
-        {/* TODO: Activate bloew after impelments phone number in backend */}
-        {/* <Input
-            autoComplete="off"
-            error={this.state.errors.phoneNumber ? true : false}
-            helperText={this.state.errors.phoneNumber}
-            inputRef={this.phoneNumberRef}
-            name="phoneNumber"
-            onBlur={this.validatePhoneNumber}
-            placeholder="Phone number('-' 없이 10자 이상 입력)"
-          /> */}
-        <ul>
-          <li>
-            <Text variant="caption" gutterBottom>
-              * <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후 <em>계정 인증용 메일</em>이
-              전송됩니다.
-            </Text>
-          </li>
-          <li>
-            <Text variant="caption" gutterBottom>
-              * 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에 <em>스팸 메일함을 확인</em> 하시기
-              바랍니다.
-            </Text>
-          </li>
-        </ul>
         <Input
           error={this.state.errors.password ? true : false}
           helperText={this.state.errors.password}
           inputRef={this.passwordRef}
-          name="password"
           onBlur={this.validatePassword}
           type="password"
           placeholder="Password(영문 숫자포함 8자 이상)"
@@ -182,7 +153,6 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           error={this.state.errors.passwordConfirm ? true : false}
           helperText={this.state.errors.passwordConfirm}
           inputRef={this.passwordConfirmRef}
-          name="passwordConfirm"
           onBlur={this.validatePasswordConfirm}
           type="password"
           placeholder="Password confirm(영문 숫자포함 8자 이상)"
@@ -202,24 +172,13 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             {this.state.errors.permitTerms}
           </Text>
         )}
-        <MuiButton
-          color="secondary"
-          disabled={this.props.pending}
-          fullWidth
-          size="medium"
-          type="submit"
-          variant="contained"
-        >
+        <Button disabled={this.props.pending}>
           <Text variant="button">회원가입</Text>
-        </MuiButton>
+        </Button>
+        {this.props.children && this.props.children.end}
       </form>
     );
   }
-
-  private setErrorState = (field: string, errorText?: string) => {
-    if (errorText) this.setState({ errors: { ...this.state.errors, [field]: errorText } });
-    else this.setState({ errors: _.omit(this.state.errors, field) });
-  };
 }
 
 export default SignUp;

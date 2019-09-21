@@ -83,8 +83,8 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
           title="CRYPTO BOX GLOBAL."
         >
           {{
-            leftSide: <img alt="logo" className="layout-header__logo" src={logo} />,
-            rightSide: (
+            left: <img alt="logo" className="layout-header__logo" src={logo} />,
+            right: (
               <MuiButton className="layout-header__button" size="medium" onClick={this.onClickSignOut}>
                 <Text variant="body1">로그아웃</Text>
               </MuiButton>

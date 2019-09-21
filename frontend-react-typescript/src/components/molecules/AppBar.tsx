@@ -6,14 +6,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import Text from 'components/atoms/Text';
 import Header, { HeaderProps } from 'components/atoms/Header';
 
-export interface AppBarProps extends HeaderProps {
-  children: AppBarChildSlots;
-  subTitle?: JSX.Element;
+interface AppBarChildSlots {
+  left: React.ReactChild;
+  right: React.ReactChild;
 }
 
-interface AppBarChildSlots {
-  leftSide?: React.ReactChild;
-  rightSide?: React.ReactChild;
+export interface AppBarProps extends HeaderProps {
+  children?: AppBarChildSlots;
+  subTitle?: JSX.Element;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -29,14 +29,14 @@ const AppBar: React.FC<AppBarProps> = props => {
   const classes = useStyles();
   return (
     <Header className={classNames(classes.root, className)} {...rest}>
-      {children.leftSide}
+      {children && children.left}
       <div className={classes.titleWrapper}>
         <Text className={classes.title} variant="subtitle1">
           <em>{title}</em>
         </Text>
         <Text variant="subtitle2">{subTitle}</Text>
       </div>
-      {children.rightSide}
+      {children && children.right}
     </Header>
   );
 };

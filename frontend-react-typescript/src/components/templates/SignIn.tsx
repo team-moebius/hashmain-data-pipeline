@@ -1,50 +1,53 @@
 import * as React from 'react';
 
-import MuiButton from '@material-ui/core/Button';
-
 import Input from 'components/atoms/Input';
 import Text from 'components/atoms/Text';
-import FormValidator from 'utils/FormValidator';
+import Button from 'components/atoms/Button';
+import InputValidator from 'utils/InputValidator';
+
+type SignInPayloadType = 'email' | 'password';
+type SignInPayload = { [key in SignInPayloadType]?: string };
 
 interface SignInProps {
-  // TODO: change object type to specific type
   pending?: boolean;
-  onSubmit?: (data: object) => void;
+  onSubmit: (data: SignInPayload) => void;
 }
 
 interface SignInState {
-  errors: { [key: string]: string | undefined };
+  errors: SignInPayload;
 }
 
 class SignIn extends React.Component<SignInProps, SignInState> {
   private emailRef = React.createRef<any>();
   private passwordRef = React.createRef<any>();
+
   constructor(props: SignInProps) {
     super(props);
     this.state = { errors: {} };
   }
 
-  validate = (id: string, password: string) => {
-    let idErrorText = '';
-    let passwordErrorText = '';
-    // Check required value of form
-    if (!FormValidator.isExistInput(id)) idErrorText = '아이디(E-mail)를 입력 해주세요.';
-    else if (!FormValidator.validateEmail(id)) idErrorText = 'ID는 E-mail 형태로 입력하세요.';
-
-    if (!FormValidator.isExistInput(password)) passwordErrorText = '패스워드를 입력 해주세요.';
-
-    this.setState({ errors: { id: idErrorText, password: passwordErrorText } });
-
-    return !(idErrorText.length > 0 || passwordErrorText.length > 0);
-  };
-
   onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const email = this.emailRef.current.value;
-    const password = this.passwordRef.current.value;
+    if (this.isValidLoginForm()) {
+      this.props.onSubmit({ email: this.emailRef.current.value, password: this.passwordRef.current.value });
+    }
+  };
 
-    if (this.props.onSubmit && this.validate(email, password)) this.props.onSubmit({ email, password });
+  isValidLoginForm = () => {
+    let idErrorText = '';
+    let passwordErrorText = '';
+
+    if (InputValidator.nonValid('email', this.emailRef.current.value)) {
+      idErrorText = 'ID를 E-mail 형태로 입력해주세요.';
+    }
+    if (InputValidator.isBlank(this.passwordRef.current.value)) {
+      passwordErrorText = '패스워드를 입력 해주세요.';
+    }
+
+    this.setState({ errors: { email: idErrorText, password: passwordErrorText } });
+
+    return InputValidator.isBlank(idErrorText) && InputValidator.isBlank(passwordErrorText);
   };
 
   render() {
@@ -53,46 +56,22 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         <Input
           autoComplete="off"
           autoFocus
-          error={this.state.errors.id ? true : false}
-          helperText={this.state.errors.id}
+          error={this.state.errors.email ? true : false}
+          helperText={this.state.errors.email}
           inputRef={this.emailRef}
-          name="email"
           placeholder="E-Mail"
         />
         <Input
           error={this.state.errors.password ? true : false}
           helperText={this.state.errors.password}
           inputRef={this.passwordRef}
-          name="password"
           type="password"
           placeholder="Password"
         />
-        <MuiButton
-          color="secondary"
-          disabled={this.props.pending}
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-        >
+        <Button color="secondary" style={{ marginTop: '8px' }} disabled={this.props.pending}>
           <Text variant="button">로그인</Text>
-        </MuiButton>
-        {/* <Checkbox label="아이디 저장하기" /> */}
-        <ul>
-          <li>
-            <Text gutterBottom variant="caption">
-              * 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의하는 것으로
-              간주합니다.
-            </Text>
-          </li>
-          <li>
-            <Text gutterBottom variant="caption">
-              * CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.
-            </Text>
-          </li>
-        </ul>
-        {/* TODO: Implements passwrod find */}
-        {/* <MuiButton fullWidth>비밀번호 찾기</MuiButton> */}
+        </Button>
+        {this.props.children}
       </form>
     );
   }

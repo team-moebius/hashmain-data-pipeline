@@ -10,7 +10,7 @@ const MoebInput = withStyles(theme => ({
     },
     backgroundColor: theme.palette.primary.light,
     borderRadius: 4,
-    margin: '0 0px 8px 0',
+    margin: '8px 0px 0px 0',
   },
 }))(MuiTextField);
 
