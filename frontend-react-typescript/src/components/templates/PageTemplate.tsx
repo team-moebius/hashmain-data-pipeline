@@ -29,7 +29,7 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
         <BasicTabs value={props.index} items={props.tabHeaders} orientation="horizontal" onChange={props.onChangeTab} />
       </Paper>
       <Paper className={classes.tabContents}>
-        <div style={{ marginTop: '4px' }}>{props.tabContents[props.index]}</div>
+        <div>{props.tabContents[props.index]}</div>
       </Paper>
     </div>
   );

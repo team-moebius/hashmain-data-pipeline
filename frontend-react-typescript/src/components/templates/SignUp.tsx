@@ -10,6 +10,7 @@ import InputValidator from 'utils/InputValidator';
 type SignUpPayloadType = 'email' | 'name' | 'password';
 type SignUpValidationType = SignUpPayloadType | 'permitTerms' | 'passwordConfirm';
 type SignUpPayload = { [key in SignUpPayloadType]?: string };
+type SignUpErrorState = { [key in SignUpValidationType]?: string };
 
 interface SignUpChildSlots {
   idHelp: React.ReactChild;
@@ -24,7 +25,7 @@ interface SignUpProps {
 }
 
 interface SignUpState {
-  errors: SignUpPayload;
+  errors: SignUpErrorState;
   isCheckPermitTerms: boolean;
 }
 
@@ -41,16 +42,20 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
   onChangePermitTerms = () => {
     this.setState({ isCheckPermitTerms: !this.state.isCheckPermitTerms }, () => {
-      this.validatePermitTerms();
+      this.isValidPermitTerms();
     });
   };
 
-  setErrorTextState = (key: SignUpValidationType, text: string) => {
-    if (InputValidator.isBlank(text)) {
+  updateErrorTextState = async (key: SignUpValidationType, text: string) => {
+    const valid = InputValidator.isBlank(text);
+
+    if (valid) {
       this.setState({ errors: _.omit(this.state.errors, key) });
     } else {
       this.setState({ errors: { ...this.state.errors, [key]: text } });
     }
+
+    return valid;
   };
 
   isValidId = async () => {
@@ -63,63 +68,72 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
       errorText = '중복된 ID 입니다.';
     }
 
-    this.setErrorTextState('email', errorText);
-    return InputValidator.isBlank(id);
+    return await this.updateErrorTextState('email', errorText);
   };
 
-  isValidName = () => {
+  isValidName = async () => {
     const name = this.nameRef.current.value;
     let errorText = '';
-    if (InputValidator.isBlank(name)) errorText = '이름을 입력 해주세요.';
 
-    this.setErrorState('userName', errorText);
-    return errorText.length === 0;
+    if (InputValidator.isBlank(name)) {
+      errorText = '이름을 입력 해주세요.';
+    }
+
+    return await this.updateErrorTextState('name', errorText);
   };
 
-  validatePassword = () => {
+  isValidPassword = async () => {
     const password = this.passwordRef.current.value;
-    let errorText = undefined;
-    if (InputValidator.nonValid('password', password))
+    let errorText = '';
+
+    if (InputValidator.nonValid('password', password)) {
       errorText = '패스워드를 올바르게 입력해 주세요.(영문,숫자 포함 8자 이상, 30자 이하)';
+    }
 
-    this.setErrorState('password', errorText);
-    return errorText ? false : true;
+    return await this.updateErrorTextState('password', errorText);
   };
 
-  validatePasswordConfirm = () => {
+  isValidPasswordConfirm = async () => {
     const passwordConfirm = this.passwordConfirmRef.current.value;
-    let errorText = undefined;
-    if (InputValidator.isBlank(passwordConfirm)) errorText = '패스워드 확인란을 입력해 주세요.';
-    else if (passwordConfirm !== this.passwordRef.current.value)
+    let errorText = '';
+
+    if (InputValidator.isBlank(passwordConfirm)) {
+      errorText = '패스워드 확인란을 입력해 주세요.';
+    } else if (passwordConfirm !== this.passwordRef.current.value) {
       errorText = '패스워드 확인란이 패스워드란과 동일하지 않습니다';
+    }
 
-    this.setErrorState('passwordConfirm', errorText);
-    return errorText ? false : true;
+    return await this.updateErrorTextState('passwordConfirm', errorText);
   };
 
-  validatePermitTerms = () => {
-    const errorText = this.state.isCheckPermitTerms ? undefined : '이용약관에 동의해주세요';
+  isValidPermitTerms = async () => {
+    const errorText = this.state.isCheckPermitTerms ? '' : '이용약관에 동의해주세요';
 
-    this.setErrorState('permitTerms', errorText);
-    return this.state.isCheckPermitTerms;
+    return await this.updateErrorTextState('permitTerms', errorText);
   };
 
-  validate = async () => {
-    // ID는 중복 값 Check logic 존재 하나, 제출 직전 한번 더 검사합니다.
-    return Object.keys(this.state.errors).length === 0 && (await this.isValidId());
+  isAllValid = async () => {
+    await this.isValidId();
+    await this.isValidName();
+    await this.isValidPassword();
+    await this.isValidPasswordConfirm();
+    await this.isValidPermitTerms();
+
+    return Object.keys(this.state.errors).length === 0;
   };
 
   onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (await this.validate()) {
-      const data = {
-        email: this.emailRef.current.value,
-        name: this.nameRef.current.value,
-        password: this.passwordRef.current.value,
-      };
-      this.props.onSubmit(data);
-    }
+    this.isAllValid().then(valid => {
+      if (valid) {
+        this.props.onSubmit({
+          email: this.emailRef.current.value,
+          name: this.nameRef.current.value,
+          password: this.passwordRef.current.value,
+        });
+      }
+    });
   };
 
   render() {
@@ -127,16 +141,16 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
       <form onSubmit={this.onSubmit}>
         <Input
           autoFocus
-          error={this.state.errors.id ? true : false}
-          helperText={this.state.errors.id}
+          error={this.state.errors.email ? true : false}
+          helperText={this.state.errors.email}
           inputRef={this.emailRef}
           onBlur={this.isValidId}
           placeholder="E-Mail(User ID)"
         />
         {this.props.children && this.props.children.idHelp}
         <Input
-          error={this.state.errors.userName ? true : false}
-          helperText={this.state.errors.userName}
+          error={this.state.errors.name ? true : false}
+          helperText={this.state.errors.name}
           inputRef={this.nameRef}
           onBlur={this.isValidName}
           placeholder="User Name"
@@ -145,7 +159,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           error={this.state.errors.password ? true : false}
           helperText={this.state.errors.password}
           inputRef={this.passwordRef}
-          onBlur={this.validatePassword}
+          onBlur={this.isValidPassword}
           type="password"
           placeholder="Password(영문 숫자포함 8자 이상)"
         />
@@ -153,7 +167,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           error={this.state.errors.passwordConfirm ? true : false}
           helperText={this.state.errors.passwordConfirm}
           inputRef={this.passwordConfirmRef}
-          onBlur={this.validatePasswordConfirm}
+          onBlur={this.isValidPasswordConfirm}
           type="password"
           placeholder="Password confirm(영문 숫자포함 8자 이상)"
         />

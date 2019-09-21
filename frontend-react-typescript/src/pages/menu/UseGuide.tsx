@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import PageTemplate from 'components/templates/PageTemplate';
-import Test1 from 'pages/sub-contents/Test1';
-import Test2 from 'pages/sub-contents/Test2';
+import Test1 from 'pages/sub/Test1';
+import Test2 from 'pages/sub/Test2';
 
 interface ContentsProps {
   className: string;
@@ -12,8 +12,8 @@ interface ContentsState {
   index: number;
 }
 
-class Assets extends React.Component<ContentsProps, ContentsState> {
-  private static TAB_HEADERS = [<>자산 보유내역</>, <>주문 완료내역</>];
+class UseGuide extends React.Component<ContentsProps, ContentsState> {
+  private static TAB_HEADERS = [<>로드맵 소개</>, <>개인 정보 정책</>];
   private static TAB_ITEMS = [<Test1 />, <Test2 />];
   constructor(props: ContentsProps) {
     super(props);
@@ -32,11 +32,11 @@ class Assets extends React.Component<ContentsProps, ContentsState> {
         className={this.props.className}
         index={this.state.index}
         onChangeTab={this.onChangeTabIndex}
-        tabHeaders={Assets.TAB_HEADERS}
-        tabContents={Assets.TAB_ITEMS}
+        tabHeaders={UseGuide.TAB_HEADERS}
+        tabContents={UseGuide.TAB_ITEMS}
       />
     );
   }
 }
 
-export default Assets;
+export default UseGuide;

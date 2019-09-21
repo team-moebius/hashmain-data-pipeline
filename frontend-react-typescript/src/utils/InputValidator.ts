@@ -8,11 +8,11 @@ class InputValidator {
   };
 
   public static isValid = (type: ValidationType, value: string) => {
-    return value && value.length !== 0 && InputValidator.VALIDATION_REGEX[type].test(value);
+    return InputValidator.nonBlank(value) && InputValidator.VALIDATION_REGEX[type].test(value);
   };
 
   public static nonValid = (type: ValidationType, value: string) => {
-    return !value || value.length === 0 || !InputValidator.VALIDATION_REGEX[type].test(value);
+    return InputValidator.isBlank(value) || !InputValidator.VALIDATION_REGEX[type].test(value);
   };
 
   public static isBlank = (value: string) => {

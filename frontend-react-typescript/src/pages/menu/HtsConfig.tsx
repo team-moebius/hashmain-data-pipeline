@@ -5,8 +5,8 @@ import classNames from 'classnames';
 import Paper from 'components/atoms/Paper';
 import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import PageTemplate from 'components/templates/PageTemplate';
-import Test1 from 'pages/sub-contents/Test1';
-import Test2 from 'pages/sub-contents/Test2';
+import Test1 from 'pages/sub/Test1';
+import Test2 from 'pages/sub/Test2';
 import ajax from 'utils/Ajax';
 
 import 'assets/scss/HtsConfig.scss';

@@ -29,12 +29,12 @@ class SignIn extends React.Component<SignInProps, SignInState> {
   onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (this.isValidLoginForm()) {
+    if (this.isValid()) {
       this.props.onSubmit({ email: this.emailRef.current.value, password: this.passwordRef.current.value });
     }
   };
 
-  isValidLoginForm = () => {
+  isValid = () => {
     let idErrorText = '';
     let passwordErrorText = '';
 
