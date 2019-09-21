@@ -1,15 +1,11 @@
-import * as React from 'react';
-import MuiCircularProgress, {
-  CircularProgressProps as MuiCircularProgressProps,
-} from '@material-ui/core/CircularProgress';
+import MuiCircularProgress from '@material-ui/core/CircularProgress';
+import { withStyles } from '@material-ui/styles';
 
-export interface CircularProgressProps extends MuiCircularProgressProps {}
+const MoebCircularProgress = withStyles(theme => ({}))(MuiCircularProgress);
 
-const CircularProgress: React.FC<CircularProgressProps> = props => <MuiCircularProgress {...props} />;
-
-CircularProgress.defaultProps = {
+MoebCircularProgress.defaultProps = {
   color: 'secondary',
   disableShrink: true,
 };
 
-export default CircularProgress;
+export default MoebCircularProgress;

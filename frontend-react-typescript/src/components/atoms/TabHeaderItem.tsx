@@ -1,12 +1,10 @@
-import * as React from 'react';
-import MuiTab, { TabProps as MuiTabProps } from '@material-ui/core/Tab';
+import MuiTab from '@material-ui/core/Tab';
+import { withStyles } from '@material-ui/styles';
 
-export interface TabHeaderItemProps extends MuiTabProps {}
+const MoebTabHeaderItem = withStyles(theme => ({}))(MuiTab);
 
-const TabHeaderItem: React.FC<TabHeaderItemProps> = props => <MuiTab {...props}>{props.children}</MuiTab>;
-
-TabHeaderItem.defaultProps = {
+MoebTabHeaderItem.defaultProps = {
   disableRipple: true,
 };
 
-export default TabHeaderItem;
+export default MoebTabHeaderItem;

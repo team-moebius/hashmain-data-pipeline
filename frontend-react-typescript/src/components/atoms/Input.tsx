@@ -1,8 +1,7 @@
-import * as React from 'react';
-import MuiTextField, { TextFieldProps as MuiTextFieldProps } from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 
-const MoebiusInput = withStyles(theme => ({
+const MoebInput = withStyles(theme => ({
   root: {
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
@@ -15,13 +14,12 @@ const MoebiusInput = withStyles(theme => ({
   },
 }))(MuiTextField);
 
-const Input: React.FC<MuiTextFieldProps> = props => <MoebiusInput {...props}>{props.children}</MoebiusInput>;
-
-Input.defaultProps = {
+MoebInput.defaultProps = {
+  autoComplete: 'off',
   fullWidth: true,
   margin: 'dense',
   variant: 'outlined',
   inputProps: { style: { padding: '11px' } },
 };
 
-export default Input;
+export default MoebInput;

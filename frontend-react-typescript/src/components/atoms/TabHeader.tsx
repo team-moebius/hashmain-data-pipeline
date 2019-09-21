@@ -1,14 +1,12 @@
-import * as React from 'react';
-import MuiTabs, { TabsProps as MuiTabsProps } from '@material-ui/core/Tabs';
+import MuiTabs from '@material-ui/core/Tabs';
+import { withStyles } from '@material-ui/styles';
 
-export interface TabHeaderProps extends MuiTabsProps {}
+const MoebTabHeader = withStyles(theme => ({}))(MuiTabs);
 
-const TabHeader: React.FC<TabHeaderProps> = props => <MuiTabs {...props}>{props.children}</MuiTabs>;
-
-TabHeader.defaultProps = {
+MoebTabHeader.defaultProps = {
   variant: 'scrollable',
   indicatorColor: 'secondary',
   textColor: 'secondary',
 };
 
-export default TabHeader;
+export default MoebTabHeader;

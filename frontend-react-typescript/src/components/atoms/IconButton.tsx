@@ -2,7 +2,7 @@ import * as React from 'react';
 import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 
-const MobeiusIconButton = withStyles(theme => ({
+const MoebIconButton = withStyles(theme => ({
   sizeSmall: { padding: '4px' },
 }))(MuiIconButton);
 
@@ -12,7 +12,7 @@ export interface IconButtonProps extends MuiIconButtonProps {
 
 const IconButton: React.FC<IconButtonProps> = props => {
   const { icon, ...rest } = props;
-  return <MobeiusIconButton {...rest}>{icon}</MobeiusIconButton>;
+  return <MoebIconButton {...rest}>{icon}</MoebIconButton>;
 };
 
 IconButton.defaultProps = {
