@@ -16,4 +16,16 @@ public class OrderResponseDto {
 	private String id;
 	@NotNull
 	private EventType eventType;
+	@NotNull
+	private Exchange exchange;
+	@NotNull
+	private String symbol;
+	@NotNull
+	private OrderType orderType;
+	@NotNull
+	private OrderPosition orderPosition;
+	@PositiveOrZero
+	private double price;
+	@PositiveOrZero
+	private double volume;
 }
