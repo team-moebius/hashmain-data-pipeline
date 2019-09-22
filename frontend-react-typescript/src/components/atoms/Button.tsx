@@ -1,9 +1,9 @@
 import MuiButton from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/styles';
 
-const MoebButton = withStyles(theme => ({}))(MuiButton);
+const Button = withStyles(theme => ({}))(MuiButton);
 
-MoebButton.defaultProps = {
+Button.defaultProps = {
   color: 'secondary',
   fullWidth: true,
   size: 'large',
@@ -11,4 +11,4 @@ MoebButton.defaultProps = {
   variant: 'contained',
 };
 
-export default MoebButton;
+export default Button;

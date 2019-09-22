@@ -1,14 +1,10 @@
-import * as React from 'react';
-
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@material-ui/core/AppBar';
-import MuiToolbar from '@material-ui/core/Toolbar';
+import { withStyles } from '@material-ui/styles';
 
 export interface HeaderProps extends MuiAppBarProps {}
 
-const Header: React.FC<HeaderProps> = props => (
-  <MuiAppBar {...props}>
-    <MuiToolbar>{props.children}</MuiToolbar>
-  </MuiAppBar>
-);
+const Header = withStyles(theme => ({}))(MuiAppBar);
+
+Header.defaultProps = {};
 
 export default Header;

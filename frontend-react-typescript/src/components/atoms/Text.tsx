@@ -1,8 +1,8 @@
 import MuiTypography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/styles';
 
-const MoebText = withStyles(theme => ({}))(MuiTypography);
+const Text = withStyles(theme => ({}))(MuiTypography);
 
-MoebText.defaultProps = {};
+Text.defaultProps = {};
 
-export default MoebText;
+export default Text;

@@ -1,7 +1,7 @@
 import MuiTextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 
-const MoebInput = withStyles(theme => ({
+const Input = withStyles(theme => ({
   root: {
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
@@ -14,7 +14,7 @@ const MoebInput = withStyles(theme => ({
   },
 }))(MuiTextField);
 
-MoebInput.defaultProps = {
+Input.defaultProps = {
   autoComplete: 'off',
   fullWidth: true,
   margin: 'dense',
@@ -22,4 +22,4 @@ MoebInput.defaultProps = {
   inputProps: { style: { padding: '11px' } },
 };
 
-export default MoebInput;
+export default Input;

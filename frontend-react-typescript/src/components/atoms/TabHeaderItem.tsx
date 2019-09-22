@@ -1,10 +1,10 @@
 import MuiTab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/styles';
 
-const MoebTabHeaderItem = withStyles(theme => ({}))(MuiTab);
+const TabHeaderItem = withStyles(theme => ({}))(MuiTab);
 
-MoebTabHeaderItem.defaultProps = {
+TabHeaderItem.defaultProps = {
   disableRipple: true,
 };
 
-export default MoebTabHeaderItem;
+export default TabHeaderItem;

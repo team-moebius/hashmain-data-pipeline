@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Text from 'components/atoms/Text';
 import Header, { HeaderProps } from 'components/atoms/Header';
+import Toolbar from 'components/atoms/Toolbar';
 
 interface AppBarChildSlots {
   left: React.ReactChild;
@@ -29,14 +30,16 @@ const AppBar: React.FC<AppBarProps> = props => {
   const classes = useStyles();
   return (
     <Header className={classNames(classes.root, className)} {...rest}>
-      {children && children.left}
-      <div className={classes.titleWrapper}>
-        <Text className={classes.title} variant="subtitle1">
-          <em>{title}</em>
-        </Text>
-        <Text variant="subtitle2">{subTitle}</Text>
-      </div>
-      {children && children.right}
+      <Toolbar>
+        {children && children.left}
+        <div className={classes.titleWrapper}>
+          <Text className={classes.title} variant="subtitle1">
+            <em>{title}</em>
+          </Text>
+          <Text variant="subtitle2">{subTitle}</Text>
+        </div>
+        {children && children.right}
+      </Toolbar>
     </Header>
   );
 };

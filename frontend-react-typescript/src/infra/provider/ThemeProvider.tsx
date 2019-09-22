@@ -15,6 +15,7 @@ const MOBEIUS_THEME = createMuiTheme({
     primary: {
       main: '#0D1E34',
       light: '#162C49',
+      dark: '#091A2E',
     },
     secondary: {
       main: '#1E8CDE',

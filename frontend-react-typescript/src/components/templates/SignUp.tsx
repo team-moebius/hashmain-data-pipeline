@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from 'lodash';
 
 import Input from 'components/atoms/Input';
-import Checkbox from 'components/atoms/Checkbox';
+import CheckboxForm from 'components/atoms/CheckboxForm';
 import Text from 'components/atoms/Text';
 import Button from 'components/atoms/Button';
 import InputValidator from 'utils/InputValidator';
@@ -171,7 +171,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           type="password"
           placeholder="Password confirm(영문 숫자포함 8자 이상)"
         />
-        <Checkbox
+        <CheckboxForm
           name="permitTerms"
           onChange={this.onChangePermitTerms}
           style={{ width: '100%' }}

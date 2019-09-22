@@ -1,4 +1,4 @@
-// 해당 파일은 Moebius 의 비즈니스 컴포넌트이기에 organsisms에 위치합니다.
+// 해당 파일은 비즈니스 컴포넌트로, organsisms에 위치합니다.
 import * as React from 'react';
 
 import Input from 'components/atoms/Input';
