@@ -6,7 +6,7 @@ import com.moebius.backend.domain.apikeys.ApiKeyRepository;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
-import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.DuplicatedDataException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.exchange.ExchangeService;
@@ -94,7 +94,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
-				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(apiKeyDto.getName())) :
+				new DuplicatedDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(apiKeyDto.getName())) :
 				exception)
 			.map(apiKeyAssembler::toResponseDto)
 			.map(ResponseEntity::ok);

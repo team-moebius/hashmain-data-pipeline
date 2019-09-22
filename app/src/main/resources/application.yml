@@ -14,13 +14,10 @@ spring:
     client-id: moebius
     consumer:
       client-id: moebius-consumer
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
     producer:
       client-id: moebius-producer
       acks: all
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   thymeleaf:
     reactive:
