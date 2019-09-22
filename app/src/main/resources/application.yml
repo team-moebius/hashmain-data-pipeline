@@ -45,7 +45,7 @@ exchange:
       public-uri: https://api.upbit.com/
       secret-uri: https://crix-api-endpoint.upbit.com/v1/crix/
       asset: v1/accounts
-
+      market: v1/market/all
 
 server:
   port: 80

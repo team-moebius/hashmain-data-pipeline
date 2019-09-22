@@ -1,5 +1,6 @@
 package com.moebius.backend.api;
 
+import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.MarketDto;
 import com.moebius.backend.service.market.MarketService;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,10 @@ public class MarketController {
 	@DeleteMapping("/{id}")
 	public Mono<ResponseEntity<String>> deleteMarket(@PathVariable String id) {
 		return marketService.deleteMarket(id);
+	}
+
+	@PutMapping("/exchanges/{exchange}")
+	public Mono<ResponseEntity<?>> updateMarketsByExchange(@PathVariable Exchange exchange) {
+		return marketService.updateMarketsByExchange(exchange);
 	}
 }
