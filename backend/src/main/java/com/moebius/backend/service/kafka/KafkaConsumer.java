@@ -9,7 +9,6 @@ import reactor.kafka.receiver.ReceiverRecord;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
 
@@ -32,7 +31,7 @@ public abstract class KafkaConsumer<K, V> {
 
 	public abstract String getTopic();
 
-	public abstract Consumer<? extends ReceiverRecord<K, V>> processRecord(ReceiverRecord<K, V> record);
+	public abstract void processRecord(ReceiverRecord<K, V> record);
 
 	protected abstract Class<?> getKeyDeserializerClass();
 
