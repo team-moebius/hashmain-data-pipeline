@@ -1,6 +1,6 @@
 package com.moebius.backend.service.kafka.trade;
 
-import com.moebius.backend.dto.TradeDto;
+import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.kafka.KafkaConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
+public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
 
 	public TradeKafkaConsumer(Map<String, Object> receiverDefaultProperties) {
@@ -27,7 +27,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 	}
 
 	@Override
-	public void processRecord(ReceiverRecord<String, TradeDto> record) {
+	public void processRecord(ReceiverRecord<String, TradeDocument> record) {
 		ReceiverOffset offset = record.receiverOffset();
 		log.info("Received message: topic-partition={} offset={} timestamp={} key={} value={}\n",
 			offset.topicPartition(),
@@ -49,7 +49,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 	}
 
 	@Override
-	public Disposable consumeMessages(TradeDto message) {
+	public Disposable consumeMessages(TradeDocument message) {
 		return super.consumeMessages(message);
 	}
 }

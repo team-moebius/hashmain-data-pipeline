@@ -1,6 +1,6 @@
 package com.moebius.backend.service.kafka.trade;
 
-import com.moebius.backend.dto.TradeDto;
+import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.kafka.KafkaProducer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -11,7 +11,7 @@ import reactor.kafka.sender.SenderResult;
 import java.util.Map;
 
 @Component
-public class TradeKafkaProducer extends KafkaProducer<String, TradeDto, String> {
+public class TradeKafkaProducer extends KafkaProducer<String, TradeDocument, String> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
 
 	public TradeKafkaProducer(Map<String, Object> senderDefaultProperties) {
@@ -34,17 +34,17 @@ public class TradeKafkaProducer extends KafkaProducer<String, TradeDto, String> 
 	}
 
 	@Override
-	protected String getKey(TradeDto message) {
+	protected String getKey(TradeDocument message) {
 		return message.getSymbol();
 	}
 
 	@Override
-	protected String getCorrelationMetadata(TradeDto message) {
+	protected String getCorrelationMetadata(TradeDocument message) {
 		return TRADE_KAFKA_TOPIC + "." + message.getSymbol();
 	}
 
 	@Override
-	public Flux<SenderResult<String>> produceMessages(TradeDto message) {
+	public Flux<SenderResult<String>> produceMessages(TradeDocument message) {
 		return super.produceMessages(message);
 	}
 }
