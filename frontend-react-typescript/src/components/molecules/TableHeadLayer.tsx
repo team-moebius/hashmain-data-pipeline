@@ -5,8 +5,8 @@ import AddIcon from '@material-ui/icons/LibraryAddOutlined';
 
 import Checkbox, { CheckboxProps } from 'components/atoms/Checkbox';
 import TableHead from 'components/atoms/TableHead';
-import TableRow from 'components/atoms/TableRow';
-import TableCell from 'components/atoms/TableCell';
+import TableHeadRow from 'components/atoms/TableHeadRow';
+import TableHeadCell from 'components/atoms/TableHeadCell';
 import TableSortLabel from 'components/atoms/TableSortLabel';
 import IconButton from 'components/atoms/IconButton';
 
@@ -28,6 +28,7 @@ export interface TableColum {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   checkbox?: CheckboxProps;
   disablePadding?: boolean;
+  format?: (value: number) => string;
   id: string;
   label?: string;
   minWidth?: number;
@@ -43,10 +44,10 @@ interface TableHeadLayerProps {
 }
 
 const CheckboxCell: React.FC<TableColum> = props => (
-  <TableCell key={props.id} style={{ minWidth: props.minWidth }} padding="checkbox">
+  <TableHeadCell key={props.id} style={{ minWidth: props.minWidth }} padding="checkbox">
     <Checkbox {...props.checkbox} />
     {props.label}
-  </TableCell>
+  </TableHeadCell>
 );
 
 const TableHeadLayer: React.FC<TableHeadLayerProps> = props => {
@@ -57,17 +58,17 @@ const TableHeadLayer: React.FC<TableHeadLayerProps> = props => {
 
   return (
     <TableHead>
-      <TableRow>
+      <TableHeadRow>
         {props.onClickAddIcon && (
-          <TableCell>
+          <TableHeadCell>
             <IconButton icon={<AddIcon aria-label="add" />} onClick={props.onClickAddIcon} />
-          </TableCell>
+          </TableHeadCell>
         )}
         {props.columns.map(col =>
           col.checkbox ? (
             <CheckboxCell {...col} />
           ) : (
-            <TableCell
+            <TableHeadCell
               align={col.align}
               padding={col.disablePadding ? 'none' : 'default'}
               sortDirection={col.id === props.orderBy ? props.order : false}
@@ -89,10 +90,10 @@ const TableHeadLayer: React.FC<TableHeadLayerProps> = props => {
               ) : (
                 col.label
               )}
-            </TableCell>
+            </TableHeadCell>
           )
         )}
-      </TableRow>
+      </TableHeadRow>
     </TableHead>
   );
 };

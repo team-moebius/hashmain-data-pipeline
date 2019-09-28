@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Grid, { GridData } from 'components/organisms/ActionGrid';
+import Grid, { GridData } from 'components/organisms/Grid';
 import { TableColum } from 'components/molecules/TableHeadLayer';
 
 interface Data extends GridData {
@@ -38,16 +38,32 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     { id: 'targetCost', label: 'targetCost', align: 'right', sortable: true },
     { id: 'estimatedCost', label: 'estimatedCost', align: 'right' },
     { id: 'sellCost', label: 'sellCost', align: 'right' },
-    { id: 'percentage', label: 'percentage', align: 'right', sortable: true },
+    { id: 'percentage', label: 'percentage', align: 'right', sortable: true, format: value => `${value}%` },
   ];
+
   constructor(props: MultiTradingModeProps) {
     super(props);
 
     this.state = {};
   }
 
-  public render() {
-    return <Grid<Data> columns={MultiTradingMode.dataColumns} rows={data} />;
+  onClickRowDeleteIcon = () => {
+    return;
+  };
+
+  onClickHeadLayerAddIcon = () => {
+    return;
+  };
+
+  render() {
+    return (
+      <Grid<Data>
+        columns={MultiTradingMode.dataColumns}
+        rows={data}
+        onClickRowDeleteIcon={this.onClickRowDeleteIcon}
+        onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
+      />
+    );
   }
 }
 

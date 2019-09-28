@@ -7,8 +7,8 @@ import Table from 'components/atoms/Table';
 import TableToolbar, { TableToolbarProps } from 'components/molecules/TableToolbar';
 import TableHeadLayer, { TableColum } from 'components/molecules/TableHeadLayer';
 import TableBody from 'components/atoms/TableBody';
-import TableRow from 'components/atoms/TableRow';
-import TableCell from 'components/atoms/TableCell';
+import TableBodyRow from 'components/atoms/TableBodyRow';
+import TableBodyCell from 'components/atoms/TableBodyCell';
 import IconButton from 'components/atoms/IconButton';
 import Checkbox from 'components/atoms/Checkbox';
 
@@ -99,31 +99,30 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
             />
             <TableBody>
               {stableSort(this.props.rows, getSorting(this.state.order, this.state.orderBy)).map(row => (
-                <TableRow hover onClick={this.onClickRow(row.id)} tabIndex={-1} key={row.id}>
+                <TableBodyRow hover onClick={this.onClickRow(row.id)} tabIndex={-1} key={row.id}>
                   {this.props.onClickRowDeleteIcon && (
-                    <TableCell>
+                    <TableBodyCell>
                       <IconButton
                         icon={<DeleteIcon aria-label="delete" />}
                         onClick={this.onClickRowDeleteIcon(row.id)}
                       />
-                    </TableCell>
+                    </TableBodyCell>
                   )}
                   {this.props.columns.map(col => {
                     // @ts-ignore
                     const label = row[col.id];
 
                     return col.checkbox ? (
-                      <TableCell align={col.align} key={col.id} padding="checkbox">
+                      <TableBodyCell align={col.align} key={col.id} padding="checkbox">
                         <Checkbox {...col.checkbox} />
-                        {label}
-                      </TableCell>
+                      </TableBodyCell>
                     ) : (
-                      <TableCell align={col.align} padding={col.disablePadding ? 'none' : 'default'} key={col.id}>
-                        {label}
-                      </TableCell>
+                      <TableBodyCell align={col.align} padding={col.disablePadding ? 'none' : 'default'} key={col.id}>
+                        {col.format && typeof label === 'number' ? col.format(label) : label}
+                      </TableBodyCell>
                     );
                   })}
-                </TableRow>
+                </TableBodyRow>
               ))}
             </TableBody>
           </Table>
