@@ -4,6 +4,7 @@ import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.kafka.KafkaConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.stereotype.Component;
 import reactor.core.Disposable;
@@ -16,8 +17,8 @@ import java.util.Map;
 @Component
 public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
-
-	public TradeKafkaConsumer(Map<String, Object> receiverDefaultProperties) {
+	
+	public TradeKafkaConsumer(@Qualifier("receiverDefaultProperties") Map<String, Object> receiverDefaultProperties) {
 		super(receiverDefaultProperties);
 	}
 
