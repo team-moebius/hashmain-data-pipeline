@@ -24,7 +24,8 @@ moebius:
     admin: /admin,
       /api/markets/**
     member: /api/stoplosses/**,
-      /api/api-keys/**
+      /api/api-keys/**,
+      /api/orders/**
 
 reactor:
   netty:

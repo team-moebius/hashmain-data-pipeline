@@ -2,6 +2,7 @@ package com.moebius.backend.service.order;
 
 import com.moebius.backend.assembler.OrderAssembler;
 import com.moebius.backend.domain.commons.EventType;
+import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.dto.frontend.OrderDto;
@@ -11,7 +12,6 @@ import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -30,25 +30,24 @@ public class OrderService {
 	private final OrderAssembler orderAssembler;
 	private final ApiKeyService apiKeyService;
 
-	public Mono<ResponseEntity<List<OrderResponseDto>>> upsertOrders(String apiKeyId, List<OrderDto> orderDtos) {
-		return apiKeyService.getApiKeyById(apiKeyId)
+	public Mono<ResponseEntity<List<OrderResponseDto>>> upsertOrders(String memberId, List<OrderDto> orderDtos) {
+		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, Exchange.UPBIT)
 			.subscribeOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(
-				() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] " + apiKeyId)))))
 			.flatMapIterable(apiKey -> orderAssembler.toOrders(apiKey, orderDtos))
 			.flatMap(this::processOrder)
 			.collectList()
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<List<OrderResponseDto>>> getOrdersByApiKey(String apiKeyId) {
-		return orderRepository.findAllByApiKeyId(new ObjectId(apiKeyId))
+	public Mono<ResponseEntity<List<OrderResponseDto>>> getOrdersByApiKey(String memberId) {
+		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, Exchange.UPBIT)
+			.map(apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Stoploss] Stoploss information based on  " + apiKeyId)))))
-			.map(order -> orderAssembler.toResponseDto(order, EventType.READ))
-			.collectList()
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
+			.flatMap(orderFlux -> orderFlux.map(order -> orderAssembler.toResponseDto(order, EventType.READ))
+				.collectList())
 			.map(ResponseEntity::ok);
 	}
 

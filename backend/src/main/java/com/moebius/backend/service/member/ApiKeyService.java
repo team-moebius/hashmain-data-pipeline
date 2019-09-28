@@ -3,6 +3,7 @@ package com.moebius.backend.service.member;
 import com.moebius.backend.assembler.ApiKeyAssembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.apikeys.ApiKeyRepository;
+import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
@@ -51,7 +52,6 @@ public class ApiKeyService {
 			.publishOn(COMPUTE.scheduler());
 	}
 
-	// TODO : Refactor return type as simplified one. (ServerResponse)
 	public Mono<ResponseEntity<List<ApiKeyResponseDto>>> getApiKeysByMemberId(String memberId) {
 		Verifier.checkBlankString(memberId);
 
@@ -77,6 +77,16 @@ public class ApiKeyService {
 				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key"));
 			})
 			.map(aVoid -> ResponseEntity.ok(id));
+	}
+
+	public Mono<ApiKey> getApiKeyByMemberIdAndExchange(String memberId, Exchange exchange) {
+		Verifier.checkBlankString(memberId);
+
+		return apiKeyRepository.findByMemberIdAndExchange(new ObjectId(memberId), exchange)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ")")))));
 	}
 
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
