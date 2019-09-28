@@ -2,12 +2,12 @@ import * as React from 'react';
 import { withAlert, AlertManager } from 'react-alert';
 import classNames from 'classnames';
 
+import ajax from 'utils/Ajax';
 import Paper from 'components/atoms/Paper';
+import Text from 'components/atoms/Text';
 import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import PageTemplate from 'components/templates/PageTemplate';
-import Test1 from 'pages/sub/Test1';
-import Test2 from 'pages/sub/Test2';
-import ajax from 'utils/Ajax';
+import MultiTradingMode from 'pages/sub/MutliTradingMode';
 
 import 'assets/scss/HtsConfig.scss';
 
@@ -21,8 +21,8 @@ interface ContentsState {
 }
 
 class HtsConfig extends React.Component<ContentsProps, ContentsState> {
-  private static TAB_HEADERS = [<>멀티거래 모드</>, <>Test2</>];
-  private static TAB_ITEMS = [<Test1 />, <Test2 />];
+  private static TAB_HEADERS = [<Text variant="subtitle2">멀티거래 모드</Text>];
+  private static TAB_ITEMS = [<MultiTradingMode />];
   constructor(props: ContentsProps) {
     super(props);
     this.state = {

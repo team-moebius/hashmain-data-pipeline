@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/DeleteOutlined';
 
 import Paper from 'components/atoms/Paper';
@@ -41,19 +40,6 @@ function stableSort<T extends GridData>(array: T[], cmp: (a: T, b: T) => number)
 function getSorting<T extends GridData>(order: 'asc' | 'desc', orderBy: keyof T): (a: T, b: T) => number {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing(3),
-  },
-  table: {
-    minWidth: 750,
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-}));
 
 interface GridProps<T extends GridData> {
   columns: TableColum[];
@@ -99,12 +85,11 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
   };
 
   render() {
-    const classes = useStyles();
     return (
-      <Paper className={classes.root}>
+      <Paper style={{ width: '100%' }}>
         {this.props.toolbarProps && <TableToolbar {...this.props.toolbarProps} />}
-        <div className={classes.tableWrapper}>
-          <Table className={classes.table} aria-labelledby="tableTitle">
+        <div style={{ overflowX: 'auto' }}>
+          <Table aria-labelledby="tableTitle" style={{ minWidth: 750 }}>
             <TableHeadLayer
               columns={this.props.columns}
               order={this.state.order}
@@ -113,8 +98,8 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
               onClickAddIcon={this.props.onClickHeadLayerAddIcon}
             />
             <TableBody>
-              {stableSort(this.props.rows, getSorting(this.state.order, this.state.orderBy)).map(row => {
-                <TableRow hover onClick={this.onClickRow(row.id)} role="checkbox" tabIndex={-1} key={row.id}>
+              {stableSort(this.props.rows, getSorting(this.state.order, this.state.orderBy)).map(row => (
+                <TableRow hover onClick={this.onClickRow(row.id)} tabIndex={-1} key={row.id}>
                   {this.props.onClickRowDeleteIcon && (
                     <TableCell>
                       <IconButton
@@ -138,8 +123,8 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                       </TableCell>
                     );
                   })}
-                </TableRow>;
-              })}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
