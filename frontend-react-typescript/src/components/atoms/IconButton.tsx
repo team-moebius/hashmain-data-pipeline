@@ -3,6 +3,11 @@ import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-
 import { withStyles } from '@material-ui/core/styles';
 
 const CustomIconButton = withStyles(theme => ({
+  root: {
+    '&:hover': {
+      color: theme.palette.secondary.main,
+    },
+  },
   sizeSmall: { padding: '4px' },
 }))(MuiIconButton);
 

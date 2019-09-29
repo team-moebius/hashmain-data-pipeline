@@ -7,7 +7,7 @@ const TableBodyCell = withStyles(theme => ({
     borderTopColor: theme.palette.primary.main,
     borderBottom: '0',
     fontSize: '0.85em',
-    padding: '4px 9px',
+    padding: '3px 9px',
     marginTop: '1px',
     // userSelect: 'none',
   },

@@ -5,6 +5,7 @@ const TableHeadCell = withStyles(theme => ({
   root: {
     border: '0',
     color: theme.palette.text.primary,
+    backgroundColor: theme.palette.primary.dark,
     fontSize: '0.85em',
     fontWeight: 'bold',
     padding: '0px 9px',
