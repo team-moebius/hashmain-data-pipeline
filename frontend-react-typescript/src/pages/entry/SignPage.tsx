@@ -113,13 +113,13 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
                 <ul>
                   <li>
                     <Text gutterBottom variant="caption">
-                      * 로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의하는
+                      로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의하는
                       것으로 간주합니다.
                     </Text>
                   </li>
                   <li>
                     <Text gutterBottom variant="caption">
-                      * CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.
+                      CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.
                     </Text>
                   </li>
                 </ul>
@@ -132,13 +132,13 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
                     <ul>
                       <li>
                         <Text variant="caption" gutterBottom>
-                          * <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
+                          <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
                           <em>계정 인증용 메일</em>이 전송됩니다.
                         </Text>
                       </li>
                       <li>
                         <Text variant="caption" gutterBottom>
-                          * 메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에 <em>스팸 메일함을 확인</em>{' '}
+                          메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에 <em>스팸 메일함을 확인</em>{' '}
                           하시기 바랍니다.
                         </Text>
                       </li>

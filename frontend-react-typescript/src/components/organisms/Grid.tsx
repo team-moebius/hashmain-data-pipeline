@@ -43,10 +43,12 @@ function getSorting<T extends GridData>(order: 'asc' | 'desc', orderBy: keyof T)
 
 interface GridProps<T extends GridData> {
   columns: TableColum[];
+  className?: string;
   rows: T[];
   toolbarProps?: TableToolbarProps;
   order?: 'asc' | 'desc';
   orderBy?: keyof T;
+  style?: React.CSSProperties;
   onClickRow?: (event: React.MouseEvent<unknown>, rowId: string) => void;
   onClickRowDeleteIcon?: (e: React.MouseEvent<unknown>, rowId: string) => void;
   onClickHeadLayerAddIcon?: (e: React.MouseEvent<unknown>) => void;
@@ -86,7 +88,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
 
   render() {
     return (
-      <Paper style={{ width: '100%' }}>
+      <Paper className={this.props.className} style={{ width: '100%', ...this.props.style }}>
         {this.props.toolbarProps && <TableToolbar {...this.props.toolbarProps} />}
         <div style={{ overflowX: 'auto' }}>
           <Table aria-labelledby="tableTitle" style={{ minWidth: 750 }}>

@@ -33,7 +33,7 @@ const AppBar: React.FC<AppBarProps> = props => {
       <Toolbar>
         {children && children.left}
         <div className={classes.titleWrapper}>
-          <Text className={classes.title} variant="subtitle1">
+          <Text className={classes.title} variant="h6">
             <em>{title}</em>
           </Text>
           <Text variant="subtitle2">{subTitle}</Text>

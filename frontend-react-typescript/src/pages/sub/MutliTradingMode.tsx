@@ -1,8 +1,9 @@
 import * as React from 'react';
 import Grid, { GridData } from 'components/organisms/Grid';
 import { TableColum } from 'components/molecules/TableHeadLayer';
+import ajax from 'utils/Ajax';
 
-interface Data extends GridData {
+interface OrderData extends GridData {
   title: string;
   targetCost: number;
   estimatedCost: number;
@@ -18,7 +19,7 @@ function createData(
   estimatedCost: number,
   sellCost: number,
   percentage: number
-): Data {
+): OrderData {
   return { id, status, title, targetCost, estimatedCost, sellCost, percentage };
 }
 
@@ -29,7 +30,9 @@ const data = [
 
 interface MultiTradingModeProps {}
 
-interface MultiTradingModeState {}
+interface MultiTradingModeState {
+  orderData: OrderData[];
+}
 
 class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradingModeState> {
   private static dataColumns: TableColum[] = [
@@ -43,9 +46,19 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
 
   constructor(props: MultiTradingModeProps) {
     super(props);
-
-    this.state = {};
   }
+
+  componentDidMount = () => {
+    ajax
+      .get('/api/orders')
+      .then(response => {
+        console.log(response);
+        // this.props.alert.success('등록 성공');
+      })
+      .catch(error => {
+        // this.props.alert.error('Order data load fail');
+      });
+  };
 
   onClickRowDeleteIcon = () => {
     return;
@@ -57,12 +70,29 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
 
   render() {
     return (
-      <Grid<Data>
-        columns={MultiTradingMode.dataColumns}
-        rows={data}
-        onClickRowDeleteIcon={this.onClickRowDeleteIcon}
-        onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
-      />
+      <div>
+        <Grid<OrderData>
+          columns={MultiTradingMode.dataColumns}
+          rows={data}
+          style={{ height: '215px' }}
+          onClickRowDeleteIcon={this.onClickRowDeleteIcon}
+          onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
+        />
+        <Grid<OrderData>
+          columns={MultiTradingMode.dataColumns}
+          rows={data}
+          style={{ height: '215px' }}
+          onClickRowDeleteIcon={this.onClickRowDeleteIcon}
+          onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
+        />
+        <Grid<OrderData>
+          columns={MultiTradingMode.dataColumns}
+          rows={data}
+          style={{ height: '215px' }}
+          onClickRowDeleteIcon={this.onClickRowDeleteIcon}
+          onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
+        />
+      </div>
     );
   }
 }

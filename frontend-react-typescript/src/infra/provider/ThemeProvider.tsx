@@ -11,7 +11,7 @@ const MOBEIUS_THEME = createMuiTheme({
       default: '#091A2E',
     },
     text: {
-      primary: '#B3BAD3',
+      primary: '#C9CFE8',
     },
     primary: {
       main: '#0D1E34',
@@ -22,6 +22,25 @@ const MOBEIUS_THEME = createMuiTheme({
       main: '#1E8CDE',
       dark: '#13253F',
     },
+  },
+  typography: {
+    caption: {
+      fontSize: '0.825em',
+    },
+    fontFamily: [
+      'Malgun Gothic',
+      '맑은 고딕',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
   },
 });
 

@@ -5,6 +5,7 @@ const TableHeadCell = withStyles(theme => ({
   root: {
     border: '0',
     padding: '0px 9px',
+    userSelect: 'none',
   },
 }))(MuiTableCell);
 

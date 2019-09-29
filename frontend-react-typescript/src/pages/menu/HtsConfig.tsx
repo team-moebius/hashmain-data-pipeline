@@ -35,7 +35,6 @@ class HtsConfig extends React.Component<ContentsProps, ContentsState> {
   };
 
   onSubmitApiRegist = (data: object) => {
-    console.log(data);
     ajax
       .post('/api/api-keys', data)
       .then(response => {

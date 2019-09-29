@@ -6,7 +6,7 @@ const Button = withStyles(theme => ({}))(MuiButton);
 Button.defaultProps = {
   color: 'secondary',
   fullWidth: true,
-  size: 'large',
+  size: 'medium',
   type: 'button',
   variant: 'contained',
 };

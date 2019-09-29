@@ -10,6 +10,7 @@ const useStyles = makeStyles(theme => ({
   root: { display: 'flex', flexDirection: 'column' },
   tabHeader: { flex: '0 auto' },
   tabContents: { flex: '1 auto', marginTop: 4 },
+  tabContentsWrapper: { margin: '15px' },
 }));
 
 interface PageTemplateProps {
@@ -29,7 +30,7 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
         <BasicTabs value={props.index} items={props.tabHeaders} orientation="horizontal" onChange={props.onChangeTab} />
       </Paper>
       <Paper className={classes.tabContents}>
-        <div>{props.tabContents[props.index]}</div>
+        <div className={classes.tabContentsWrapper}>{props.tabContents[props.index]}</div>
       </Paper>
     </div>
   );

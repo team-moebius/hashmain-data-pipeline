@@ -1,7 +1,18 @@
-import MuiTextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/core/styles';
+import * as React from 'react';
+import MuiTextField, { TextFieldProps as MuiTextFieldProps } from '@material-ui/core/TextField';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 
-const Input = withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
+  input: {
+    padding: '11px',
+    '&::placeholder': {
+      color: theme.palette.text.primary,
+      fontSize: '0.8em',
+    },
+  },
+}));
+
+const CustomInput = withStyles(theme => ({
   root: {
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
@@ -13,6 +24,16 @@ const Input = withStyles(theme => ({
     margin: '8px 0px 0px 0',
   },
 }))(MuiTextField);
+
+const Input: React.FC<MuiTextFieldProps> = props => {
+  const classes = useStyles();
+
+  return (
+    <CustomInput {...props} InputProps={{ classes: { input: classes.input }, ...props.InputProps }}>
+      {props.children}
+    </CustomInput>
+  );
+};
 
 Input.defaultProps = {
   autoComplete: 'off',
