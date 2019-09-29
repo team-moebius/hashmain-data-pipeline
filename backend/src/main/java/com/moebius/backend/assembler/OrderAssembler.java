@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +27,10 @@ public class OrderAssembler {
 			order.setOrderPosition(dto.getOrderPosition());
 			order.setPrice(dto.getPrice());
 			order.setVolume(dto.getVolume());
+			if (dto.getEventType() == EventType.CREATE) {
+				order.setCreatedAt(LocalDateTime.now());
+			}
+			order.setUpdatedAt(LocalDateTime.now());
 			orders.add(order);
 		});
 		return orders;
