@@ -4,8 +4,10 @@
   background-image: url(assets/images/bg.png);
   background-color: #13253f;
   position: relative;
-  overflow: auto;
-  width: 100%;
+  min-width: 1400px;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 em {
@@ -23,7 +25,9 @@ li {
 }
 
 body {
-  margin: 0;
+  overflow: auto;
+  height: 100vh;
+  background-color: #13253f;
 }
 
 code {

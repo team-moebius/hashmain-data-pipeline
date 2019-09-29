@@ -74,21 +74,20 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
           rows={data}
-          style={{ height: '215px' }}
+          style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
           rows={data}
-          style={{ height: '215px' }}
+          style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
           rows={data}
-          style={{ height: '215px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />

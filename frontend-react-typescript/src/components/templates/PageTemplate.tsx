@@ -7,10 +7,11 @@ import Paper from 'components/atoms/Paper';
 import Tab from 'components/molecules/Tab';
 
 const useStyles = makeStyles(theme => ({
-  root: { display: 'flex', flexDirection: 'column' },
-  tabHeader: { flex: '0 auto' },
+  // root: { display: 'flex', flexDirection: 'column' },
+  root: {},
+  tabHeader: { display: 'flex', flexDirection: 'column', height: '100%' },
   tabContents: { flex: '1 auto', marginTop: '6px' },
-  tabContentsWrapper: { margin: '15px' },
+  tabContentsWrapper: { padding: '15px' },
 }));
 
 interface PageTemplateProps {
@@ -28,7 +29,7 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
   return (
     <div className={classNames(classes.root, props.className)}>
       <Tab
-        rootClassName={classes.tabHeader}
+        rootClassName={classNames(classes.tabHeader, props.className)}
         value={props.index}
         items={props.tabHeaders}
         orientation="horizontal"

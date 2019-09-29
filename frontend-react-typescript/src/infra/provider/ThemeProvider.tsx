@@ -8,7 +8,7 @@ const MOBEIUS_THEME = createMuiTheme({
     type: 'dark',
     background: {
       paper: '#0D1E34',
-      default: '#091A2E',
+      default: '#13253f',
     },
     text: {
       primary: '#C7CDDB',

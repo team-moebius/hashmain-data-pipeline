@@ -4,11 +4,10 @@ $responsive-toggle-point: 960px;
 $item-margin: 8px;
 
 .layout {
-  display: flex;
-  position: relative;
+  width: 1400px;
   margin: 0 auto;
-  max-width: 1400px;
-  height: 100vh;
+  position: relative;
+  z-index: 1;
 
   .layout-header {
     .layout-header__logo {
@@ -32,7 +31,8 @@ $item-margin: 8px;
 
   .layout-contents {
     display: flex;
-    margin-top: 74px;
+    padding-top: 74px;
+    height: auto;
     width: 100%;
     .layout-contents__menu {
       min-width: 100px;
