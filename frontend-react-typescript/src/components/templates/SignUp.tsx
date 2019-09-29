@@ -186,7 +186,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             {this.state.errors.permitTerms}
           </Text>
         )}
-        <Button disabled={this.props.pending}>
+        <Button disabled={this.props.pending} type="submit">
           <Text variant="button">회원가입</Text>
         </Button>
         {this.props.children && this.props.children.end}

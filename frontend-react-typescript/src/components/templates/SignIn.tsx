@@ -68,7 +68,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
           type="password"
           placeholder="Password"
         />
-        <Button color="secondary" style={{ marginTop: '8px' }} disabled={this.props.pending}>
+        <Button color="secondary" disabled={this.props.pending} type="submit" style={{ marginTop: '8px' }}>
           <Text variant="button">로그인</Text>
         </Button>
         {this.props.children}

@@ -7,7 +7,7 @@ Button.defaultProps = {
   color: 'secondary',
   fullWidth: true,
   size: 'large',
-  type: 'submit',
+  type: 'button',
   variant: 'contained',
 };
 

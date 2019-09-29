@@ -34,7 +34,7 @@ class HtsConfig extends React.Component<ContentsProps, ContentsState> {
     this.setState({ index: value });
   };
 
-  onClickApiRegistButton = (data: object) => {
+  onSubmitApiRegist = (data: object) => {
     console.log(data);
     ajax
       .post('/api/api-keys', data)
@@ -69,7 +69,7 @@ class HtsConfig extends React.Component<ContentsProps, ContentsState> {
         />
         <Paper className="hts-config__sub">
           <ApiKeyRegistBox
-            onClickRegistApiKeyButton={this.onClickApiRegistButton}
+            onSubmit={this.onSubmitApiRegist}
             onClickViewMyApiKeyButton={this.onClickViewMyApkKeyButton}
           />
         </Paper>
