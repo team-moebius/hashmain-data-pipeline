@@ -36,10 +36,10 @@ interface MultiTradingModeState {
 
 class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradingModeState> {
   private static dataColumns: TableColum[] = [
-    { id: 'status', label: 'status', align: 'left' },
-    { id: 'title', label: 'title', align: 'left' },
-    { id: 'targetCost', label: 'targetCost', align: 'right', sortable: true },
-    { id: 'estimatedCost', label: 'estimatedCost', align: 'right' },
+    { id: 'status', label: '주문 포지션', align: 'left' },
+    { id: 'title', label: '이익실현 지정가', align: 'left' },
+    { id: 'targetCost', label: '예상 주문총액', align: 'right', sortable: true },
+    { id: 'estimatedCost', label: '매도 수량', align: 'right' },
     { id: 'sellCost', label: 'sellCost', align: 'right' },
     { id: 'percentage', label: 'percentage', align: 'right', sortable: true, format: value => `${value}%` },
   ];

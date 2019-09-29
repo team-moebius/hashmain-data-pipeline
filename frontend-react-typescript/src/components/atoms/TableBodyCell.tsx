@@ -6,10 +6,10 @@ const TableBodyCell = withStyles(theme => ({
     borderTop: '3px solid',
     borderTopColor: theme.palette.primary.main,
     borderBottom: '0',
-    cursor: 'pointer',
+    fontSize: '0.85em',
     padding: '4px 9px',
     marginTop: '1px',
-    userSelect: 'none',
+    // userSelect: 'none',
   },
 }))(MuiTableCell);
 

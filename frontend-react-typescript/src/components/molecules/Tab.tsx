@@ -7,6 +7,7 @@ import TabHeader from 'components/atoms/TabHeader';
 import TabHeaderItem from 'components/atoms/TabHeaderItem';
 
 interface TabProps {
+  centered?: boolean;
   chidren?: React.ReactNode;
   items: JSX.Element[];
   rootClassName?: string;
@@ -46,6 +47,7 @@ const Tab: React.FC<TabProps> = props => {
   return (
     <div className={rootClassName}>
       <TabHeader
+        centered={props.centered}
         className={tabsClassName}
         orientation={props.orientation}
         value={props.value}
