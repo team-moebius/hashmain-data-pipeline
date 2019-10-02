@@ -36,6 +36,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 			record.timestamp(),
 			record.key(),
 			record.value());
+
 		offset.acknowledge();
 	}
 
