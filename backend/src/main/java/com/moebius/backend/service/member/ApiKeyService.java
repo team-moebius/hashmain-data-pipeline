@@ -82,7 +82,7 @@ public class ApiKeyService {
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
 		log.info("[ApiKey] Start to verify api key. [{}]", apiKeyDto);
 
-		ExchangeService exchangeService = exchangeServiceFactory.getService(apiKeyDto.getExchange());
+		ExchangeService<?> exchangeService = exchangeServiceFactory.getService(apiKeyDto.getExchange());
 		return exchangeService.getAuthToken(apiKeyDto.getAccessKey(), apiKeyDto.getSecretKey())
 			.flatMap(exchangeService::doHealthCheck);
 	}

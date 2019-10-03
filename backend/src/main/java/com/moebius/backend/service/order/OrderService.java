@@ -5,15 +5,18 @@ import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.member.ApiKeyService;
+import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -46,22 +49,22 @@ public class OrderService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] Order information based on apiKeyId(" + apiKeyId + ")")))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] Order by apiKeyId(" + apiKeyId + ")")))))
 			.map(order -> orderAssembler.toResponseDto(order, EventType.READ))
 			.collectList()
 			.map(ResponseEntity::ok);
 	}
 
-//	public Flux<OrderDto> getValidOrdersByTrade(TradeDto tradeDto) {
-//		Verifier.checkNullFields(tradeDto);
-//
-//		return orderRepository.findAllByExchangeAndSymbolAndPrice(tradeDto.getExchange(), tradeDto.getSymbol(), tradeDto.getPrice())
-//			.subscribeOn(IO.scheduler())
-//			.publishOn(COMPUTE.scheduler())
-//			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-//				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] Order information based on trade(" + tradeDto + ")")))))
-//			.map(order -> orderAssembler.toOrderDto(order, EventType.READ));
-//	}
+	private Flux<OrderDto> getOrdersByTrade(TradeDto tradeDto) {
+		Verifier.checkNullFields(tradeDto);
+
+		return orderRepository.findAllByExchangeAndSymbol(tradeDto.getExchange(), tradeDto.getSymbol())
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] Order by trade(" + tradeDto + ")")))))
+			.map(order -> orderAssembler.toOrderDto(order, EventType.READ));
+	}
 
 	private Mono<OrderResponseDto> processOrder(Order order) {
 		return Objects.isNull(order.getId()) ? createOrder(order) : deleteOrder(order);

@@ -10,7 +10,7 @@ spring:
     elasticsearch:
       cluster-nodes: http://internal-moebius-es-1636081679.ap-northeast-2.elb.amazonaws.com
   kafka:
-    bootstrap-servers: http://kafka.cryptoboxglobal.com:9092
+    bootstrap-servers: http://kafka.cryptoboxglobal.com:9092 # FIXME : make url resolved well
     client-id: moebius
     consumer:
       client-id: moebius-consumer
@@ -43,6 +43,7 @@ exchange:
       secret-uri: https://crix-api-endpoint.upbit.com/v1/crix/
       asset: v1/accounts
       market: v1/market/all
+      order: v1/orders
 
 server:
   port: 80

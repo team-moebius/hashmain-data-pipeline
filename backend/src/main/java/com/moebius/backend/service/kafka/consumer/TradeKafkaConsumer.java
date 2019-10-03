@@ -1,4 +1,4 @@
-package com.moebius.backend.service.kafka.trade;
+package com.moebius.backend.service.kafka.consumer;
 
 import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.kafka.KafkaConsumer;
@@ -7,7 +7,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.stereotype.Component;
-import reactor.core.Disposable;
 import reactor.kafka.receiver.ReceiverOffset;
 import reactor.kafka.receiver.ReceiverRecord;
 
@@ -48,10 +47,5 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	@Override
 	protected Class<?> getValueDeserializerClass() {
 		return JsonDeserializer.class;
-	}
-
-	@Override
-	public Disposable consumeMessages(TradeDocument message) {
-		return super.consumeMessages(message);
 	}
 }

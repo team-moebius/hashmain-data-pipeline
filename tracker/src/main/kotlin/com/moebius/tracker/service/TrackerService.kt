@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.markets.MarketRepository
 import com.moebius.backend.domain.trades.TradeDocumentRepository
-import com.moebius.backend.service.kafka.trade.TradeKafkaProducer
+import com.moebius.backend.service.kafka.producer.TradeKafkaProducer
 import com.moebius.backend.utils.ThreadScheduler.COMPUTE
 import com.moebius.backend.utils.ThreadScheduler.IO
 import com.moebius.tracker.assembler.TradeAssembler

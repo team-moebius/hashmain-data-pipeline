@@ -12,7 +12,5 @@ public interface OrderRepository extends ReactiveMongoRepository<Order, ObjectId
 	@Query(value = "{ 'apiKey.id' : ?0 }")
 	Flux<Order> findAllByApiKeyId(ObjectId apiKeyId);
 
-	Flux<Order> findAllByExchangeAndSymbolAndPriceGreaterThanEqual(Exchange exchange, String symbol, double price);
-
-	Flux<Order> findAllByExchangeAndSymbolAndPriceLessThanEqual(Exchange exchange, String symbol, double price);
+	Flux<Order> findAllByExchangeAndSymbol(Exchange exchange, String symbol);
 }

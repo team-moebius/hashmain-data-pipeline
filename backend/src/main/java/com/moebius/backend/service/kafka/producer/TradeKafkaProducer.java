@@ -1,4 +1,4 @@
-package com.moebius.backend.service.kafka.trade;
+package com.moebius.backend.service.kafka.producer;
 
 import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.kafka.KafkaProducer;

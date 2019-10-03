@@ -37,8 +37,8 @@ public abstract class KafkaConsumer<K, V> {
 
 	protected abstract Class<?> getValueDeserializerClass();
 
-	public Disposable consumeMessages(V message) {
-		log.info("[Kafka] Start read message. [{}]", message);
+	public Disposable consumeMessages() {
+		log.info("[Kafka] Start read messages. [{}]", getTopic());
 		return receiver.receive().subscribe(this::processRecord);
 	}
 }
