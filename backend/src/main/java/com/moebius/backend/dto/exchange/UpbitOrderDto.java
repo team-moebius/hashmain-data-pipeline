@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,6 +21,8 @@ public class UpbitOrderDto {
 	@NotBlank
 	@JsonProperty("ord_type")
 	private String orderType;
+	@PositiveOrZero
 	private double price;
+	@PositiveOrZero
 	private double volume;
 }

@@ -4,7 +4,7 @@ import com.moebius.backend.assembler.OrderAssembler;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
-import com.moebius.backend.dto.frontend.OrderDto;
+import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
@@ -46,11 +46,22 @@ public class OrderService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Stoploss] Stoploss information based on  " + apiKeyId)))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] Order information based on apiKeyId(" + apiKeyId + ")")))))
 			.map(order -> orderAssembler.toResponseDto(order, EventType.READ))
 			.collectList()
 			.map(ResponseEntity::ok);
 	}
+
+//	public Flux<OrderDto> getValidOrdersByTrade(TradeDto tradeDto) {
+//		Verifier.checkNullFields(tradeDto);
+//
+//		return orderRepository.findAllByExchangeAndSymbolAndPrice(tradeDto.getExchange(), tradeDto.getSymbol(), tradeDto.getPrice())
+//			.subscribeOn(IO.scheduler())
+//			.publishOn(COMPUTE.scheduler())
+//			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+//				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] Order information based on trade(" + tradeDto + ")")))))
+//			.map(order -> orderAssembler.toOrderDto(order, EventType.READ));
+//	}
 
 	private Mono<OrderResponseDto> processOrder(Order order) {
 		return Objects.isNull(order.getId()) ? createOrder(order) : deleteOrder(order);

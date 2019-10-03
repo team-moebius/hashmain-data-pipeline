@@ -3,13 +3,12 @@ package com.moebius.backend.assembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
-import com.moebius.backend.dto.frontend.OrderDto;
+import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,5 +43,19 @@ public class OrderAssembler {
 		responseDto.setVolume(order.getVolume());
 
 		return responseDto;
+	}
+
+	public OrderDto toOrderDto(@NotNull Order order, EventType eventType) {
+		OrderDto orderDto = new OrderDto();
+		orderDto.setId(order.getId().toHexString());
+		orderDto.setEventType(eventType);
+		orderDto.setExchange(order.getExchange());
+		orderDto.setSymbol(order.getSymbol());
+		orderDto.setOrderType(order.getOrderType());
+		orderDto.setOrderPosition(order.getOrderPosition());
+		orderDto.setPrice(order.getPrice());
+		orderDto.setVolume(order.getVolume());
+
+		return orderDto;
 	}
 }
