@@ -10,6 +10,7 @@ import reactor.kafka.sender.SenderOptions;
 import reactor.kafka.sender.SenderRecord;
 import reactor.kafka.sender.SenderResult;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
@@ -25,11 +26,12 @@ import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
 public abstract class KafkaProducer<K, V, T> {
 	private final KafkaSender<K, V> sender;
 
-	public KafkaProducer(Map<String, Object> senderDefaultProperties) {
-		senderDefaultProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, getKeySerializerClass());
-		senderDefaultProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, getValueSerializerClass());
+	public KafkaProducer(Map<String, String> senderDefaultProperties) {
+		Map<String, Object> properties = new HashMap<>(senderDefaultProperties);
+		properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, getKeySerializerClass());
+		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, getValueSerializerClass());
 
-		SenderOptions<K, V> senderOptions = SenderOptions.create(senderDefaultProperties);
+		SenderOptions<K, V> senderOptions = SenderOptions.create(properties);
 		senderOptions.scheduler(KAFKA.scheduler());
 
 		sender = KafkaSender.create(senderOptions);
@@ -50,7 +52,7 @@ public abstract class KafkaProducer<K, V, T> {
 	}
 
 	public Flux<SenderResult<T>> produceMessages(V message) {
-		log.info("[Kafka] Send message. [{}]", message);
+		log.info("[Kafka] Start to send message. [{}]", message);
 		return sender.send(Mono.just(SenderRecord.create(new ProducerRecord<>(getTopic(), getKey(message), message), getCorrelationMetadata(message))));
 	}
 }

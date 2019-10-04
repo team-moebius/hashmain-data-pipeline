@@ -10,14 +10,11 @@ spring:
     elasticsearch:
       cluster-nodes: http://internal-moebius-es-1636081679.ap-northeast-2.elb.amazonaws.com
   kafka:
-    bootstrap-servers: http://kafka.cryptoboxglobal.com:9092 # FIXME : make url resolved well
+    bootstrap-servers: http://kafka.cryptoboxglobal.com:9092
     client-id: moebius
     consumer:
       client-id: moebius-consumer
       auto-offset-reset: earliest
-    producer:
-      client-id: moebius-producer
-      acks: all
 
   thymeleaf:
     reactive:

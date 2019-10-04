@@ -18,24 +18,24 @@ public class KafkaConfiguration {
 	private final KafkaProperties kafkaProperties;
 
 	@Bean
-	public Map<String, Object> senderDefaultProperties() {
-		Map<String, Object> defaultProperties = new HashMap<>();
+	public Map<String, String> senderDefaultProperties() {
+		Map<String, String> senderDefaultProperties = new HashMap<>();
 
-		defaultProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
-		defaultProperties.put(ProducerConfig.CLIENT_ID_CONFIG, kafkaProperties.getProducer().getClientId());
-		defaultProperties.put(ProducerConfig.ACKS_CONFIG, kafkaProperties.getProducer().getAcks());
+		senderDefaultProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, String.join(",", kafkaProperties.getBootstrapServers()));
+		senderDefaultProperties.put(ProducerConfig.CLIENT_ID_CONFIG, kafkaProperties.getProducer().getClientId());
+		senderDefaultProperties.put(ProducerConfig.ACKS_CONFIG, kafkaProperties.getProducer().getAcks());
 
-		return defaultProperties;
+		return senderDefaultProperties;
 	}
 
 	@Bean
-	public Map<String, Object> receiverDefaultProperties() {
-		Map<String, Object> defaultProperties = new HashMap<>();
+	public Map<String, String> receiverDefaultProperties() {
+		Map<String, String> receiverDefaultProperties = new HashMap<>();
 
-		defaultProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
-		defaultProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, kafkaProperties.getConsumer().getClientId());
-		defaultProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getConsumer().getAutoOffsetReset());
+		receiverDefaultProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, String.join(",", kafkaProperties.getBootstrapServers()));
+		receiverDefaultProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, kafkaProperties.getConsumer().getClientId());
+		receiverDefaultProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getConsumer().getAutoOffsetReset());
 
-		return defaultProperties;
+		return receiverDefaultProperties;
 	}
 }

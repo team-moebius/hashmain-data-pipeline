@@ -3,7 +3,6 @@ package com.moebius.backend.service.kafka.producer;
 import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.kafka.KafkaProducer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -15,7 +14,7 @@ import java.util.Map;
 public class TradeKafkaProducer extends KafkaProducer<String, TradeDocument, String> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
 
-	public TradeKafkaProducer(@Qualifier("senderDefaultProperties") Map<String, Object> senderDefaultProperties) {
+	public TradeKafkaProducer(Map<String, String> senderDefaultProperties) {
 		super(senderDefaultProperties);
 	}
 

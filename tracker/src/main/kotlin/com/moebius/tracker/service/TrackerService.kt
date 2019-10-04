@@ -83,7 +83,7 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                                     try {
                                         val tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto::class.java)
                                         accumulateTrade(tradeDto)
-                                        tradeKafkaProducer.produceMessages(tradeAssembler.toTradeDocument(tradeDto))
+                                        tradeKafkaProducer.produceMessages(tradeAssembler.toTradeDocument(tradeDto)).subscribe()
                                     } catch (e: IOException) {
                                         log.error(e.message)
                                     }

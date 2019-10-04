@@ -8,6 +8,7 @@ import reactor.kafka.receiver.ReceiverOptions;
 import reactor.kafka.receiver.ReceiverRecord;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
@@ -16,11 +17,12 @@ import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
 public abstract class KafkaConsumer<K, V> {
 	private final KafkaReceiver<K, V> receiver;
 
-	public KafkaConsumer(Map<String, Object> receiverDefaultProperties) {
-		receiverDefaultProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, getKeyDeserializerClass());
-		receiverDefaultProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, getValueDeserializerClass());
+	public KafkaConsumer(Map<String, String> receiverDefaultProperties) {
+		Map<String, Object> properties = new HashMap<>(receiverDefaultProperties);
+		properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, getKeyDeserializerClass());
+		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, getValueDeserializerClass());
 
-		ReceiverOptions<K, V> receiverOptions = ReceiverOptions.create(receiverDefaultProperties);
+		ReceiverOptions<K, V> receiverOptions = ReceiverOptions.create(properties);
 		receiverOptions.schedulerSupplier(KAFKA::scheduler);
 		receiverOptions.subscription(Collections.singleton(getTopic()))
 			.addAssignListener(partitions -> log.debug("[Kafka] onPartitionsAssigned {}", partitions))
@@ -37,8 +39,8 @@ public abstract class KafkaConsumer<K, V> {
 
 	protected abstract Class<?> getValueDeserializerClass();
 
-	public Disposable consumeMessages() {
-		log.info("[Kafka] Start read messages. [{}]", getTopic());
-		return receiver.receive().subscribe(this::processRecord);
+	public void consumeMessages() {
+		log.info("[Kafka] Start to read messages. [{}]", getTopic());
+		Disposable disposable = receiver.receive().subscribe(this::processRecord);
 	}
 }
