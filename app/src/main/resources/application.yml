@@ -10,11 +10,16 @@ spring:
     elasticsearch:
       cluster-nodes: http://internal-moebius-es-1636081679.ap-northeast-2.elb.amazonaws.com
   kafka:
-    bootstrap-servers: http://kafka.cryptoboxglobal.com:9092
+    bootstrap-servers: kafka.cryptoboxglobal.com:9092
     client-id: moebius
     consumer:
       client-id: moebius-consumer
       auto-offset-reset: earliest
+    jaas:
+      login-module: org.apache.kafka.common.security.plain.PlainLoginModule
+      options:
+        username: moebius
+        password: NTOBS2hiP5z7
 
   thymeleaf:
     reactive:

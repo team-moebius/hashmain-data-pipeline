@@ -9,11 +9,16 @@ spring:
       uri: mongodb+srv://moebius:highbal1!@mongodb-rs.cryptoboxglobal.com/?retryWrites=true&streamType=netty&readPreference=secondary&ssl=false # TODO : Change to use ssl
       database: moebius
   kafka:
-    bootstrap-servers: http://kafka.cryptoboxglobal.com:9092
+    bootstrap-servers: kafka.cryptoboxglobal.com:9092
     client-id: moebius
     producer:
       client-id: moebius-producer
       acks: all
+    jaas:
+      login-module: org.apache.kafka.common.security.plain.PlainLoginModule
+      options:
+        username: moebius
+        password: NTOBS2hiP5z7
 
 exchange:
   upbit:
