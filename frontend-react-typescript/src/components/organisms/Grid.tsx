@@ -80,6 +80,14 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
     }
   };
 
+  onClickCell = (col: TableColum, rowId: string) => (e: React.MouseEvent<unknown>) => {
+    e.preventDefault();
+
+    if (col.onClickCell) {
+      col.onClickCell(col.id, rowId);
+    }
+  };
+
   onClickRowDeleteIcon = (rowId: string) => (e: React.MouseEvent<unknown>) => {
     if (this.props.onClickRowDeleteIcon) {
       this.props.onClickRowDeleteIcon(e, rowId);
@@ -116,16 +124,26 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                       />
                     </TableBodyCell>
                   )}
-                  {this.props.columns.map(col => {
+                  {this.props.columns.map((col: TableColum) => {
                     // @ts-ignore
                     const label = row[col.id];
 
                     return col.checkbox ? (
-                      <TableBodyCell align={col.align} key={col.id} padding="checkbox">
+                      <TableBodyCell
+                        align={col.align}
+                        key={col.id}
+                        padding="checkbox"
+                        onClick={this.onClickCell(col, row.id)}
+                      >
                         <Checkbox {...col.checkbox} />
                       </TableBodyCell>
                     ) : (
-                      <TableBodyCell align={col.align} padding={col.disablePadding ? 'none' : 'default'} key={col.id}>
+                      <TableBodyCell
+                        align={col.align}
+                        key={col.id}
+                        padding={col.disablePadding ? 'none' : 'default'}
+                        onClick={this.onClickCell(col, row.id)}
+                      >
                         {col.format && typeof label === 'number' ? col.format(label) : label}
                       </TableBodyCell>
                     );

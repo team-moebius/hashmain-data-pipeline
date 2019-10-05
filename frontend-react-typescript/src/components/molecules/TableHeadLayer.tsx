@@ -32,6 +32,7 @@ export interface TableColum {
   id: string;
   label?: string;
   minWidth?: number;
+  onClickCell?: (colId: string, rowId: string) => void;
   sortable?: boolean;
 }
 
