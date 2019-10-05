@@ -27,42 +27,59 @@ interface MultiTradingModeState {
 }
 
 class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradingModeState> {
-  private static dataColumns: TableColum[] = [
+  private dataColumns: TableColum[] = [
     { id: 'orderPosition', label: '주문 포지션', align: 'left' },
-    { id: 'orderType', label: '모드 변경', align: 'left', sortable: true },
+    {
+      id: 'orderType',
+      label: '모드 변경',
+      align: 'left',
+      sortable: true,
+      onClickCell: (col, rowId) => this.toggleOrderType(col, rowId),
+    },
     {
       id: 'price',
       label: '이익실현 지정가',
       align: 'right',
       sortable: true,
-      format: value => `${MultiTradingMode.formatNumber(value)} KRW`,
+      format: value => `${this.formatNumber(value)} KRW`,
     },
     {
       id: 'volume',
       label: '매도 수량',
       align: 'right',
       sortable: true,
-      format: value => `${MultiTradingMode.formatNumber(value)} XRP`,
+      format: value => `${this.formatNumber(value)} XRP`,
     },
     {
       id: 'estimatedTotalPrice',
       label: '예상 주문총액',
       align: 'right',
       sortable: true,
-      format: value => `${MultiTradingMode.formatNumber(value)} KRW`,
+      format: value => `${this.formatNumber(value)} KRW`,
     },
     {
       id: 'percentage',
       label: '주문 비율',
       align: 'right',
       sortable: true,
-      format: value => `${MultiTradingMode.formatNumber(value)} %`,
+      format: value => `${this.formatNumber(value)} %`,
     },
   ];
 
-  private static formatNumber = (num: number) => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-
   private originalOrderData: { [key: string]: OrderData } = {};
+
+  private formatNumber = (num: number) => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+
+  private toggleOrderType = (col: TableColum, rowId: string) => {
+    const selectedData = this.state.orderData[rowId];
+    // DELETE 상태에선 현재 값 Update 불가능
+    if (selectedData.eventType !== 'DELETE') {
+      const newOrderType = selectedData.orderType === 'LIMIT' ? 'MARKET' : 'LIMIT';
+      const isUpdated = this.originalOrderData[rowId].orderType !== newOrderType;
+      const value: OrderData = { ...selectedData, eventType: isUpdated ? 'UPDATE' : 'READ', orderType: newOrderType };
+      this.updateRow(selectedData.id, value);
+    }
+  };
 
   constructor(props: MultiTradingModeProps) {
     super(props);
@@ -118,16 +135,24 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     e.preventDefault();
 
     const selectedData = this.state.orderData[rowId];
+    const originalData = this.originalOrderData[rowId];
 
     if (selectedData.eventType === 'READ') {
       const value: OrderData = { ...selectedData, eventType: 'DELETE' };
-      this.setState({ orderData: { ...this.state.orderData, [selectedData.id]: value } });
+      this.updateRow(selectedData.id, value);
     } else if (selectedData.eventType === 'CREATE') {
       this.setState({ orderData: _.omit(this.state.orderData, selectedData.id) });
     } else if (selectedData.eventType === 'DELETE') {
       const value: OrderData = { ...selectedData, eventType: 'READ' };
-      this.setState({ orderData: { ...this.state.orderData, [selectedData.id]: value } });
+      this.updateRow(selectedData.id, value);
+    } else if (selectedData.eventType === 'UPDATE') {
+      const value: OrderData = { ...originalData, eventType: 'DELETE' };
+      this.updateRow(selectedData.id, value);
     }
+  };
+
+  updateRow = (rowId: string, value: OrderData) => {
+    this.setState({ orderData: { ...this.state.orderData, [rowId]: value } });
   };
 
   onClickHeadLayerAddIcon = () => {
@@ -154,7 +179,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     return (
       <div>
         <Grid<OrderData>
-          columns={MultiTradingMode.dataColumns}
+          columns={this.dataColumns}
           rowClassNameFunc={this.getRowClassName}
           rows={filteredData.saleOrderData}
           style={{ marginBottom: '80px' }}
@@ -162,7 +187,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
-          columns={MultiTradingMode.dataColumns}
+          columns={this.dataColumns}
           rowClassNameFunc={this.getRowClassName}
           rows={filteredData.purchaseOrderData}
           style={{ marginBottom: '80px' }}
@@ -170,7 +195,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
-          columns={MultiTradingMode.dataColumns}
+          columns={this.dataColumns}
           rowClassNameFunc={this.getRowClassName}
           rows={filteredData.stoplossOrderData}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}

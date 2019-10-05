@@ -84,7 +84,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
     e.preventDefault();
 
     if (col.onClickCell) {
-      col.onClickCell(col.id, rowId);
+      col.onClickCell(col, rowId);
     }
   };
 
@@ -133,6 +133,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                         align={col.align}
                         key={col.id}
                         padding="checkbox"
+                        style={{ cursor: col.onClickCell && 'pointer' }}
                         onClick={this.onClickCell(col, row.id)}
                       >
                         <Checkbox {...col.checkbox} />
@@ -142,6 +143,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                         align={col.align}
                         key={col.id}
                         padding={col.disablePadding ? 'none' : 'default'}
+                        style={{ cursor: col.onClickCell && 'pointer' }}
                         onClick={this.onClickCell(col, row.id)}
                       >
                         {col.format && typeof label === 'number' ? col.format(label) : label}
@@ -150,6 +152,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                   })}
                 </TableBodyRow>
               ))}
+              {this.props.children}
             </TableBody>
           </Table>
         </div>
