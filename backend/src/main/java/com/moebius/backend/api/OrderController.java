@@ -22,9 +22,9 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@ApiOperation(
-		value = "주문(매수, 매도, 역지정) 생성 / 갱신",
+		value = "주문(매수, 매도, 역지정) 생성 / 갱신 / 삭제",
 		httpMethod = "POST",
-		notes = "트레이더가 원하는 주문 정보를 일괄 생성 또는 갱신한다."
+		notes = "트레이더가 원하는 주문 정보를 Event Type에 따라 생성, 갱신 또는 삭제 한다."
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
@@ -33,8 +33,8 @@ public class OrderController {
 		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("")
-	public Mono<ResponseEntity<List<OrderResponseDto>>> upsertOrders(@RequestBody @Valid @ApiParam(value = "등록할 주문 정보", required = true) List<OrderDto> orderDtos, Principal principal) {
-		return orderService.upsertOrders(principal.getName(), orderDtos);
+	public Mono<ResponseEntity<List<OrderResponseDto>>> processOrders(@RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos, Principal principal) {
+		return orderService.processOrders(principal.getName(), orderDtos);
 	}
 
 	@ApiOperation(

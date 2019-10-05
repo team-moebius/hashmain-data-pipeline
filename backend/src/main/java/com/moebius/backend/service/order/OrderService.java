@@ -1,6 +1,7 @@
 package com.moebius.backend.service.order;
 
 import com.moebius.backend.assembler.OrderAssembler;
+import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
@@ -12,13 +13,15 @@ import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static com.moebius.backend.domain.commons.EventType.DELETE;
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
 
@@ -30,11 +33,12 @@ public class OrderService {
 	private final OrderAssembler orderAssembler;
 	private final ApiKeyService apiKeyService;
 
-	public Mono<ResponseEntity<List<OrderResponseDto>>> upsertOrders(String memberId, List<OrderDto> orderDtos) {
+	public Mono<ResponseEntity<List<OrderResponseDto>>> processOrders(String memberId, List<OrderDto> orderDtos) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, Exchange.UPBIT)
 			.subscribeOn(COMPUTE.scheduler())
-			.flatMapIterable(apiKey -> orderAssembler.toOrders(apiKey, orderDtos))
-			.flatMap(this::processOrder)
+			.flatMapIterable(apiKey -> orderDtos.stream()
+				.map(orderDto -> processOrder(apiKey, orderDto))
+				.collect(Collectors.toList()))
 			.collectList()
 			.map(ResponseEntity::ok);
 	}
@@ -51,21 +55,29 @@ public class OrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	private Mono<OrderResponseDto> processOrder(Order order) {
-		return Objects.isNull(order.getId()) ? createOrder(order) : deleteOrder(order);
+	private OrderResponseDto processOrder(ApiKey apiKey, OrderDto orderDto) {
+		EventType eventType = orderDto.getEventType();
+		if (eventType == DELETE) {
+			deleteOrder(orderDto.getId()).subscribe();
+			log.info("deleted order.");
+			return orderAssembler.toSimpleResponseDto(orderDto.getId(), DELETE);
+		}
+
+		Order order = orderAssembler.toOrder(apiKey, orderDto);
+		upsertOrder(order).subscribe();
+		log.info("updated order.");
+		return orderAssembler.toResponseDto(order, eventType);
 	}
 
-	private Mono<OrderResponseDto> createOrder(Order order) {
+	private Mono<Order> upsertOrder(Order order) {
 		return orderRepository.save(order)
 			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
-			.map(createdOrder -> orderAssembler.toResponseDto(createdOrder, EventType.CREATE));
+			.publishOn(COMPUTE.scheduler());
 	}
 
-	private Mono<OrderResponseDto> deleteOrder(Order order) {
-		return orderRepository.delete(order)
+	private Mono<Void> deleteOrder(String id) {
+		return orderRepository.deleteById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
-			.map(aVoid -> orderAssembler.toResponseDto(order, EventType.DELETE));
+			.publishOn(COMPUTE.scheduler());
 	}
 }
