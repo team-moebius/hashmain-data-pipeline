@@ -44,11 +44,13 @@ function getSorting<T extends GridData>(order: 'asc' | 'desc', orderBy: keyof T)
 interface GridProps<T extends GridData> {
   columns: TableColum[];
   className?: string;
+  rowClassName?: string;
   rows: T[];
   toolbarProps?: TableToolbarProps;
   order?: 'asc' | 'desc';
   orderBy?: keyof T;
   style?: React.CSSProperties;
+  rowStyle?: React.CSSProperties;
   onClickRow?: (event: React.MouseEvent<unknown>, rowId: string) => void;
   onClickRowDeleteIcon?: (e: React.MouseEvent<unknown>, rowId: string) => void;
   onClickHeadLayerAddIcon?: (e: React.MouseEvent<unknown>) => void;
@@ -101,7 +103,14 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
             />
             <TableBody>
               {stableSort(this.props.rows, getSorting(this.state.order, this.state.orderBy)).map(row => (
-                <TableBodyRow hover onClick={this.onClickRow(row.id)} tabIndex={-1} key={row.id}>
+                <TableBodyRow
+                  className={this.props.rowClassName}
+                  hover
+                  key={row.id}
+                  onClick={this.onClickRow(row.id)}
+                  style={this.props.rowStyle}
+                  tabIndex={-1}
+                >
                   {this.props.onClickRowDeleteIcon && (
                     <TableBodyCell>
                       <IconButton

@@ -4,48 +4,71 @@ import { TableColum } from 'components/molecules/TableHeadLayer';
 import ajax from 'utils/Ajax';
 
 interface OrderData extends GridData {
-  title: string;
-  targetCost: number;
-  estimatedCost: number;
-  sellCost: number;
+  eventType: 'READ' | 'UPDATE' | 'CREATE' | 'DELETE';
+  exchange: 'UPBIT';
+  estimatedTotalPrice: number;
+  orderPosition: 'SALE' | 'PURCHASE' | 'STOPLOSS';
+  orderType: 'MARKET' | 'LIMIT';
+  price: number;
   percentage: number;
+  symbol: string;
+  volume: number;
 }
-
-function createData(
-  id: string,
-  status: 'add' | 'delete' | 'default',
-  title: string,
-  targetCost: number,
-  estimatedCost: number,
-  sellCost: number,
-  percentage: number
-): OrderData {
-  return { id, status, title, targetCost, estimatedCost, sellCost, percentage };
-}
-
-const data = [
-  createData('1', 'default', '1차 이익실현', 1, 1, 1, 1),
-  createData('0', 'default', '2차 이익실현', 2, 2, 2, 0),
-];
 
 interface MultiTradingModeProps {}
 
 interface MultiTradingModeState {
-  orderData: OrderData[];
+  fetching: boolean;
+  saleOrderData: OrderData[];
+  purchaseOrderData: OrderData[];
+  stoplossOrderData: OrderData[];
 }
 
 class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradingModeState> {
   private static dataColumns: TableColum[] = [
-    { id: 'status', label: '주문 포지션', align: 'left' },
-    { id: 'title', label: '이익실현 지정가', align: 'left' },
-    { id: 'targetCost', label: '예상 주문총액', align: 'right', sortable: true },
-    { id: 'estimatedCost', label: '매도 수량', align: 'right' },
-    { id: 'sellCost', label: 'sellCost', align: 'right' },
-    { id: 'percentage', label: 'percentage', align: 'right', sortable: true, format: value => `${value}%` },
+    { id: 'orderPosition', label: '주문 포지션', align: 'left' },
+    { id: 'orderType', label: '모드 변경', align: 'left', sortable: true },
+    {
+      id: 'price',
+      label: '이익실현 지정가',
+      align: 'right',
+      sortable: true,
+      format: value => `${MultiTradingMode.formatNumber(value)} KRW`,
+    },
+    {
+      id: 'volume',
+      label: '매도 수량',
+      align: 'right',
+      sortable: true,
+      format: value => `${MultiTradingMode.formatNumber(value)} XRP`,
+    },
+    {
+      id: 'estimatedTotalPrice',
+      label: '예상 주문총액',
+      align: 'right',
+      sortable: true,
+      format: value => `${MultiTradingMode.formatNumber(value)} KRW`,
+    },
+    {
+      id: 'percentage',
+      label: '주문 비율',
+      align: 'right',
+      sortable: true,
+      format: value => `${MultiTradingMode.formatNumber(value)} %`,
+    },
   ];
+
+  private static formatNumber = (num: number) => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
   constructor(props: MultiTradingModeProps) {
     super(props);
+
+    this.state = {
+      fetching: false,
+      saleOrderData: [],
+      purchaseOrderData: [],
+      stoplossOrderData: [],
+    };
   }
 
   componentDidMount = () => {
@@ -53,11 +76,42 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       .get('/api/orders')
       .then(response => {
         console.log(response);
-        // this.props.alert.success('등록 성공');
+        const orderData = this.calculateTotalPrice(response.data);
+        const { saleOrderData, purchaseOrderData, stoplossOrderData } = this.classifyFetchingOrderData(orderData);
+        this.setState({ saleOrderData, purchaseOrderData, stoplossOrderData });
       })
       .catch(error => {
         // this.props.alert.error('Order data load fail');
       });
+  };
+
+  calculateTotalPrice = (orderData: OrderData[]) => {
+    return orderData.map(data => {
+      data.estimatedTotalPrice = Math.round(data.price * data.volume);
+      return data;
+    });
+  };
+
+  classifyFetchingOrderData = (orderData: OrderData[]) => {
+    const saleOrderData: OrderData[] = [];
+    const purchaseOrderData: OrderData[] = [];
+    const stoplossOrderData: OrderData[] = [];
+
+    orderData.forEach(orderDatum => {
+      switch (orderDatum.orderPosition) {
+        case 'SALE':
+          saleOrderData.push(orderDatum);
+          break;
+        case 'PURCHASE':
+          purchaseOrderData.push(orderDatum);
+          break;
+        case 'STOPLOSS':
+          stoplossOrderData.push(orderDatum);
+          break;
+      }
+    });
+
+    return { saleOrderData, purchaseOrderData, stoplossOrderData };
   };
 
   onClickRowDeleteIcon = () => {
@@ -73,21 +127,21 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       <div>
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
-          rows={data}
+          rows={this.state.saleOrderData}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
-          rows={data}
+          rows={this.state.purchaseOrderData}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
-          rows={data}
+          rows={this.state.stoplossOrderData}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />

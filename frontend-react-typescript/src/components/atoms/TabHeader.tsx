@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/styles';
 const TabHeader = withStyles(theme => ({}))(MuiTabs);
 
 TabHeader.defaultProps = {
-  variant: 'scrollable',
   indicatorColor: 'secondary',
   textColor: 'secondary',
 };
