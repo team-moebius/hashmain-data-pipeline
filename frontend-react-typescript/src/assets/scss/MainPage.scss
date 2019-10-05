@@ -1,5 +1,3 @@
-@import 'assets/scss/Color.scss';
-
 $responsive-toggle-point: 960px;
 $item-margin: 8px;
 
@@ -22,10 +20,6 @@ $item-margin: 8px;
       font-size: 14px !important;
       margin: 6px;
       transition: 0.5s;
-
-      &:hover {
-        color: $primary-font-accent-color;
-      }
     }
   }
 

@@ -7,7 +7,7 @@ import Paper from 'components/atoms/Paper';
 import Text from 'components/atoms/Text';
 import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import PageTemplate from 'components/templates/PageTemplate';
-import MultiTradingMode from 'pages/sub/MutliTradingMode';
+import MultiTradingMode from 'pages/sub/MultiTradingMode';
 
 import 'assets/scss/HtsConfig.scss';
 

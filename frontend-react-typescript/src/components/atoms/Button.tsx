@@ -1,7 +1,13 @@
 import MuiButton from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/styles';
 
-const Button = withStyles(theme => ({}))(MuiButton);
+const Button = withStyles(theme => ({
+  root: {
+    '&:hover': {
+      backgroundColor: theme.palette.primary.light,
+    },
+  },
+}))(MuiButton);
 
 Button.defaultProps = {
   color: 'secondary',

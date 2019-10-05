@@ -1,7 +1,11 @@
 import * as React from 'react';
+import _ from 'lodash';
+
+import ajax from 'utils/Ajax';
 import Grid, { GridData } from 'components/organisms/Grid';
 import { TableColum } from 'components/molecules/TableHeadLayer';
-import ajax from 'utils/Ajax';
+
+import 'assets/scss/MultiTradingMode.scss';
 
 interface OrderData extends GridData {
   eventType: 'READ' | 'UPDATE' | 'CREATE' | 'DELETE';
@@ -19,9 +23,7 @@ interface MultiTradingModeProps {}
 
 interface MultiTradingModeState {
   fetching: boolean;
-  saleOrderData: OrderData[];
-  purchaseOrderData: OrderData[];
-  stoplossOrderData: OrderData[];
+  orderData: { [key: string]: OrderData };
 }
 
 class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradingModeState> {
@@ -60,14 +62,14 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
 
   private static formatNumber = (num: number) => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
+  private originalOrderData: { [key: string]: OrderData } = {};
+
   constructor(props: MultiTradingModeProps) {
     super(props);
 
     this.state = {
       fetching: false,
-      saleOrderData: [],
-      purchaseOrderData: [],
-      stoplossOrderData: [],
+      orderData: {},
     };
   }
 
@@ -75,21 +77,19 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     ajax
       .get('/api/orders')
       .then(response => {
-        console.log(response);
-        const orderData = this.calculateTotalPrice(response.data);
-        const { saleOrderData, purchaseOrderData, stoplossOrderData } = this.classifyFetchingOrderData(orderData);
-        this.setState({ saleOrderData, purchaseOrderData, stoplossOrderData });
+        this.originalOrderData = Object.freeze(this.convertOrderData(response.data));
+        this.setState({ orderData: { ...this.originalOrderData } });
       })
       .catch(error => {
         // this.props.alert.error('Order data load fail');
       });
   };
 
-  calculateTotalPrice = (orderData: OrderData[]) => {
-    return orderData.map(data => {
-      data.estimatedTotalPrice = Math.round(data.price * data.volume);
-      return data;
-    });
+  convertOrderData = (data: OrderData[]) => {
+    return data.reduce((accumulator: { [key: string]: OrderData }, data: OrderData) => {
+      accumulator[data.id] = { ...data, estimatedTotalPrice: Math.round(data.price * data.volume) };
+      return accumulator;
+    }, {});
   };
 
   classifyFetchingOrderData = (orderData: OrderData[]) => {
@@ -114,34 +114,65 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     return { saleOrderData, purchaseOrderData, stoplossOrderData };
   };
 
-  onClickRowDeleteIcon = () => {
-    return;
+  onClickRowDeleteIcon = (e: React.MouseEvent<unknown, MouseEvent>, rowId: string) => {
+    e.preventDefault();
+
+    const selectedData = this.state.orderData[rowId];
+
+    if (selectedData.eventType === 'READ') {
+      const value: OrderData = { ...selectedData, eventType: 'DELETE' };
+      this.setState({ orderData: { ...this.state.orderData, [selectedData.id]: value } });
+    } else if (selectedData.eventType === 'CREATE') {
+      this.setState({ orderData: _.omit(this.state.orderData, selectedData.id) });
+    } else if (selectedData.eventType === 'DELETE') {
+      const value: OrderData = { ...selectedData, eventType: 'READ' };
+      this.setState({ orderData: { ...this.state.orderData, [selectedData.id]: value } });
+    }
   };
 
   onClickHeadLayerAddIcon = () => {
     return;
   };
 
+  getRowClassName = (rowId: string) => {
+    const rowEventType = this.state.orderData[rowId].eventType;
+
+    switch (rowEventType) {
+      case 'CREATE':
+        return 'trading-grid-row__created';
+      case 'DELETE':
+        return 'trading-grid-row__deleted';
+      case 'UPDATE':
+        return 'trading-grid-row__updated';
+    }
+    return '';
+  };
+
   render() {
+    const filteredData = this.classifyFetchingOrderData(Object.values(this.state.orderData));
+
     return (
       <div>
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
-          rows={this.state.saleOrderData}
+          rowClassNameFunc={this.getRowClassName}
+          rows={filteredData.saleOrderData}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
-          rows={this.state.purchaseOrderData}
+          rowClassNameFunc={this.getRowClassName}
+          rows={filteredData.purchaseOrderData}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
         <Grid<OrderData>
           columns={MultiTradingMode.dataColumns}
-          rows={this.state.stoplossOrderData}
+          rowClassNameFunc={this.getRowClassName}
+          rows={filteredData.stoplossOrderData}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
         />
