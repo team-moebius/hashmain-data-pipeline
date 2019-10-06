@@ -18,7 +18,7 @@ spring:
       login-module: org.apache.kafka.common.security.plain.PlainLoginModule
       options:
         username: moebius
-        password: NTOBS2hiP5z7
+        password: VVbRzWYK4OHE
 
 exchange:
   upbit:
