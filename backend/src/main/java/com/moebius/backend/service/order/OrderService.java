@@ -43,7 +43,7 @@ public class OrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<List<OrderResponseDto>>> getOrdersByApiKey(String memberId) {
+	public Mono<ResponseEntity<List<OrderResponseDto>>> getOrdersByMemberId(String memberId) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, Exchange.UPBIT)
 			.map(apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
 			.subscribeOn(IO.scheduler())

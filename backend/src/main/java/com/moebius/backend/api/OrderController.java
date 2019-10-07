@@ -50,6 +50,6 @@ public class OrderController {
 	})
 	@GetMapping("")
 	public Mono<ResponseEntity<List<OrderResponseDto>>> getOrders(Principal principal) {
-		return orderService.getOrdersByApiKey(principal.getName());
+		return orderService.getOrdersByMemberId(principal.getName());
 	}
 }
