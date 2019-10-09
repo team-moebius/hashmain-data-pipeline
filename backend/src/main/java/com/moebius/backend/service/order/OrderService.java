@@ -45,7 +45,7 @@ public class OrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetByMemberId(String memberId, Exchange exchange) {
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetByMemberIdAndExchange(String memberId, Exchange exchange) {
 		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), assetService.getAssetsByMemberId(memberId, exchange))
 			.subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))

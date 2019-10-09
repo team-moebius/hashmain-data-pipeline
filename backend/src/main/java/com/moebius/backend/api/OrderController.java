@@ -39,9 +39,9 @@ public class OrderController {
 	}
 
 	@ApiOperation(
-		value = "주문(매수, 매도, 역지정) 정보 제공",
+		value = "주문(매수, 매도, 역지정) 및 자산 정보 제공",
 		httpMethod = "GET",
-		notes = "트레이더가 저장한 주문 정보를 제공한다. 트레이더의 거래소 api key를 기반으로 등록되어 있는 모든 주문 정보가 제공된다."
+		notes = "트레이더가 저장한 주문 정보 및 자산 정보를 제공한다. 트레이더의 거래소 api key를 기반으로 등록되어 있는 모든 주문 정보가 제공되며 현재 트레이더의 자산 정보도 같이 제공된다."
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
@@ -50,7 +50,7 @@ public class OrderController {
 		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
 	@GetMapping("")
-	public Mono<ResponseEntity<OrderResponseDto>> getOrders(Principal principal) {
-		return orderService.getOrdersAndAssetByMemberId(principal.getName(), Exchange.UPBIT);
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(Principal principal) {
+		return orderService.getOrdersAndAssetByMemberIdAndExchange(principal.getName(), Exchange.UPBIT);
 	}
 }
