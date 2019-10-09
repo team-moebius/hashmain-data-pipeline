@@ -37,7 +37,7 @@ public class UpbitService implements ExchangeService {
 
 	@Override
 	public Mono<String> getAuthToken(String accessKey, String secretKey) {
-		log.info("[ApiKey] Start to getting auth token.");
+		log.info("[ApiKey] Start to get upbit auth token.");
 
 		return Mono.fromCallable(() -> {
 			Algorithm algorithm = Algorithm.HMAC256(secretKey);

@@ -44,14 +44,6 @@ public class ApiKeyService {
 			.flatMap(clientResponse -> createApiKey(apiKeyDto, memberId));
 	}
 
-	public Mono<ApiKey> getApiKeyById(String id) {
-		Verifier.checkBlankString(id);
-
-		return apiKeyRepository.findById(new ObjectId(id))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
 	public Mono<ResponseEntity<List<ApiKeyResponseDto>>> getApiKeysByMemberId(String memberId) {
 		Verifier.checkBlankString(memberId);
 
@@ -59,7 +51,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ")")))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ").")))))
 			.map(apiKeyAssembler::toResponseDto)
 			.collectList()
 			.map(ResponseEntity::ok);
@@ -73,7 +65,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> {
-				log.error("[ApiKey] Deletion failed", exception);
+				log.error("[ApiKey] Deletion failed.", exception);
 				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key"));
 			})
 			.map(aVoid -> ResponseEntity.ok(id));
@@ -86,7 +78,16 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ")")))));
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ").")))));
+	}
+
+	public Mono<String> getExchangeAuthToken(String memberId, Exchange exchange) {
+		Verifier.checkNullFields(memberId);
+		Verifier.checkNullFields(exchange);
+
+		ExchangeService exchangeService = exchangeFactory.getService(exchange);
+		return getApiKeyByMemberIdAndExchange(memberId, exchange)
+			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()));
 	}
 
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
