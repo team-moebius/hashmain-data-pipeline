@@ -9,4 +9,4 @@ upbit:
     openedHost: https://api.upbit.com/
     secretHost: https://crix-api-endpoint.upbit.com/v1/crix/
     asset: v1/accounts
-    order:
+    order: v1/orders

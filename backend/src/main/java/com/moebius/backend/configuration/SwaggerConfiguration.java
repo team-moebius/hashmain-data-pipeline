@@ -11,6 +11,8 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
 
+import java.security.Principal;
+
 @Configuration
 @EnableSwagger2WebFlux
 public class SwaggerConfiguration {
@@ -22,6 +24,7 @@ public class SwaggerConfiguration {
 			.apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
 			.paths(PathSelectors.any())
 			.build()
+			.ignoredParameterTypes(Principal.class)
 			.genericModelSubstitutes(Mono.class, Flux.class);
 	}
 }

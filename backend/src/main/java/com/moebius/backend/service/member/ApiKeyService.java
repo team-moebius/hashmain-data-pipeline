@@ -3,6 +3,7 @@ package com.moebius.backend.service.member;
 import com.moebius.backend.assembler.ApiKeyAssembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.apikeys.ApiKeyRepository;
+import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
@@ -43,15 +44,6 @@ public class ApiKeyService {
 			.flatMap(clientResponse -> createApiKey(apiKeyDto, memberId));
 	}
 
-	public Mono<ApiKey> getApiKeyById(String id) {
-		Verifier.checkBlankString(id);
-
-		return apiKeyRepository.findById(new ObjectId(id))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
-	// TODO : Refactor return type as simplified one. (ServerResponse)
 	public Mono<ResponseEntity<List<ApiKeyResponseDto>>> getApiKeysByMemberId(String memberId) {
 		Verifier.checkBlankString(memberId);
 
@@ -59,7 +51,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ")")))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ").")))))
 			.map(apiKeyAssembler::toResponseDto)
 			.collectList()
 			.map(ResponseEntity::ok);
@@ -73,10 +65,30 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> {
-				log.error("[ApiKey] Deletion failed", exception);
+				log.error("[ApiKey] Deletion failed.", exception);
 				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key"));
 			})
 			.map(aVoid -> ResponseEntity.ok(id));
+	}
+
+	public Mono<ApiKey> getApiKeyByMemberIdAndExchange(String memberId, Exchange exchange) {
+		Verifier.checkBlankString(memberId);
+		Verifier.checkNullFields(exchange);
+
+		return apiKeyRepository.findByMemberIdAndExchange(new ObjectId(memberId), exchange)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ").")))));
+	}
+
+	public Mono<String> getExchangeAuthToken(String memberId, Exchange exchange) {
+		Verifier.checkBlankString(memberId);
+		Verifier.checkNullFields(exchange);
+
+		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
+		return getApiKeyByMemberIdAndExchange(memberId, exchange)
+			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()));
 	}
 
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
