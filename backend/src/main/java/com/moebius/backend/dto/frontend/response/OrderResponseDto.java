@@ -14,6 +14,6 @@ import java.util.List;
 @ToString
 public class OrderResponseDto {
 	private List<OrderDto> orders;
-	@ApiModelProperty(notes = "트레이더의 잔고 정보, order processing에는 가지고 오지 않는다.")
+	@ApiModelProperty(notes = "트레이더의 잔고 정보, 주문 갱신/생성/삭제시에는 Response로 가지고 오지 않는다.")
 	private List<AssetDto> assets;
 }
