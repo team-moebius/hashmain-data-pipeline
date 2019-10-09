@@ -32,41 +32,49 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
 	private final ApiKeyService apiKeyService;
+	private final AssetService assetService;
 
-	public Mono<ResponseEntity<List<OrderResponseDto>>> processOrders(String memberId, List<OrderDto> orderDtos) {
-		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, Exchange.UPBIT)
+	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
+		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
 			.flatMapIterable(apiKey -> orderDtos.stream()
 				.map(orderDto -> processOrder(apiKey, orderDto))
 				.collect(Collectors.toList()))
 			.collectList()
+			.map(ordersDto -> orderAssembler.toResponseDto(ordersDto, null))
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<List<OrderResponseDto>>> getOrdersByApiKey(String memberId) {
-		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, Exchange.UPBIT)
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetByMemberId(String memberId, Exchange exchange) {
+		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), assetService.getAssetsByMemberId(memberId, exchange))
+			.subscribeOn(COMPUTE.scheduler())
+			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
+			.map(ResponseEntity::ok);
+	}
+
+	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {
+		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.map(apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
-			.flatMap(orderFlux -> orderFlux.map(order -> orderAssembler.toResponseDto(order, EventType.READ))
-				.collectList())
-			.map(ResponseEntity::ok);
+			.flatMap(orderFlux -> orderFlux.map(order -> orderAssembler.toDto(order, EventType.READ))
+				.collectList());
 	}
 
-	private OrderResponseDto processOrder(ApiKey apiKey, OrderDto orderDto) {
+	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
 		EventType eventType = orderDto.getEventType();
 		if (eventType == DELETE) {
 			deleteOrder(orderDto.getId()).subscribe();
 			log.info("deleted order.");
-			return orderAssembler.toSimpleResponseDto(orderDto.getId(), DELETE);
+			return orderAssembler.toSimpleDto(orderDto.getId(), DELETE);
 		}
 
 		Order order = orderAssembler.toOrder(apiKey, orderDto);
 		upsertOrder(order).subscribe();
 		log.info("updated order.");
-		return orderAssembler.toResponseDto(order, eventType);
+		return orderAssembler.toDto(order, eventType);
 	}
 
 	private Mono<Order> upsertOrder(Order order) {

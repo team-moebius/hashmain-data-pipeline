@@ -1,31 +1,19 @@
 package com.moebius.backend.dto.frontend.response;
 
-import com.moebius.backend.domain.commons.EventType;
-import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.domain.orders.OrderPosition;
-import com.moebius.backend.domain.orders.OrderType;
+import com.moebius.backend.dto.AssetDto;
+import com.moebius.backend.dto.frontend.OrderDto;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 @Getter
 @Setter
 @ToString
 public class OrderResponseDto {
-	@Id
-	private String id;
-	@NotNull
-	private EventType eventType;
-	private Exchange exchange;
-	private String symbol;
-	private OrderType orderType;
-	private OrderPosition orderPosition;
-	@PositiveOrZero
-	private double price;
-	@PositiveOrZero
-	private double volume;
+	private List<OrderDto> orders;
+	@ApiModelProperty(notes = "트레이더의 잔고 정보, order processing에는 가지고 오지 않는다.")
+	private List<AssetDto> assets;
 }

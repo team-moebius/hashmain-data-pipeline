@@ -1,5 +1,6 @@
 package com.moebius.backend.api;
 
+import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.frontend.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
@@ -28,13 +29,13 @@ public class OrderController {
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success", responseContainer = "List", response = OrderResponseDto.class),
+		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("")
-	public Mono<ResponseEntity<List<OrderResponseDto>>> processOrders(@RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos, Principal principal) {
-		return orderService.processOrders(principal.getName(), orderDtos);
+	public Mono<ResponseEntity<OrderResponseDto>> processOrders(@RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos, Principal principal) {
+		return orderService.processOrders(principal.getName(), Exchange.UPBIT, orderDtos);
 	}
 
 	@ApiOperation(
@@ -44,12 +45,12 @@ public class OrderController {
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success", responseContainer = "List", response = OrderResponseDto.class),
+		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
 	@GetMapping("")
-	public Mono<ResponseEntity<List<OrderResponseDto>>> getOrders(Principal principal) {
-		return orderService.getOrdersByApiKey(principal.getName());
+	public Mono<ResponseEntity<OrderResponseDto>> getOrders(Principal principal) {
+		return orderService.getOrdersAndAssetByMemberId(principal.getName(), Exchange.UPBIT);
 	}
 }
