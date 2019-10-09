@@ -44,7 +44,7 @@ interface GridProps<T extends GridData> {
   columns: TableColum[];
   className?: string;
   rowClassNameFunc?: (rowId: string) => string;
-  rows: T[];
+  rows?: T[];
   toolbarProps?: TableToolbarProps;
   order?: 'asc' | 'desc';
   orderBy?: keyof T;
@@ -95,6 +95,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
   };
 
   render() {
+    const rows = this.props.rows ? this.props.rows : [];
     return (
       <Paper className={this.props.className} style={{ width: '100%', ...this.props.style }}>
         {this.props.toolbarProps && <TableToolbar {...this.props.toolbarProps} />}
@@ -108,7 +109,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
               onClickAddIcon={this.props.onClickHeadLayerAddIcon}
             />
             <TableBody>
-              {stableSort(this.props.rows, getSorting(this.state.order, this.state.orderBy)).map(row => (
+              {stableSort(rows, getSorting(this.state.order, this.state.orderBy)).map(row => (
                 <TableBodyRow
                   className={this.props.rowClassNameFunc && this.props.rowClassNameFunc(row.id)}
                   hover

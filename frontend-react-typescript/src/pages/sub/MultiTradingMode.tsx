@@ -19,10 +19,23 @@ interface OrderData extends GridData {
   volume: number;
 }
 
+interface AssetData {
+  balance: number;
+  currency: string;
+  locked: number;
+}
+
+interface AjaxData {
+  assets: AssetData[];
+  orders: OrderData[];
+}
+
 interface MultiTradingModeProps {}
 
 interface MultiTradingModeState {
+  selectedCurrency: string;
   fetching: boolean;
+  assetData: { [key: string]: AssetData };
   orderData: { [key: string]: OrderData };
 }
 
@@ -85,7 +98,9 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     super(props);
 
     this.state = {
+      selectedCurrency: 'KRW',
       fetching: false,
+      assetData: {},
       orderData: {},
     };
   }
@@ -94,41 +109,42 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     ajax
       .get('/api/orders')
       .then(response => {
-        this.originalOrderData = Object.freeze(this.convertOrderData(response.data));
-        this.setState({ orderData: { ...this.originalOrderData } });
+        const responseData = this.convertData(response.data);
+        this.originalOrderData = Object.freeze(responseData.orderData);
+        this.setState({ ...responseData });
       })
       .catch(error => {
         // this.props.alert.error('Order data load fail');
       });
   };
 
-  convertOrderData = (data: OrderData[]) => {
-    return data.reduce((accumulator: { [key: string]: OrderData }, data: OrderData) => {
-      accumulator[data.id] = { ...data, estimatedTotalPrice: Math.round(data.price * data.volume) };
-      return accumulator;
-    }, {});
-  };
+  convertData = (data: AjaxData) => {
+    const assetData: { [key: string]: AssetData } = data.assets.reduce(
+      (accumulator: { [key: string]: AssetData }, data: AssetData) => {
+        accumulator[data.currency] = { ...data };
+        return accumulator;
+      },
+      {}
+    );
 
-  classifyFetchingOrderData = (orderData: OrderData[]) => {
-    const saleOrderData: OrderData[] = [];
-    const purchaseOrderData: OrderData[] = [];
-    const stoplossOrderData: OrderData[] = [];
+    const orderData: { [key: string]: OrderData } = data.orders.reduce(
+      (accumulator: { [key: string]: OrderData }, data: OrderData) => {
+        const estimatedTotalPrice = Math.round(data.price * data.volume);
+        const currentCurrencyBalance = assetData[this.state.selectedCurrency].balance;
+        const percentage =
+          Math.round(
+            (data.orderPosition === 'PURCHASE'
+              ? estimatedTotalPrice / currentCurrencyBalance
+              : data.volume / currentCurrencyBalance) * 100
+          ) / 100;
 
-    orderData.forEach(orderDatum => {
-      switch (orderDatum.orderPosition) {
-        case 'SALE':
-          saleOrderData.push(orderDatum);
-          break;
-        case 'PURCHASE':
-          purchaseOrderData.push(orderDatum);
-          break;
-        case 'STOPLOSS':
-          stoplossOrderData.push(orderDatum);
-          break;
-      }
-    });
+        accumulator[data.id] = { ...data, estimatedTotalPrice, percentage };
+        return accumulator;
+      },
+      {}
+    );
 
-    return { saleOrderData, purchaseOrderData, stoplossOrderData };
+    return { assetData, orderData };
   };
 
   onClickRowDeleteIcon = (e: React.MouseEvent<unknown, MouseEvent>, rowId: string) => {
@@ -155,7 +171,15 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     this.setState({ orderData: { ...this.state.orderData, [rowId]: value } });
   };
 
-  onClickHeadLayerAddIcon = () => {
+  onClickSaleGridAddIcon = () => {
+    return;
+  };
+
+  onClickPurchaseGridAddIcon = () => {
+    return;
+  };
+
+  onClickStoplossGridAddIcon = () => {
     return;
   };
 
@@ -174,33 +198,41 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
   };
 
   render() {
-    const filteredData = this.classifyFetchingOrderData(Object.values(this.state.orderData));
+    const data = _.groupBy(Object.values(this.state.orderData), data => data.eventType === 'CREATE');
+    const newData = _.groupBy(data['true'], data => data.orderPosition);
+    const viewData = _.groupBy(data['false'], data => data.orderPosition);
 
     return (
       <div>
         <Grid<OrderData>
           columns={this.dataColumns}
           rowClassNameFunc={this.getRowClassName}
-          rows={filteredData.saleOrderData}
+          rows={viewData['SALE']}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
-          onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
-        />
+          onClickHeadLayerAddIcon={this.onClickSaleGridAddIcon}
+        >
+          {newData['SALE'] && newData['SALE'].map(data => {})}
+        </Grid>
         <Grid<OrderData>
           columns={this.dataColumns}
           rowClassNameFunc={this.getRowClassName}
-          rows={filteredData.purchaseOrderData}
+          rows={viewData['PURCHASE']}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
-          onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
-        />
+          onClickHeadLayerAddIcon={this.onClickPurchaseGridAddIcon}
+        >
+          {newData['PURCHASE'] && newData['PURCHASE'].map(data => {})}
+        </Grid>
         <Grid<OrderData>
           columns={this.dataColumns}
           rowClassNameFunc={this.getRowClassName}
-          rows={filteredData.stoplossOrderData}
+          rows={viewData['STOPLOSS']}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
-          onClickHeadLayerAddIcon={this.onClickHeadLayerAddIcon}
-        />
+          onClickHeadLayerAddIcon={this.onClickStoplossGridAddIcon}
+        >
+          {newData['STOPLOSS'] && newData['STOPLOSS'].map(data => {})}
+        </Grid>
       </div>
     );
   }
