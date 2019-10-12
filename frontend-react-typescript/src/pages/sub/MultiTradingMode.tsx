@@ -1,4 +1,5 @@
 import * as React from 'react';
+import shortid from 'shortid';
 import _ from 'lodash';
 
 import ajax from 'utils/Ajax';
@@ -6,6 +7,7 @@ import Grid, { GridData } from 'components/organisms/Grid';
 import { TableColum } from 'components/molecules/TableHeadLayer';
 
 import 'assets/scss/MultiTradingMode.scss';
+import TableBodyRow from 'components/atoms/TableBodyRow';
 
 interface OrderData extends GridData {
   eventType: 'READ' | 'UPDATE' | 'CREATE' | 'DELETE';
@@ -15,9 +17,11 @@ interface OrderData extends GridData {
   orderType: 'MARKET' | 'LIMIT';
   price: number;
   percentage: number;
-  symbol: string;
+  symbol: 'KRW';
   volume: number;
 }
+
+type GridColumn = 'orderPosition' | 'orderType' | 'price' | 'volume' | 'estimatedTotalPrice' | 'percentage';
 
 interface AssetData {
   balance: number;
@@ -33,70 +37,113 @@ interface AjaxData {
 interface MultiTradingModeProps {}
 
 interface MultiTradingModeState {
-  selectedCurrency: string;
+  selectedCurrency: 'KRW';
   fetching: boolean;
   assetData: { [key: string]: AssetData };
   orderData: { [key: string]: OrderData };
 }
 
 class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradingModeState> {
-  private dataColumns: TableColum[] = [
-    { id: 'orderPosition', label: '주문 포지션', align: 'left' },
-    {
+  private commonColumns: { [key in GridColumn]: TableColum } = {
+    orderPosition: { id: 'orderPosition', label: '', align: 'left' },
+    orderType: {
       id: 'orderType',
       label: '모드 변경',
       align: 'left',
       sortable: true,
       onClickCell: (col, rowId) => this.toggleOrderType(col, rowId),
     },
-    {
+    price: {
       id: 'price',
-      label: '이익실현 지정가',
+      label: '',
       align: 'right',
       sortable: true,
+      numeric: true,
+      newRowProps: {
+        type: 'input',
+        onChange: (e, rowId) => {},
+      },
       format: value => `${this.formatNumber(value)} KRW`,
     },
-    {
+    volume: {
       id: 'volume',
-      label: '매도 수량',
+      label: '',
       align: 'right',
+      numeric: true,
       sortable: true,
+      newRowProps: {
+        type: 'input',
+        onChange: (e, rowId) => {},
+      },
       format: value => `${this.formatNumber(value)} XRP`,
     },
-    {
+    estimatedTotalPrice: {
       id: 'estimatedTotalPrice',
       label: '예상 주문총액',
       align: 'right',
       sortable: true,
+      numeric: true,
       format: value => `${this.formatNumber(value)} KRW`,
     },
-    {
+    percentage: {
       id: 'percentage',
       label: '주문 비율',
       align: 'right',
       sortable: true,
+      numeric: true,
+      newRowProps: {
+        type: 'input',
+        onChange: (e, rowId) => {},
+      },
       format: value => `${this.formatNumber(value)} %`,
     },
-  ];
-
+  };
+  private sellGridColums: TableColum[] = [];
+  private stoplossGridColums: TableColum[] = [];
+  private purchaseGridColums: TableColum[] = [];
   private originalOrderData: { [key: string]: OrderData } = {};
 
   private formatNumber = (num: number) => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
   private toggleOrderType = (col: TableColum, rowId: string) => {
     const selectedData = this.state.orderData[rowId];
+    const newOrderType = selectedData.orderType === 'LIMIT' ? 'MARKET' : 'LIMIT';
     // DELETE 상태에선 현재 값 Update 불가능
-    if (selectedData.eventType !== 'DELETE') {
-      const newOrderType = selectedData.orderType === 'LIMIT' ? 'MARKET' : 'LIMIT';
+    if (selectedData.eventType === 'READ' || selectedData.eventType === 'UPDATE') {
       const isUpdated = this.originalOrderData[rowId].orderType !== newOrderType;
       const value: OrderData = { ...selectedData, eventType: isUpdated ? 'UPDATE' : 'READ', orderType: newOrderType };
       this.updateRow(selectedData.id, value);
+    } else if (selectedData.eventType === 'CREATE') {
+      const value: OrderData = { ...selectedData, orderType: newOrderType };
+      this.updateRow(selectedData.id, value);
     }
+  };
+
+  private setGridColumLabel = () => {
+    let sellColumns, purchaseColumns, stoplossColums;
+    sellColumns = _.cloneDeep(this.commonColumns);
+    sellColumns.orderPosition.label = '이익실현 매도';
+    sellColumns.price.label = '매도 수량';
+    sellColumns.volume.label = '이익실현 지정가';
+    this.sellGridColums = Object.values(sellColumns);
+
+    purchaseColumns = _.cloneDeep(this.commonColumns);
+    purchaseColumns.orderPosition.label = '지정가 매수';
+    purchaseColumns.price.label = '매수 수량';
+    purchaseColumns.volume.label = '먜수 지정가';
+    this.purchaseGridColums = Object.values(purchaseColumns);
+
+    stoplossColums = _.cloneDeep(this.commonColumns);
+    stoplossColums.orderPosition.label = '스탑 로스';
+    stoplossColums.price.label = '매도 수량';
+    stoplossColums.volume.label = '매수 지정가';
+    this.stoplossGridColums = Object.values(stoplossColums);
   };
 
   constructor(props: MultiTradingModeProps) {
     super(props);
 
+    this.setGridColumLabel();
     this.state = {
       selectedCurrency: 'KRW',
       fetching: false,
@@ -172,6 +219,21 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
   };
 
   onClickSaleGridAddIcon = () => {
+    const rowId = shortid.generate();
+    const newRow: OrderData = {
+      id: rowId,
+      exchange: 'UPBIT',
+      eventType: 'CREATE',
+      estimatedTotalPrice: 0,
+      orderPosition: 'SALE',
+      orderType: 'LIMIT',
+      price: 0,
+      percentage: 0,
+      volume: 0,
+      symbol: 'KRW',
+    };
+
+    this.setState({ orderData: { ...this.state.orderData, [rowId]: newRow } });
     return;
   };
 
@@ -198,24 +260,23 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
   };
 
   render() {
-    const data = _.groupBy(Object.values(this.state.orderData), data => data.eventType === 'CREATE');
-    const newData = _.groupBy(data['true'], data => data.orderPosition);
-    const viewData = _.groupBy(data['false'], data => data.orderPosition);
+    const dataByCreated = _.groupBy(Object.values(this.state.orderData), data => data.eventType === 'CREATE');
+    const newData = _.groupBy(dataByCreated['true'], data => data.orderPosition);
+    const viewData = _.groupBy(dataByCreated['false'], data => data.orderPosition);
 
     return (
       <div>
         <Grid<OrderData>
-          columns={this.dataColumns}
+          columns={this.sellGridColums}
           rowClassNameFunc={this.getRowClassName}
           rows={viewData['SALE']}
+          newRows={newData['SALE']}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickSaleGridAddIcon}
-        >
-          {newData['SALE'] && newData['SALE'].map(data => {})}
-        </Grid>
+        />
         <Grid<OrderData>
-          columns={this.dataColumns}
+          columns={this.purchaseGridColums}
           rowClassNameFunc={this.getRowClassName}
           rows={viewData['PURCHASE']}
           style={{ marginBottom: '80px' }}
@@ -225,7 +286,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
           {newData['PURCHASE'] && newData['PURCHASE'].map(data => {})}
         </Grid>
         <Grid<OrderData>
-          columns={this.dataColumns}
+          columns={this.stoplossGridColums}
           rowClassNameFunc={this.getRowClassName}
           rows={viewData['STOPLOSS']}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}

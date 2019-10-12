@@ -21,7 +21,6 @@ const CustomInput = withStyles(theme => ({
     },
     backgroundColor: theme.palette.primary.light,
     borderRadius: 4,
-    margin: '8px 0px 0px 0',
   },
 }))(MuiTextField);
 

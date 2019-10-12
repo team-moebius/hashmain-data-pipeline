@@ -7,6 +7,8 @@ const TableBodyRow = withStyles(theme => ({
   },
 }))(MuiTableRow);
 
-TableBodyRow.defaultProps = {};
+TableBodyRow.defaultProps = {
+  tabIndex: -1,
+};
 
 export default TableBodyRow;

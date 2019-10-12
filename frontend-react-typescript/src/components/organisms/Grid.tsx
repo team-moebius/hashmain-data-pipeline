@@ -11,6 +11,7 @@ import TableBodyRow from 'components/atoms/TableBodyRow';
 import TableBodyCell from 'components/atoms/TableBodyCell';
 import IconButton from 'components/atoms/IconButton';
 import Checkbox from 'components/atoms/Checkbox';
+import Input from 'components/atoms/Input';
 
 export interface GridData {
   id: string;
@@ -45,6 +46,7 @@ interface GridProps<T extends GridData> {
   className?: string;
   rowClassNameFunc?: (rowId: string) => string;
   rows?: T[];
+  newRows?: T[];
   toolbarProps?: TableToolbarProps;
   order?: 'asc' | 'desc';
   orderBy?: keyof T;
@@ -88,10 +90,20 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
     }
   };
 
+  onChangeNewRowCell = (col: TableColum, rowId: string) => (e: React.ChangeEvent<unknown>) => {
+    if (col.newRowProps && col.newRowProps.onChange) {
+      col.newRowProps.onChange(e, rowId);
+    }
+  };
+
   onClickRowDeleteIcon = (rowId: string) => (e: React.MouseEvent<unknown>) => {
     if (this.props.onClickRowDeleteIcon) {
       this.props.onClickRowDeleteIcon(e, rowId);
     }
+  };
+
+  getRowClassName = (rowId: string) => {
+    return this.props.rowClassNameFunc ? this.props.rowClassNameFunc(rowId) : '';
   };
 
   render() {
@@ -109,13 +121,59 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
               onClickAddIcon={this.props.onClickHeadLayerAddIcon}
             />
             <TableBody>
+              {this.props.newRows &&
+                this.props.newRows.map(row => (
+                  <TableBodyRow className={this.getRowClassName(row.id)} key={row.id} onClick={this.onClickRow(row.id)}>
+                    {this.props.onClickRowDeleteIcon && (
+                      <TableBodyCell>
+                        <IconButton
+                          icon={<DeleteIcon aria-label="delete" />}
+                          onClick={this.onClickRowDeleteIcon(row.id)}
+                        />
+                      </TableBodyCell>
+                    )}
+                    {this.props.columns.map((col: TableColum) => {
+                      // @ts-ignore
+                      const label = col.format ? col.format(row[col.id]) : row[col.id];
+
+                      return col.checkbox ? (
+                        <TableBodyCell
+                          align={col.align}
+                          key={col.id}
+                          padding="checkbox"
+                          style={{ cursor: col.onClickCell && 'pointer' }}
+                          onClick={this.onClickCell(col, row.id)}
+                        >
+                          <Checkbox {...col.checkbox} />
+                        </TableBodyCell>
+                      ) : (
+                        <TableBodyCell
+                          align={col.align}
+                          key={col.id}
+                          padding={col.disablePadding ? 'none' : 'default'}
+                          style={{ cursor: col.onClickCell && 'pointer' }}
+                          onClick={this.onClickCell(col, row.id)}
+                        >
+                          {col.newRowProps && col.newRowProps.type === 'input' ? (
+                            <Input
+                              type={col.numeric ? 'number' : ''}
+                              value={label}
+                              onChange={this.onChangeNewRowCell(col, row.id)}
+                            />
+                          ) : (
+                            label
+                          )}
+                        </TableBodyCell>
+                      );
+                    })}
+                  </TableBodyRow>
+                ))}
               {stableSort(rows, getSorting(this.state.order, this.state.orderBy)).map(row => (
                 <TableBodyRow
-                  className={this.props.rowClassNameFunc && this.props.rowClassNameFunc(row.id)}
+                  className={this.getRowClassName(row.id)}
                   hover
                   key={row.id}
                   onClick={this.onClickRow(row.id)}
-                  tabIndex={-1}
                 >
                   {this.props.onClickRowDeleteIcon && (
                     <TableBodyCell>
@@ -147,7 +205,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                         style={{ cursor: col.onClickCell && 'pointer' }}
                         onClick={this.onClickCell(col, row.id)}
                       >
-                        {col.format && typeof label === 'number' ? col.format(label) : label}
+                        {col.format ? col.format(label) : label}
                       </TableBodyCell>
                     );
                   })}

@@ -24,6 +24,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+export interface NewRowProps {
+  type?: 'input' | 'basic';
+  onChange: (e: React.ChangeEvent<unknown>, rowId: string) => void;
+}
+
 export interface TableColum {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   checkbox?: CheckboxProps;
@@ -32,6 +37,8 @@ export interface TableColum {
   id: string;
   label?: string;
   minWidth?: number;
+  newRowProps?: NewRowProps;
+  numeric?: boolean;
   onClickCell?: (col: TableColum, rowId: string) => void;
   sortable?: boolean;
 }
