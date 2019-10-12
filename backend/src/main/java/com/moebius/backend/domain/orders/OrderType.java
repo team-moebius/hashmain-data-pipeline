@@ -1,4 +1,4 @@
-package com.moebius.backend.domain.commons;
+package com.moebius.backend.domain.orders;
 
 /**
  * LIMIT : 지정가 주문

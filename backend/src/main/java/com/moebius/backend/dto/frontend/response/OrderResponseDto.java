@@ -1,11 +1,13 @@
-package com.moebius.backend.dto.frontend;
+package com.moebius.backend.dto.frontend.response;
 
+import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.domain.commons.OrderType;
-import com.moebius.backend.domain.commons.TradeType;
+import com.moebius.backend.domain.orders.OrderPosition;
+import com.moebius.backend.domain.orders.OrderType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
@@ -13,15 +15,19 @@ import javax.validation.constraints.PositiveOrZero;
 @Getter
 @Setter
 @ToString
-public class StoplossDto {
+public class OrderResponseDto {
+	@Id
+	private String id;
+	@NotNull
+	private EventType eventType;
 	@NotNull
 	private Exchange exchange;
 	@NotNull
 	private String symbol;
 	@NotNull
-	private TradeType tradeType;
-	@NotNull
 	private OrderType orderType;
+	@NotNull
+	private OrderPosition orderPosition;
 	@PositiveOrZero
 	private double price;
 	@PositiveOrZero

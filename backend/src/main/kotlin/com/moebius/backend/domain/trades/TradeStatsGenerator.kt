@@ -11,6 +11,7 @@ import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.search.aggregations.AggregationBuilder
 import org.elasticsearch.search.aggregations.AggregationBuilders
+import org.elasticsearch.search.aggregations.AggregatorFactories
 import org.elasticsearch.search.aggregations.bucket.filter.ParsedFilter
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram
@@ -30,7 +31,8 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
     private enum class AGGNAMES(name: String) {
         HISTOGRAM("histogram"),
         FILTER("filter"),
-        TRX_SUM("transaction_sum"),
+        PRICE_SUM("price_sum"),
+        VOLUME_SUM("volume_sum"),
         EXCHANGE("exchange_terms"),
         SYMBOL("symbol_terms"),
         TRADE_TYPE("tradeType_terms");
@@ -51,26 +53,33 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
         )
     }
 
+    private fun statsPriceSum(): AggregationBuilder = AggregationBuilders.sum(AGGNAMES.PRICE_SUM.name).field("price")
 
-    private fun statsTransactionSum(): AggregationBuilder = AggregationBuilders.sum(AGGNAMES.TRX_SUM.name).field("transactionPrice")
+    private fun statsVolumeSum(): AggregationBuilder = AggregationBuilders.sum(AGGNAMES.VOLUME_SUM.name).field("volume")
 
     private fun statsTermsAggregation(): Array<AggregationBuilder> {
-        log.info("Exchange aggregation size : ${Exchange.values().size}")
-        log.info("Symbol aggregation size : $marketCount")
-        log.info("TradeType aggregation size : ${TradeType.values().size}")
+        log.debug("Exchange aggregation size : ${Exchange.values().size}")
+        log.debug("Symbol aggregation size : $marketCount")
+        log.debug("TradeType aggregation size : ${TradeType.values().size}")
         return arrayOf(
                 AggregationBuilders.terms(AGGNAMES.EXCHANGE.name).field("exchange").size(Exchange.values().size),
                 AggregationBuilders.terms(AGGNAMES.SYMBOL.name).field("symbol").size(marketCount.toInt()),
-                AggregationBuilders.terms(AGGNAMES.TRADE_TYPE.name).field("tradeType").size(TradeType.values().size)
+                tradeTypeTermsAndValueSum()
         )
     }
+
+    private fun tradeTypeTermsAndValueSum(): AggregationBuilder {
+        val factories = AggregatorFactories.builder().addAggregator(statsPriceSum()).addAggregator(statsVolumeSum())
+        return AggregationBuilders.terms(AGGNAMES.TRADE_TYPE.name).field("tradeType").size(TradeType.values().size)
+                .subAggregations(factories)
+    }
+
 
     private fun aggregationSearchQuery(): SearchRequest {
         val aggregation = listOf(
                 statsFilterAggregation(),
                 statsDateHistogramAggregation(),
-                *statsTermsAggregation(),
-                statsTransactionSum()
+                *statsTermsAggregation()
         ).run { ElasticUtils.aggregationTreeRequest(this) }
 
         return SearchRequest(DocumentIndex.tradeStream.searchIndex()).source(
@@ -80,27 +89,27 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
 
     private fun deserializeResponse(response: SearchResponse): List<TradeStatsDocument> {
         val filter = response.aggregations.get<ParsedFilter>(AGGNAMES.FILTER.name)
-        log.info("range total doc count: ${filter.docCount}")
+        log.debug("range total doc count: ${filter.docCount}")
         val dateHistogram = filter.aggregations.get<ParsedDateHistogram>(AGGNAMES.HISTOGRAM.name)
         return dateHistogram.buckets.map { parseHistogram(it) }.flatten()
     }
 
     private fun parseHistogram(aggDate: Histogram.Bucket): List<TradeStatsDocument> {
-        log.info("date: ${aggDate.keyAsString} (${aggDate.key}) doc-count: ${aggDate.docCount}")
+        log.debug("date: ${aggDate.keyAsString} (${aggDate.key}) doc-count: ${aggDate.docCount}")
         val aggExchanges = aggDate.aggregations.get<ParsedStringTerms>(AGGNAMES.EXCHANGE.name)
         val parsedDate = aggDate.key as ZonedDateTime
         return aggExchanges.buckets.map { parseExchange(it) }.flatten().map { it.statsDate(parsedDate).build() }
     }
 
     private fun parseExchange(aggExchange: Terms.Bucket): List<TradeStatsDocument.Builder> {
-        log.info("exchange: ${aggExchange.keyAsString} doc-count: ${aggExchange.docCount}")
+        log.debug("exchange: ${aggExchange.keyAsString} doc-count: ${aggExchange.docCount}")
         val exchange = Exchange.valueOf(aggExchange.keyAsString)
         val aggSymbols = aggExchange.aggregations.get<ParsedStringTerms>(AGGNAMES.SYMBOL.name)
         return aggSymbols.buckets.map { parseSymbol(it) }.map { it.exchange(exchange) }
     }
 
     private fun parseSymbol(aggSymbol: Terms.Bucket): TradeStatsDocument.Builder {
-        log.info("symbol: ${aggSymbol.keyAsString} doc-count: ${aggSymbol.docCount}")
+        log.debug("symbol: ${aggSymbol.keyAsString} doc-count: ${aggSymbol.docCount}")
         val symbol = aggSymbol.keyAsString
         val docCount = aggSymbol.docCount
         val aggTradeTypes = aggSymbol.aggregations.get<ParsedStringTerms>(AGGNAMES.TRADE_TYPE.name)
@@ -109,25 +118,34 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
         val summaryList = aggTradeTypes.buckets.map { parseTradeTypeAndSum(it) }
 
         summaryList.forEach {
-            when (it.first) {
-                TradeType.BID -> document.totalBidCount(it.second).totalBidPrice(it.third)
-                TradeType.ASK -> document.totalAskCount(it.second).totalAskPrice(it.third)
+            when (it.tradeType) {
+                TradeType.BID -> document.totalBidCount(it.docCount).totalBidPrice(it.priceSum).totalBidVolume(it.volumeSum)
+                TradeType.ASK -> document.totalAskCount(it.docCount).totalAskPrice(it.priceSum).totalAskVolume(it.volumeSum)
             }
         }
 
-        summaryList.sumByDouble { it.third }.apply {
-            document.totalTransactionCount(docCount).totalTransactionPrice(this)
-        }
+        document.totalTransactionCount(docCount)
+        document.totalTransactionPrice(summaryList.sumByDouble { it.priceSum })
+        document.totalTransactionVolume(summaryList.sumByDouble { it.volumeSum })
+
         return document
     }
 
-    private fun parseTradeTypeAndSum(aggTradeType: Terms.Bucket): Triple<TradeType, Long, Double> {
-        log.info("tradeType: ${aggTradeType.keyAsString} doc-count: ${aggTradeType.docCount}")
+    private fun parseTradeTypeAndSum(aggTradeType: Terms.Bucket): ParsedData {
+        log.debug("tradeType: ${aggTradeType.keyAsString} doc-count: ${aggTradeType.docCount}")
         val tradeType = TradeType.valueOf(aggTradeType.keyAsString)
         val docCount = aggTradeType.docCount
-        val sumValue = aggTradeType.aggregations.get<ParsedSum>(AGGNAMES.TRX_SUM.name).value()
-        return Triple(tradeType, docCount, sumValue)
+        val priceSum = aggTradeType.aggregations.get<ParsedSum>(AGGNAMES.PRICE_SUM.name).value()
+        val volumeSum = aggTradeType.aggregations.get<ParsedSum>(AGGNAMES.VOLUME_SUM.name).value()
+        return ParsedData(tradeType, docCount, priceSum, volumeSum)
     }
+
+    private data class ParsedData(
+            val tradeType: TradeType,
+            val docCount: Long,
+            val priceSum: Double,
+            val volumeSum: Double
+    )
 
     fun generate(client: RestHighLevelClient): List<TradeStatsDocument> {
         val query = aggregationSearchQuery()

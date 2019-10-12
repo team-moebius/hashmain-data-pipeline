@@ -35,10 +35,13 @@ class TradeStatsDocumentRepositoryTest {
                 ElasticUtils.AggregationInterval.EVERY_MINUTES,
                 1,
                 2.toDouble(),
-                2,
-                3.toDouble(),
-                4,
+                2.toDouble(),
+                3,
+                4.toDouble(),
                 5.toDouble(),
+                6,
+                7.toDouble(),
+                8.toDouble(),
                 LocalDateTime.of(2019, 1, 1, 1, 1)
         )
         val id = subject.save(target)

@@ -1,5 +1,6 @@
 package com.moebius.backend.domain.apikeys;
 
+import com.moebius.backend.domain.commons.Exchange;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,6 @@ public interface ApiKeyRepository extends ReactiveMongoRepository<ApiKey, Object
 	Mono<ApiKey> findByIdAndMemberId(ObjectId id, ObjectId memberId);
 
 	Mono<Void> deleteByIdAndMemberId(ObjectId id, ObjectId memberId);
+
+	Mono<ApiKey> findByMemberIdAndExchange(ObjectId memberId, Exchange exchange);
 }
