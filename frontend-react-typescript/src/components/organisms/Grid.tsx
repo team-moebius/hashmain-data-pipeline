@@ -5,7 +5,7 @@ import DeleteIcon from '@material-ui/icons/DeleteOutlined';
 import Paper from 'components/atoms/Paper';
 import Table from 'components/atoms/Table';
 import TableToolbar, { TableToolbarProps } from 'components/molecules/TableToolbar';
-import TableHeadLayer, { TableColum } from 'components/molecules/TableHeadLayer';
+import TableHeadLayer, { TableColum, NewRowParams } from 'components/molecules/TableHeadLayer';
 import TableBody from 'components/atoms/TableBody';
 import TableBodyRow from 'components/atoms/TableBodyRow';
 import TableBodyCell from 'components/atoms/TableBodyCell';
@@ -90,9 +90,9 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
     }
   };
 
-  onChangeNewRowCell = (col: TableColum, rowId: string) => (e: React.ChangeEvent<unknown>) => {
+  onChangeNewRowCell = (col: TableColum, rowId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     if (col.newRowProps && col.newRowProps.onChange) {
-      col.newRowProps.onChange(e, rowId);
+      col.newRowProps.onChange(e, { colum: col, rowId });
     }
   };
 
@@ -134,14 +134,15 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                     )}
                     {this.props.columns.map((col: TableColum) => {
                       // @ts-ignore
-                      const label = col.format ? col.format(row[col.id]) : row[col.id];
+                      const label = row[col.id];
+                      const formattedLabel = col.format ? col.format(label) : label;
 
                       return col.checkbox ? (
                         <TableBodyCell
                           align={col.align}
                           key={col.id}
                           padding="checkbox"
-                          style={{ cursor: col.onClickCell && 'pointer' }}
+                          style={{ cursor: col.onClickCell && 'pointer', ...col.style }}
                           onClick={this.onClickCell(col, row.id)}
                         >
                           <Checkbox {...col.checkbox} />
@@ -151,17 +152,19 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                           align={col.align}
                           key={col.id}
                           padding={col.disablePadding ? 'none' : 'default'}
-                          style={{ cursor: col.onClickCell && 'pointer' }}
+                          style={{ cursor: col.onClickCell && 'pointer', ...col.style }}
                           onClick={this.onClickCell(col, row.id)}
                         >
                           {col.newRowProps && col.newRowProps.type === 'input' ? (
                             <Input
                               type={col.numeric ? 'number' : ''}
                               value={label}
+                              inputProps={{ style: { padding: '4px', textAlign: col.numeric ? 'right' : undefined } }}
+                              margin="none"
                               onChange={this.onChangeNewRowCell(col, row.id)}
                             />
                           ) : (
-                            label
+                            formattedLabel
                           )}
                         </TableBodyCell>
                       );
@@ -192,7 +195,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                         align={col.align}
                         key={col.id}
                         padding="checkbox"
-                        style={{ cursor: col.onClickCell && 'pointer' }}
+                        style={{ cursor: col.onClickCell && 'pointer', ...col.style }}
                         onClick={this.onClickCell(col, row.id)}
                       >
                         <Checkbox {...col.checkbox} />
@@ -202,7 +205,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                         align={col.align}
                         key={col.id}
                         padding={col.disablePadding ? 'none' : 'default'}
-                        style={{ cursor: col.onClickCell && 'pointer' }}
+                        style={{ cursor: col.onClickCell && 'pointer', ...col.style }}
                         onClick={this.onClickCell(col, row.id)}
                       >
                         {col.format ? col.format(label) : label}

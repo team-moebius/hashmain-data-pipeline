@@ -4,7 +4,7 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   input: {
-    padding: '11px',
+    padding: '6px',
     '&::placeholder': {
       color: theme.palette.text.primary,
       fontSize: '0.8em',

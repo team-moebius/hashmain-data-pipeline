@@ -24,9 +24,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+export interface NewRowParams {
+  colum: TableColum;
+  rowId: string;
+}
+
 export interface NewRowProps {
   type?: 'input' | 'basic';
-  onChange: (e: React.ChangeEvent<unknown>, rowId: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>, rowParams: NewRowParams) => void;
 }
 
 export interface TableColum {
@@ -36,10 +41,10 @@ export interface TableColum {
   format?: (value: number) => string;
   id: string;
   label?: string;
-  minWidth?: number;
   newRowProps?: NewRowProps;
   numeric?: boolean;
   onClickCell?: (col: TableColum, rowId: string) => void;
+  style?: React.CSSProperties;
   sortable?: boolean;
 }
 
@@ -52,7 +57,7 @@ interface TableHeadLayerProps {
 }
 
 const CheckboxCell: React.FC<TableColum> = props => (
-  <TableHeadCell key={props.id} style={{ minWidth: props.minWidth }} padding="checkbox">
+  <TableHeadCell key={props.id} style={props.style} padding="checkbox">
     <Checkbox {...props.checkbox} />
     {props.label}
   </TableHeadCell>

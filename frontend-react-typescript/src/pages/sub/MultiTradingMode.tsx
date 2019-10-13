@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import ajax from 'utils/Ajax';
 import Grid, { GridData } from 'components/organisms/Grid';
-import { TableColum } from 'components/molecules/TableHeadLayer';
+import { TableColum, NewRowParams } from 'components/molecules/TableHeadLayer';
 
 import 'assets/scss/MultiTradingMode.scss';
 import TableBodyRow from 'components/atoms/TableBodyRow';
@@ -58,10 +58,11 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       label: '',
       align: 'right',
       sortable: true,
+      style: { width: 160 },
       numeric: true,
       newRowProps: {
         type: 'input',
-        onChange: (e, rowId) => {},
+        onChange: (e, row) => this.onChangeNewRowValue(e, row),
       },
       format: value => `${this.formatNumber(value)} KRW`,
     },
@@ -71,9 +72,10 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       align: 'right',
       numeric: true,
       sortable: true,
+      style: { width: 160 },
       newRowProps: {
         type: 'input',
-        onChange: (e, rowId) => {},
+        onChange: (e, row) => this.onChangeNewRowValue(e, row),
       },
       format: value => `${this.formatNumber(value)} XRP`,
     },
@@ -82,6 +84,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       label: '예상 주문총액',
       align: 'right',
       sortable: true,
+      style: { width: 160 },
       numeric: true,
       format: value => `${this.formatNumber(value)} KRW`,
     },
@@ -90,10 +93,11 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       label: '주문 비율',
       align: 'right',
       sortable: true,
+      style: { width: 140 },
       numeric: true,
       newRowProps: {
         type: 'input',
-        onChange: (e, rowId) => {},
+        onChange: (e, row) => this.onChangeNewRowValue(e, row),
       },
       format: value => `${this.formatNumber(value)} %`,
     },
@@ -119,24 +123,31 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     }
   };
 
+  private onChangeNewRowValue = (e: React.ChangeEvent<HTMLInputElement>, newRow: NewRowParams) => {
+    const currentRow = this.state.orderData[newRow.rowId];
+    const editedRow = { ...currentRow, [newRow.colum.id]: e.currentTarget.value };
+
+    this.setState({ orderData: { ...this.state.orderData, [newRow.rowId]: editedRow } });
+  };
+
   private setGridColumLabel = () => {
     let sellColumns, purchaseColumns, stoplossColums;
     sellColumns = _.cloneDeep(this.commonColumns);
     sellColumns.orderPosition.label = '이익실현 매도';
-    sellColumns.price.label = '매도 수량';
-    sellColumns.volume.label = '이익실현 지정가';
+    sellColumns.price.label = '이익실현 지정가';
+    sellColumns.volume.label = '매도 수량';
     this.sellGridColums = Object.values(sellColumns);
 
     purchaseColumns = _.cloneDeep(this.commonColumns);
     purchaseColumns.orderPosition.label = '지정가 매수';
-    purchaseColumns.price.label = '매수 수량';
-    purchaseColumns.volume.label = '먜수 지정가';
+    purchaseColumns.price.label = '매수 지정가';
+    purchaseColumns.volume.label = '먜수 수량';
     this.purchaseGridColums = Object.values(purchaseColumns);
 
     stoplossColums = _.cloneDeep(this.commonColumns);
     stoplossColums.orderPosition.label = '스탑 로스';
-    stoplossColums.price.label = '매도 수량';
-    stoplossColums.volume.label = '매수 지정가';
+    stoplossColums.price.label = '매도 지정가';
+    stoplossColums.volume.label = '매도 수량';
     this.stoplossGridColums = Object.values(stoplossColums);
   };
 
