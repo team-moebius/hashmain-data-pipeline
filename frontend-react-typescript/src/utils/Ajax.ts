@@ -49,10 +49,11 @@ const addSignOutInterceptor = (signOutFunc: any) => {
     },
     error => {
       const isSignInRequest =
-        error.config.url === `${CONNECTION_INFO.develop}/api/members` &&
-        error.config.method === 'post';
+        error.config.url === `${CONNECTION_INFO.develop}/api/members` && error.config.method === 'post';
+      const noResponse = !error.response;
+      const expired = error.response && error.response.status === 401 && !isSignInRequest;
 
-      if (error.response && error.response.status === 401 && !isSignInRequest) {
+      if (noResponse || expired) {
         signOutFunc();
         alert('세션 만료. 재로그인 해주세요.');
         push('http://localhost:3000/sign');
