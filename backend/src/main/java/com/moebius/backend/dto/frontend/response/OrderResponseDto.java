@@ -1,7 +1,7 @@
 package com.moebius.backend.dto.frontend.response;
 
 import com.moebius.backend.dto.AssetDto;
-import com.moebius.backend.dto.frontend.OrderDto;
+import com.moebius.backend.dto.OrderDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;

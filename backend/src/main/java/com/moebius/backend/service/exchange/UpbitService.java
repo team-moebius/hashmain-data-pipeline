@@ -3,6 +3,7 @@ package com.moebius.backend.service.exchange;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.backend.domain.commons.Exchange;
+import com.moebius.backend.dto.exchange.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.VerificationFailedException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UpbitService implements ExchangeService {
+public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	@Value("${exchange.upbit.rest.public-uri}")
 	private String publicUri;
 	@Value("${exchange.upbit.rest.asset}")
@@ -61,4 +62,10 @@ public class UpbitService implements ExchangeService {
 			.filter(clientResponse -> clientResponse.statusCode() == HttpStatus.OK)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.UNVERIFIED_DATA.getMessage("AuthToken")))));
 	}
+
+	@Override
+	public Mono<ClientResponse> doOrder(UpbitOrderDto exchangeOrderDto) {
+		return null;
+	}
+
 }
