@@ -1,14 +1,5 @@
 apply plugin: 'org.springframework.boot'
 
-
 dependencies {
-    compile project(':backend')
-    implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
-    implementation('org.mongodb:mongodb-driver-reactivestreams:1.11.0')
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
-    }
+    implementation(project(":backend"))
 }

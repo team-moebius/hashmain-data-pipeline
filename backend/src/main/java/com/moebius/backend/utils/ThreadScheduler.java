@@ -5,6 +5,7 @@ import reactor.core.scheduler.Schedulers;
 
 public enum ThreadScheduler {
 	IO(Schedulers.elastic()),
+	KAFKA(Schedulers.newElastic("KAFKA")),
 	COMPUTE(Schedulers.parallel());
 
 	private Scheduler scheduler;

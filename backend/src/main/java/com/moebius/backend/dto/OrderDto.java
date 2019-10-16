@@ -1,4 +1,4 @@
-package com.moebius.backend.dto.frontend;
+package com.moebius.backend.dto;
 
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;

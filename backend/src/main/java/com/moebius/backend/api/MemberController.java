@@ -7,7 +7,7 @@ import com.moebius.backend.dto.frontend.VerificationDto;
 import com.moebius.backend.dto.frontend.response.LoginResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;
-import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.DuplicatedDataException;
 import com.moebius.backend.exception.VerificationFailedException;
 import com.moebius.backend.service.member.EmailService;
 import com.moebius.backend.service.member.MemberService;
@@ -68,7 +68,7 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = String.class),
-		@ApiResponse(code = 400, message = "Requested email already exists.", response = DuplicateDataException.class),
+		@ApiResponse(code = 400, message = "Requested email already exists.", response = DuplicatedDataException.class),
 		@ApiResponse(code = 400, message = "Requested email already verified", response = VerificationFailedException.class),
 		@ApiResponse(code = 404, message = "Requested email is not found", response = DataNotFoundException.class),
 	})

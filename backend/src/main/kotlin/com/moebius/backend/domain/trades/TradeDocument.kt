@@ -22,8 +22,8 @@ data class TradeDocument(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         val createdAt: Date = Date.from(Instant.now())
 ) : ElasticDocument {
+    constructor(): this("", Exchange.UPBIT, "", TradeType.ASK, Change.EVEN, 0.0, 0.0, 0.0, 0.0, 0.0, Date.from(Instant.now()))
     override fun getDocumentId(): String = id
-
     companion object {
         fun of(exchange: Exchange,
                symbol: String,

@@ -7,9 +7,9 @@ import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
-import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.DuplicatedDataException;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.service.exchange.ExchangeFactory;
+import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.utils.Verifier;
 import com.mongodb.DuplicateKeyException;
@@ -32,7 +32,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 public class ApiKeyService {
 	private final ApiKeyRepository apiKeyRepository;
 	private final ApiKeyAssembler apiKeyAssembler;
-	private final ExchangeFactory exchangeFactory;
+	private final ExchangeServiceFactory exchangeServiceFactory;
 
 	public Mono<ResponseEntity<ApiKeyResponseDto>> verifyAndCreateApiKey(ApiKeyDto apiKeyDto, String memberId) {
 		Verifier.checkNullFields(apiKeyDto);
@@ -44,14 +44,6 @@ public class ApiKeyService {
 			.flatMap(clientResponse -> createApiKey(apiKeyDto, memberId));
 	}
 
-	public Mono<ApiKey> getApiKeyById(String id) {
-		Verifier.checkBlankString(id);
-
-		return apiKeyRepository.findById(new ObjectId(id))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
 	public Mono<ResponseEntity<List<ApiKeyResponseDto>>> getApiKeysByMemberId(String memberId) {
 		Verifier.checkBlankString(memberId);
 
@@ -59,7 +51,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ")")))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ").")))))
 			.map(apiKeyAssembler::toResponseDto)
 			.collectList()
 			.map(ResponseEntity::ok);
@@ -73,7 +65,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> {
-				log.error("[ApiKey] Deletion failed", exception);
+				log.error("[ApiKey] Deletion failed.", exception);
 				return new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key"));
 			})
 			.map(aVoid -> ResponseEntity.ok(id));
@@ -81,18 +73,28 @@ public class ApiKeyService {
 
 	public Mono<ApiKey> getApiKeyByMemberIdAndExchange(String memberId, Exchange exchange) {
 		Verifier.checkBlankString(memberId);
+		Verifier.checkNullFields(exchange);
 
 		return apiKeyRepository.findByMemberIdAndExchange(new ObjectId(memberId), exchange)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ")")))));
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ").")))));
+	}
+
+	public Mono<String> getExchangeAuthToken(String memberId, Exchange exchange) {
+		Verifier.checkBlankString(memberId);
+		Verifier.checkNullFields(exchange);
+
+		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
+		return getApiKeyByMemberIdAndExchange(memberId, exchange)
+			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()));
 	}
 
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
 		log.info("[ApiKey] Start to verify api key. [{}]", apiKeyDto);
 
-		ExchangeService exchangeService = exchangeFactory.getService(apiKeyDto.getExchange());
+		ExchangeService<?> exchangeService = exchangeServiceFactory.getService(apiKeyDto.getExchange());
 		return exchangeService.getAuthToken(apiKeyDto.getAccessKey(), apiKeyDto.getSecretKey())
 			.flatMap(exchangeService::doHealthCheck);
 	}
@@ -104,7 +106,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
-				new DuplicateDataException(ExceptionTypes.DUPLICATE_DATA.getMessage(apiKeyDto.getName())) :
+				new DuplicatedDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(apiKeyDto.getName())) :
 				exception)
 			.map(apiKeyAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
