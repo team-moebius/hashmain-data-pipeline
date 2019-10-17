@@ -1,7 +1,7 @@
 package com.moebius.backend.api;
 
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.dto.frontend.OrderDto;
+import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;

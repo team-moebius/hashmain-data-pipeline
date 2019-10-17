@@ -6,7 +6,7 @@ import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
-import com.moebius.backend.dto.frontend.OrderDto;
+import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
