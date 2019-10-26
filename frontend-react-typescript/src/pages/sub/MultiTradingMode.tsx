@@ -2,19 +2,24 @@ import * as React from 'react';
 import shortid from 'shortid';
 import _ from 'lodash';
 
-import ajax from 'utils/Ajax';
+import Button from 'components/atoms/Button';
 import Grid, { GridData } from 'components/organisms/Grid';
 import { TableColum, NewRowParams } from 'components/molecules/TableHeadLayer';
+import ajax from 'utils/Ajax';
 
 import 'assets/scss/MultiTradingMode.scss';
-import TableBodyRow from 'components/atoms/TableBodyRow';
+
+type EventType = 'READ' | 'UPDATE' | 'CREATE' | 'DELETE';
+type ExchangeType = 'UPBIT';
+type OrderType = 'MARKET' | 'LIMIT';
+type OrderPositionType = 'SALE' | 'PURCHASE' | 'STOPLOSS';
 
 interface OrderData extends GridData {
-  eventType: 'READ' | 'UPDATE' | 'CREATE' | 'DELETE';
-  exchange: 'UPBIT';
+  eventType: EventType;
+  exchange: ExchangeType;
   estimatedTotalPrice: number;
-  orderPosition: 'SALE' | 'PURCHASE' | 'STOPLOSS';
-  orderType: 'MARKET' | 'LIMIT';
+  orderPosition: OrderPositionType;
+  orderType: OrderType;
   price: number;
   percentage: number;
   symbol: 'KRW';
@@ -124,10 +129,15 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
   };
 
   private onChangeNewRowValue = (e: React.ChangeEvent<HTMLInputElement>, newRow: NewRowParams) => {
-    const currentRow = this.state.orderData[newRow.rowId];
-    const editedRow = { ...currentRow, [newRow.colum.id]: e.currentTarget.value };
+    this.updateNewRowValue(e.currentTarget.value, newRow);
+  };
 
-    this.setState({ orderData: { ...this.state.orderData, [newRow.rowId]: editedRow } });
+  private updateNewRowValue = (value: string, newRow: NewRowParams) => {
+    const currentRow = this.state.orderData[newRow.rowId];
+    const editedRow = { ...currentRow, [newRow.colum.id]: value };
+    this.setState({ orderData: { ...this.state.orderData, [newRow.rowId]: editedRow } }, () =>
+      console.log(this.state.orderData)
+    );
   };
 
   private setGridColumLabel = () => {
@@ -161,6 +171,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       assetData: {},
       orderData: {},
     };
+    this.updateNewRowValue = _.debounce(this.updateNewRowValue, 500);
   }
 
   componentDidMount = () => {
@@ -230,13 +241,25 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
   };
 
   onClickSaleGridAddIcon = () => {
+    this.createNewRow('SALE');
+  };
+
+  onClickPurchaseGridAddIcon = () => {
+    this.createNewRow('PURCHASE');
+  };
+
+  onClickStoplossGridAddIcon = () => {
+    this.createNewRow('STOPLOSS');
+  };
+
+  createNewRow = (orderPosition: OrderPositionType) => {
     const rowId = shortid.generate();
     const newRow: OrderData = {
+      orderPosition,
       id: rowId,
       exchange: 'UPBIT',
       eventType: 'CREATE',
       estimatedTotalPrice: 0,
-      orderPosition: 'SALE',
       orderType: 'LIMIT',
       price: 0,
       percentage: 0,
@@ -245,15 +268,6 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     };
 
     this.setState({ orderData: { ...this.state.orderData, [rowId]: newRow } });
-    return;
-  };
-
-  onClickPurchaseGridAddIcon = () => {
-    return;
-  };
-
-  onClickStoplossGridAddIcon = () => {
-    return;
   };
 
   getRowClassName = (rowId: string) => {
@@ -269,6 +283,8 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     }
     return '';
   };
+
+  onClickRegistOrderButton = () => {};
 
   render() {
     const dataByCreated = _.groupBy(Object.values(this.state.orderData), data => data.eventType === 'CREATE');
@@ -290,21 +306,21 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
           columns={this.purchaseGridColums}
           rowClassNameFunc={this.getRowClassName}
           rows={viewData['PURCHASE']}
+          newRows={newData['PURCHASE']}
           style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickPurchaseGridAddIcon}
-        >
-          {newData['PURCHASE'] && newData['PURCHASE'].map(data => {})}
-        </Grid>
+        />
         <Grid<OrderData>
           columns={this.stoplossGridColums}
           rowClassNameFunc={this.getRowClassName}
           rows={viewData['STOPLOSS']}
+          newRows={newData['STOPLOSS']}
+          style={{ marginBottom: '80px' }}
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickStoplossGridAddIcon}
-        >
-          {newData['STOPLOSS'] && newData['STOPLOSS'].map(data => {})}
-        </Grid>
+        />
+        <Button>주 문 등 록</Button>
       </div>
     );
   }

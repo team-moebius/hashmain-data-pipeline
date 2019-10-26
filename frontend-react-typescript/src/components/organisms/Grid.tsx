@@ -5,7 +5,7 @@ import DeleteIcon from '@material-ui/icons/DeleteOutlined';
 import Paper from 'components/atoms/Paper';
 import Table from 'components/atoms/Table';
 import TableToolbar, { TableToolbarProps } from 'components/molecules/TableToolbar';
-import TableHeadLayer, { TableColum, NewRowParams } from 'components/molecules/TableHeadLayer';
+import TableHeadLayer, { TableColum } from 'components/molecules/TableHeadLayer';
 import TableBody from 'components/atoms/TableBody';
 import TableBodyRow from 'components/atoms/TableBodyRow';
 import TableBodyCell from 'components/atoms/TableBodyCell';
@@ -158,7 +158,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                           {col.newRowProps && col.newRowProps.type === 'input' ? (
                             <Input
                               type={col.numeric ? 'number' : ''}
-                              value={label}
+                              defaultValue={col.numeric ? 0 : ''}
                               inputProps={{ style: { padding: '4px', textAlign: col.numeric ? 'right' : undefined } }}
                               margin="none"
                               onChange={this.onChangeNewRowCell(col, row.id)}
