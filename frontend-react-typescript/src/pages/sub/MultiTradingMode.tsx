@@ -175,6 +175,10 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
   }
 
   componentDidMount = () => {
+    this.fetchOrderData();
+  };
+
+  fetchOrderData = () => {
     ajax
       .get('/api/orders')
       .then(response => {
@@ -284,7 +288,13 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     return '';
   };
 
-  onClickRegistOrderButton = () => {};
+  onClickRegistOrderButton = () => {
+    const data = Object.values(this.state.orderData).filter(data => data.eventType !== 'READ');
+    ajax
+      .post('/api/orders', data)
+      .then(respone => this.fetchOrderData())
+      .catch(error => {});
+  };
 
   render() {
     const dataByCreated = _.groupBy(Object.values(this.state.orderData), data => data.eventType === 'CREATE');
