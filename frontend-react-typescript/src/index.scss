@@ -1,7 +1,6 @@
 #root {
   background-image: url(assets/images/bg.png);
   position: relative;
-  min-width: 1400px;
   z-index: 0;
   display: flex;
   flex-direction: column;
@@ -13,7 +12,6 @@ em {
 }
 
 ul {
-  // list-style: circle;
   padding-left: 12px;
 }
 

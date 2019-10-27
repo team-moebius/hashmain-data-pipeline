@@ -9,6 +9,7 @@ import AccountIcon from '@material-ui/icons/AccountCircle';
 
 import IconButton from 'components/atoms/IconButton';
 import Dialog from 'components/atoms/Dialog';
+import Paper from 'components/atoms/Paper';
 import AppBar from 'components/molecules/AppBar';
 import Tab from 'components/molecules/Tab';
 import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
@@ -138,6 +139,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
             {this.state.index === 5 && <Profile className="layout-contents__item-contents" />}
           </div>
         </Tab>
+        <Paper className="layout-footer">Footer</Paper>
         <Dialog open={this.state.apiKeyRegistDialogOpen} onClose={this.onCloseApiKeyRegist}>
           <ApiKeyRegistBox
             className="layout-dialog__api-regist"
