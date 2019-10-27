@@ -1,5 +1,4 @@
 $responsive-toggle-point: 960px;
-$item-margin: 8px;
 
 .layout {
   width: 1400px;
@@ -16,10 +15,7 @@ $item-margin: 8px;
       }
     }
 
-    .layout-header__button {
-      font-size: 14px !important;
-      margin: 6px;
-      transition: 0.5s;
+    .layout-header__icons {
     }
   }
 
@@ -32,11 +28,16 @@ $item-margin: 8px;
       min-width: 100px;
     }
     .layout-contents__item-wrapper {
+      display: flex;
       width: 100%;
-      margin-left: $item-margin;
     }
     .layout-contents__item-contents {
       height: 100%;
     }
   }
+}
+
+.layout-dialog__api-regist {
+  padding: 15px 20px 20px 20px;
+  width: 364px;
 }

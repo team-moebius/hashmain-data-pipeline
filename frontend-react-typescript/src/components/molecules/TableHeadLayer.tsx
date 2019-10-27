@@ -74,7 +74,7 @@ const TableHeadLayer: React.FC<TableHeadLayerProps> = props => {
       <TableHeadRow>
         {props.onClickAddIcon && (
           <TableHeadCell>
-            <IconButton icon={<AddIcon aria-label="add" />} onClick={props.onClickAddIcon} />
+            <IconButton icon={<AddIcon aria-label="add" />} size="small" onClick={props.onClickAddIcon} />
           </TableHeadCell>
         )}
         {props.columns.map(col =>

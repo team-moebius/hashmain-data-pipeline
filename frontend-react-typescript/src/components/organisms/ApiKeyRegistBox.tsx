@@ -12,6 +12,7 @@ type ApiKeyRegistPayload = { [key in ApiKeyRegistPayloadType]?: string };
 type ApiKeyRegistErrorState = { [key in ApiKeyRegistValidationType]?: string };
 
 interface ApiKeyRegistBoxProps {
+  className?: string;
   pending?: boolean;
   onSubmit: (data: ApiKeyRegistPayload) => void;
   onClickViewMyApiKeyButton: () => void;
@@ -76,8 +77,8 @@ class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegist
 
   render() {
     return (
-      <form onSubmit={this.onSubmit}>
-        <Text align="center" style={{ fontWeight: 'bold', paddingBottom: '6px' }} variant="subtitle2">
+      <form className={this.props.className} onSubmit={this.onSubmit}>
+        <Text align="center" gutterBottom style={{ fontWeight: 'bold', paddingBottom: '6px' }} variant="subtitle2">
           API KEY 등록하기
         </Text>
         <Input
@@ -87,6 +88,7 @@ class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegist
           inputRef={this.botNameRef}
           name="Bot name"
           placeholder="Bot name"
+          style={{ marginBottom: '8px' }}
         />
         <Input
           autoComplete="off"
@@ -95,6 +97,7 @@ class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegist
           inputRef={this.accessKeyRef}
           name="Access Key"
           placeholder="Access Key"
+          style={{ marginBottom: '8px' }}
         />
         <Input
           autoComplete="off"

@@ -154,6 +154,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           inputRef={this.nameRef}
           onBlur={this.isValidName}
           placeholder="User Name"
+          style={{ marginBottom: '8px' }}
         />
         <Input
           error={this.state.errors.password ? true : false}
@@ -162,6 +163,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           onBlur={this.isValidPassword}
           type="password"
           placeholder="Password(영문 숫자포함 8자 이상)"
+          style={{ marginBottom: '8px' }}
         />
         <Input
           error={this.state.errors.passwordConfirm ? true : false}

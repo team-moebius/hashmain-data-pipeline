@@ -29,7 +29,7 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
   return (
     <div className={classNames(classes.root, props.className)}>
       <Tab
-        rootClassName={classNames(classes.tabHeader, props.className)}
+        rootClassName={classNames(classes.tabHeader)}
         value={props.index}
         items={props.tabHeaders}
         orientation="horizontal"

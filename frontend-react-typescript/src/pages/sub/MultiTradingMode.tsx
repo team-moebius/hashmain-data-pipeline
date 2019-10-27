@@ -13,6 +13,7 @@ type EventType = 'READ' | 'UPDATE' | 'CREATE' | 'DELETE';
 type ExchangeType = 'UPBIT';
 type OrderType = 'MARKET' | 'LIMIT';
 type OrderPositionType = 'SALE' | 'PURCHASE' | 'STOPLOSS';
+type GridColumn = 'orderPosition' | 'orderType' | 'price' | 'volume' | 'estimatedTotalPrice' | 'percentage';
 
 interface OrderData extends GridData {
   eventType: EventType;
@@ -25,8 +26,6 @@ interface OrderData extends GridData {
   symbol: 'KRW';
   volume: number;
 }
-
-type GridColumn = 'orderPosition' | 'orderType' | 'price' | 'volume' | 'estimatedTotalPrice' | 'percentage';
 
 interface AssetData {
   balance: number;
@@ -185,6 +184,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
         const responseData = this.convertData(response.data);
         this.originalOrderData = Object.freeze(responseData.orderData);
         this.setState({ ...responseData });
+        console.log(response.data);
       })
       .catch(error => {
         // this.props.alert.error('Order data load fail');

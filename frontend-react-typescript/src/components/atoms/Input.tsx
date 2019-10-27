@@ -4,7 +4,7 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   input: {
-    padding: '6px',
+    padding: '10px',
     '&::placeholder': {
       color: theme.palette.text.primary,
       fontSize: '0.8em',
@@ -16,10 +16,10 @@ const CustomInput = withStyles(theme => ({
   root: {
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
-        borderColor: theme.palette.primary.main,
+        border: 0,
       },
     },
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.primary.main,
     borderRadius: 4,
   },
 }))(MuiTextField);
@@ -37,9 +37,8 @@ const Input: React.FC<MuiTextFieldProps> = props => {
 Input.defaultProps = {
   autoComplete: 'off',
   fullWidth: true,
-  margin: 'dense',
+  margin: 'none',
   variant: 'outlined',
-  inputProps: { style: { padding: '11px' } },
 };
 
 export default Input;

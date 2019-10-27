@@ -2,10 +2,8 @@ import * as React from 'react';
 import { withAlert, AlertManager } from 'react-alert';
 import classNames from 'classnames';
 
-import ajax from 'utils/Ajax';
 import Paper from 'components/atoms/Paper';
 import Text from 'components/atoms/Text';
-import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import PageTemplate from 'components/templates/PageTemplate';
 import MultiTradingMode from 'pages/sub/MultiTradingMode';
 
@@ -34,31 +32,9 @@ class HtsConfig extends React.Component<ContentsProps, ContentsState> {
     this.setState({ index: value });
   };
 
-  onSubmitApiRegist = (data: object) => {
-    ajax
-      .post('/api/api-keys', data)
-      .then(response => {
-        this.props.alert.success('등록 성공');
-      })
-      .catch(error => {
-        this.props.alert.error('등록 실패');
-      });
-  };
-
-  onClickViewMyApkKeyButton = () => {
-    ajax
-      .get('/api')
-      .then(reponse => {
-        // this.props.alert.success('등록 성공');
-      })
-      .catch(error => {
-        // this.props.alert.error('등록 실패');
-      });
-  };
-
   render() {
     return (
-      <div className="hts-config">
+      <>
         <PageTemplate
           className={classNames('hts-config__tab', this.props.className)}
           index={this.state.index}
@@ -66,13 +42,8 @@ class HtsConfig extends React.Component<ContentsProps, ContentsState> {
           tabHeaders={HtsConfig.TAB_HEADERS}
           tabContents={HtsConfig.TAB_ITEMS}
         />
-        <Paper className="hts-config__sub">
-          <ApiKeyRegistBox
-            onSubmit={this.onSubmitApiRegist}
-            onClickViewMyApiKeyButton={this.onClickViewMyApkKeyButton}
-          />
-        </Paper>
-      </div>
+        <Paper className="hts-config__sub">{123}</Paper>
+      </>
     );
   }
 }

@@ -1,16 +1,14 @@
-.hts-config {
-  display: flex;
+.hts-config__tab {
+  flex: 1 1 auto;
+  padding-left: 8px;
+  padding-right: 8px;
   height: 100%;
+}
 
-  .hts-config__tab {
-    flex: 1 0 auto;
-    margin-right: 8px;
-  }
-
-  .hts-config__sub {
-    padding: 15px 20px 20px 20px;
-    min-width: 355px;
-    width: 355px;
-    height: fit-content;
-  }
+.hts-config__sub {
+  flex: 1 1 auto;
+  padding: 15px 20px 20px 20px;
+  max-width: 364px;
+  width: 355px;
+  height: fit-content;
 }

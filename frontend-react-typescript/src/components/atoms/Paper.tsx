@@ -5,7 +5,6 @@ import MuiPaper, { PaperProps as MuiPaperProps } from '@material-ui/core/Paper';
 
 const CustomPaper = withStyles(theme => ({
   root: {
-    backgroundColor: theme.palette.primary.main,
     boxShadow: '0px 0px 0px 0px',
   },
 }))(MuiPaper);

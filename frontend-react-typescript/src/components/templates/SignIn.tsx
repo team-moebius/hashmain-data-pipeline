@@ -60,6 +60,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
           helperText={this.state.errors.email}
           inputRef={this.emailRef}
           placeholder="E-Mail"
+          style={{ marginBottom: '8px' }}
         />
         <Input
           error={this.state.errors.password ? true : false}
@@ -67,6 +68,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
           inputRef={this.passwordRef}
           type="password"
           placeholder="Password"
+          style={{ marginBottom: '8px' }}
         />
         <Button color="secondary" disabled={this.props.pending} type="submit" style={{ marginTop: '8px' }}>
           <Text variant="button">로그인</Text>

@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/styles';
 const Button = withStyles(theme => ({
   root: {
     '&:hover': {
-      backgroundColor: theme.palette.primary.light,
+      backgroundColor: theme.palette.secondary.dark,
     },
   },
 }))(MuiButton);

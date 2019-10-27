@@ -2,12 +2,16 @@ import * as React from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
+import { withAlert, AlertManager } from 'react-alert';
 
-import MuiButton from '@material-ui/core/Button';
+import ApiKeyRegistIcon from '@material-ui/icons/VpnKey';
+import AccountIcon from '@material-ui/icons/AccountCircle';
 
-import Text from 'components/atoms/Text';
+import IconButton from 'components/atoms/IconButton';
+import Dialog from 'components/atoms/Dialog';
 import AppBar from 'components/molecules/AppBar';
 import Tab from 'components/molecules/Tab';
+import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
 import HtsConfig from 'pages/menu/HtsConfig';
 import Assets from 'pages/menu/Assets';
 import Idea from 'pages/menu/Idea';
@@ -15,7 +19,7 @@ import CoinInfo from 'pages/menu/CoinInfo';
 import UseGuide from 'pages/menu/UseGuide';
 import Profile from 'pages/menu/Profile';
 import { actionCreators as pageActions } from 'pages/PageWidgets';
-import { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors } from 'utils/Ajax';
+import ajax, { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors } from 'utils/Ajax';
 import { ReduxState } from 'infra/redux/GlobalState';
 
 import bgImage from 'assets/images/bg.png';
@@ -31,9 +35,12 @@ interface DispatchProps {
   signOut: () => void;
 }
 
-interface MainPageProps extends StateProps, DispatchProps {}
+interface MainPageProps extends StateProps, DispatchProps {
+  alert: AlertManager;
+}
 
 interface MainPageState {
+  apiKeyRegistDialogOpen: boolean;
   index: number;
 }
 
@@ -50,6 +57,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
   constructor(props: MainPageProps) {
     super(props);
     this.state = {
+      apiKeyRegistDialogOpen: false,
       index: 0,
     };
 
@@ -57,7 +65,13 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
     addJwtTokenInterceptor(this.props.token);
   }
 
-  onClickAlertSample? = (e: React.MouseEvent<HTMLElement>) => {};
+  onClickApiKeyRegistButton = (e: React.MouseEvent<HTMLElement>) => {
+    this.setState({ ...this.state, apiKeyRegistDialogOpen: true });
+  };
+
+  onCloseApiKeyRegist = (e: React.MouseEvent<HTMLElement>) => {
+    this.setState({ ...this.state, apiKeyRegistDialogOpen: false });
+  };
 
   onClickSignOut = () => {
     ejectInterceptors();
@@ -68,26 +82,42 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
     this.setState({ index: value });
   };
 
+  // TODO: 어차피 Biz component 인 ApiKeyRegistBox로 해당 event 전부 옮기고 props로 api만 주입하는 식으로처리
+  // 위처럼 해야 로딩처리까지 깔끔해짐
+  onSubmitApiRegist = (data: object) => {
+    ajax
+      .post('/api/api-keys', data)
+      .then(response => {
+        this.props.alert.success('등록 성공');
+      })
+      .catch(error => {
+        this.props.alert.error('등록 실패');
+      });
+  };
+
+  onClickViewMyApiKeyButton = () => {
+    ajax
+      .get('/api')
+      .then(reponse => {
+        // this.props.alert.success('등록 성공');
+      })
+      .catch(error => {
+        // this.props.alert.error('등록 실패');
+      });
+  };
+
   render() {
     if (!this.props.signing) return <Redirect to="/sign" />;
     return (
       <div style={{ backgroundImage: bgImage }} className="layout">
-        <AppBar
-          className="layout-header"
-          position="absolute"
-          subTitle={
-            <>
-              <em>H</em>ome <em>T</em>rading <em>S</em>ystem
-            </>
-          }
-          title="CRYPTO BOX GLOBAL."
-        >
+        <AppBar className="layout-header" position="absolute" title="CRYPTO BOX GLOBAL.">
           {{
             left: <img alt="logo" className="layout-header__logo" src={logo} />,
             right: (
-              <MuiButton className="layout-header__button" size="medium" onClick={this.onClickSignOut}>
-                <Text variant="body1">로그아웃</Text>
-              </MuiButton>
+              <div className="layout-header__icons">
+                <IconButton icon={<ApiKeyRegistIcon />} onClick={this.onClickApiKeyRegistButton} />
+                <IconButton icon={<AccountIcon />} onClick={this.onClickSignOut} />
+              </div>
             ),
           }}
         </AppBar>
@@ -108,6 +138,13 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
             {this.state.index === 5 && <Profile className="layout-contents__item-contents" />}
           </div>
         </Tab>
+        <Dialog open={this.state.apiKeyRegistDialogOpen} onClose={this.onCloseApiKeyRegist}>
+          <ApiKeyRegistBox
+            className="layout-dialog__api-regist"
+            onSubmit={this.onSubmitApiRegist}
+            onClickViewMyApiKeyButton={this.onClickViewMyApiKeyButton}
+          />
+        </Dialog>
       </div>
     );
   }
@@ -125,4 +162,4 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(MainPage);
+)(withAlert<MainPageProps>()(MainPage));

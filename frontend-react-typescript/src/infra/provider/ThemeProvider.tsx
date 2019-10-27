@@ -5,23 +5,22 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 const MOBEIUS_THEME = createMuiTheme({
   palette: {
-    type: 'dark',
     background: {
-      paper: '#0D1E34',
-      default: '#13253f',
+      paper: '#101037',
+      default: '#151544',
     },
     text: {
-      primary: '#C7CDDB',
+      primary: '#B7C8F5',
       secondary: '#657486',
     },
     primary: {
-      main: '#0D1E34',
-      light: '#162C49',
-      dark: '#091A2E',
+      main: '#1A1C4B',
+      light: '#2A84C6',
+      dark: '#0D0D2B',
     },
     secondary: {
-      main: '#1E8CDE',
-      dark: '#13253F',
+      main: '#FF3A7D',
+      dark: '#B11C3B',
     },
   },
   typography: {

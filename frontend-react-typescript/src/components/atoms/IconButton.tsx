@@ -8,7 +8,6 @@ const CustomIconButton = withStyles(theme => ({
       color: theme.palette.secondary.main,
     },
   },
-  sizeSmall: { padding: '4px' },
 }))(MuiIconButton);
 
 export interface IconButtonProps extends MuiIconButtonProps {
@@ -21,7 +20,6 @@ const IconButton: React.FC<IconButtonProps> = props => {
 };
 
 IconButton.defaultProps = {
-  size: 'small',
   color: 'inherit',
 };
 

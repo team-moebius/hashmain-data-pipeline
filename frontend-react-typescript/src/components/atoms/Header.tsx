@@ -3,7 +3,11 @@ import { withStyles } from '@material-ui/styles';
 
 export interface HeaderProps extends MuiAppBarProps {}
 
-const Header = withStyles(theme => ({}))(MuiAppBar);
+const Header = withStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.background.paper,
+  },
+}))(MuiAppBar);
 
 Header.defaultProps = {};
 

@@ -128,6 +128,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                       <TableBodyCell>
                         <IconButton
                           icon={<DeleteIcon aria-label="delete" />}
+                          size="small"
                           onClick={this.onClickRowDeleteIcon(row.id)}
                         />
                       </TableBodyCell>
@@ -182,6 +183,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                     <TableBodyCell>
                       <IconButton
                         icon={<DeleteIcon aria-label="delete" />}
+                        size="small"
                         onClick={this.onClickRowDeleteIcon(row.id)}
                       />
                     </TableBodyCell>

@@ -18,7 +18,7 @@ export interface AppBarProps extends HeaderProps {
 }
 
 const useStyles = makeStyles(theme => ({
-  root: { flexGrow: 1, backgroundColor: theme.palette.primary.dark },
+  root: { flexGrow: 1 },
   titleWrapper: { flexGrow: 1 },
   title: {
     fontWeight: 'bold',

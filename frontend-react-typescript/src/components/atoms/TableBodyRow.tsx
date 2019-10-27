@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/styles';
 
 const TableBodyRow = withStyles(theme => ({
   root: {
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.primary.main,
   },
 }))(MuiTableRow);
 
