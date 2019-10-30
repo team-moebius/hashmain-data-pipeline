@@ -64,7 +64,7 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	}
 
 	@Override
-	public Mono<ClientResponse> doOrder(UpbitOrderDto exchangeOrderDto) {
+	public Mono<ClientResponse> doOrder(UpbitOrderDto orderDto) {
 		return null;
 	}
 

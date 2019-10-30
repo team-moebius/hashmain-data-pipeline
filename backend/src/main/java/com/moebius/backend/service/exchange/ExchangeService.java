@@ -11,5 +11,5 @@ public interface ExchangeService<T> {
 
 	Mono<ClientResponse> doHealthCheck(String authToken);
 
-	Mono<ClientResponse> doOrder(T exchangeOrderDto);
+	Mono<ClientResponse> doOrder(T orderDto);
 }
