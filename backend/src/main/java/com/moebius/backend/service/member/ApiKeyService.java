@@ -79,7 +79,17 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ").")))));
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ")")))));
+	}
+
+	public Mono<ApiKey> getApiKeyById(String id) {
+		Verifier.checkBlankString(id);
+
+		return apiKeyRepository.findById(new ObjectId(id))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on id(" + id + ")")))));
 	}
 
 	public Mono<String> getExchangeAuthToken(String memberId, Exchange exchange) {

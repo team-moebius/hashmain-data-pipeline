@@ -41,16 +41,10 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 		String symbol = record.value().getSymbol();
 
 		ExchangeService<?> exchangeService = exchangeServiceFactory.getService(exchange);
+		// TODO : add more conditions to request order specifically
 		orderService.getOrdersByExchangeAndSymbol(exchange, symbol)
 			.map(exchangeService::order)
 			.subscribe();
-
-		log.info("Received message: topic-partition={} offset={} timestamp={} key={} value={}\n",
-			offset.topicPartition(),
-			offset.offset(),
-			record.timestamp(),
-			record.key(),
-			record.value());
 
 		offset.acknowledge();
 	}

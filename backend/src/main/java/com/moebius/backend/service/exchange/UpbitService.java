@@ -4,15 +4,17 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.dto.exchange.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.VerificationFailedException;
+import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -30,9 +32,12 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	private String publicUri;
 	@Value("${exchange.upbit.rest.asset}")
 	private String assetUri;
+	@Value("${exchange.upbit.rest.order}")
+	private String orderUri;
 
 	private final WebClient webClient;
 	private final UpbitAssembler upbitAssembler;
+	private final ApiKeyService apiKeyService;
 
 	@Override
 	public Exchange getExchange() {
@@ -41,7 +46,7 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 
 	@Override
 	public Mono<String> getAuthToken(String accessKey, String secretKey) {
-		log.info("[ApiKey] Start to get upbit auth token.");
+		log.info("[Upbit] Start to get auth token.");
 
 		return Mono.fromCallable(() -> {
 			Algorithm algorithm = Algorithm.HMAC256(secretKey);
@@ -54,7 +59,7 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 
 	@Override
 	public Mono<ClientResponse> checkHealth(String authToken) {
-		log.info("[ApiKey] Start to do health check.");
+		log.info("[Upbit] Start to do health check.");
 
 		return webClient.get()
 			.uri(publicUri + assetUri)
@@ -67,12 +72,22 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	}
 
 	@Override
-	public Mono<ClientResponse> order(OrderDto orderDto) {
-		return Mono.fromCallable(() -> upbitAssembler.toOrderDto(orderDto))
-			.map(upbitOrderDto -> )
+	public Mono<ClientResponse> order(Order order) {
+		log.info("[Upbit] Start to request order.");
+
+		return apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
+			.subscribeOn(COMPUTE.scheduler())
+			.flatMap(apiKey -> getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()))
+			.flatMap(authToken -> requestOrder(upbitAssembler.toOrderDto(order), authToken));
 	}
 
-	private Mono<ClientResponse> requestOrder(UpbitOrderDto upbitOrderDto) {
-		return null;
+	private Mono<ClientResponse> requestOrder(UpbitOrderDto upbitOrderDto, String authToken) {
+		return webClient.post()
+			.uri(publicUri + orderUri)
+			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
+			.body(BodyInserters.fromObject(upbitOrderDto))
+			.exchange()
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
 	}
 }

@@ -53,11 +53,10 @@ public class OrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Flux<OrderDto> getOrdersByExchangeAndSymbol(Exchange exchange, String symbol) {
+	public Flux<Order> getOrdersByExchangeAndSymbol(Exchange exchange, String symbol) {
 		return orderRepository.findAllByExchangeAndSymbol(exchange, symbol)
 			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
-			.map(order -> orderAssembler.toDto(order, EventType.READ));
+			.publishOn(COMPUTE.scheduler());
 	}
 
 	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {

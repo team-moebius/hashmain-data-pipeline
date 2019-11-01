@@ -1,7 +1,7 @@
 package com.moebius.backend.service.exchange;
 
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.domain.orders.Order;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
 
@@ -12,5 +12,5 @@ public interface ExchangeService<T> {
 
 	Mono<ClientResponse> checkHealth(String authToken);
 
-	Mono<ClientResponse> order(OrderDto orderDto);
+	Mono<ClientResponse> order(Order order);
 }
