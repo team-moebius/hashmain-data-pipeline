@@ -86,7 +86,7 @@ public class ApiKeyService {
 		Verifier.checkBlankString(memberId);
 		Verifier.checkNullFields(exchange);
 
-		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
+		ExchangeService<?> exchangeService = exchangeServiceFactory.getService(exchange);
 		return getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()));
 	}
@@ -96,7 +96,7 @@ public class ApiKeyService {
 
 		ExchangeService<?> exchangeService = exchangeServiceFactory.getService(apiKeyDto.getExchange());
 		return exchangeService.getAuthToken(apiKeyDto.getAccessKey(), apiKeyDto.getSecretKey())
-			.flatMap(exchangeService::doHealthCheck);
+			.flatMap(exchangeService::checkHealth);
 	}
 
 	private Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(ApiKeyDto apiKeyDto, String memberId) {

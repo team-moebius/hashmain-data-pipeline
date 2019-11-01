@@ -2,7 +2,9 @@ package com.moebius.backend.service.exchange;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
+import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.exchange.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.VerificationFailedException;
@@ -30,6 +32,7 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	private String assetUri;
 
 	private final WebClient webClient;
+	private final UpbitAssembler upbitAssembler;
 
 	@Override
 	public Exchange getExchange() {
@@ -50,7 +53,7 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	}
 
 	@Override
-	public Mono<ClientResponse> doHealthCheck(String authToken) {
+	public Mono<ClientResponse> checkHealth(String authToken) {
 		log.info("[ApiKey] Start to do health check.");
 
 		return webClient.get()
@@ -64,8 +67,12 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	}
 
 	@Override
-	public Mono<ClientResponse> doOrder(UpbitOrderDto orderDto) {
-		return null;
+	public Mono<ClientResponse> order(OrderDto orderDto) {
+		return Mono.fromCallable(() -> upbitAssembler.toOrderDto(orderDto))
+			.map(upbitOrderDto -> )
 	}
 
+	private Mono<ClientResponse> requestOrder(UpbitOrderDto upbitOrderDto) {
+		return null;
+	}
 }

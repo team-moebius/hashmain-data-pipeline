@@ -11,4 +11,6 @@ public interface OrderRepository extends ReactiveMongoRepository<Order, ObjectId
 	Flux<Order> findAllByApiKeyId(ObjectId apiKeyId);
 
 	Flux<Order> findAllByExchangeAndSymbol(Exchange exchange, String symbol);
+
+
 }

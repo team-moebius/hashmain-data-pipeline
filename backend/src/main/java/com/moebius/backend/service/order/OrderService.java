@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -50,6 +51,13 @@ public class OrderService {
 			.subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
 			.map(ResponseEntity::ok);
+	}
+
+	public Flux<OrderDto> getOrdersByExchangeAndSymbol(Exchange exchange, String symbol) {
+		return orderRepository.findAllByExchangeAndSymbol(exchange, symbol)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.map(order -> orderAssembler.toDto(order, EventType.READ));
 	}
 
 	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {
