@@ -5,7 +5,7 @@ import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;
-import com.moebius.backend.service.order.OrderService;
+import com.moebius.backend.service.order.InternalOrderService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
-	private final OrderService orderService;
+	private final InternalOrderService internalOrderService;
 
 	@ApiOperation(
 		value = "주문(매수, 매도, 역지정) 생성 / 갱신 / 삭제",
@@ -35,7 +35,7 @@ public class OrderController {
 	})
 	@PostMapping("")
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(@RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos, Principal principal) {
-		return orderService.processOrders(principal.getName(), Exchange.UPBIT, orderDtos);
+		return internalOrderService.processOrders(principal.getName(), Exchange.UPBIT, orderDtos);
 	}
 
 	@ApiOperation(
@@ -51,6 +51,6 @@ public class OrderController {
 	})
 	@GetMapping("")
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(Principal principal) {
-		return orderService.getOrdersAndAssetByMemberIdAndExchange(principal.getName(), Exchange.UPBIT);
+		return internalOrderService.getOrdersAndAssetsByMemberIdAndExchange(principal.getName(), Exchange.UPBIT);
 	}
 }

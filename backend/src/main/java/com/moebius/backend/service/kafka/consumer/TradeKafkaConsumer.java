@@ -5,7 +5,8 @@ import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.kafka.KafkaConsumer;
-import com.moebius.backend.service.order.OrderService;
+import com.moebius.backend.service.member.ApiKeyService;
+import com.moebius.backend.service.order.ExchangeOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -19,13 +20,15 @@ import java.util.Map;
 @Component
 public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
-	private final OrderService orderService;
+	private final ExchangeOrderService exchangeOrderService;
+	private final ApiKeyService apiKeyService;
 	private final ExchangeServiceFactory exchangeServiceFactory;
 
-	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, OrderService orderService,
-		ExchangeServiceFactory exchangeServiceFactory) {
+	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService,
+		ApiKeyService apiKeyService, ExchangeServiceFactory exchangeServiceFactory) {
 		super(receiverDefaultProperties);
-		this.orderService = orderService;
+		this.exchangeOrderService = exchangeOrderService;
+		this.apiKeyService = apiKeyService;
 		this.exchangeServiceFactory = exchangeServiceFactory;
 	}
 
@@ -37,13 +40,20 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	@Override
 	public void processRecord(ReceiverRecord<String, TradeDocument> record) {
 		ReceiverOffset offset = record.receiverOffset();
-		Exchange exchange = record.value().getExchange();
-		String symbol = record.value().getSymbol();
 
-		ExchangeService<?> exchangeService = exchangeServiceFactory.getService(exchange);
+		TradeDocument tradeDocument = record.value();
+		Exchange exchange = tradeDocument.getExchange();
+		String symbol = tradeDocument.getSymbol();
+		double price = tradeDocument.getPrice();
+
+		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
+
 		// TODO : add more conditions to request order specifically
-		orderService.getOrdersByExchangeAndSymbol(exchange, symbol)
-			.map(exchangeService::order)
+		exchangeOrderService.getOrdersByExchangeAndSymbol(exchange, symbol)
+			.map(order -> apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
+				.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()))
+				.flatMap(authToken -> exchangeService.order(authToken, order))
+				.subscribe())
 			.subscribe();
 
 		offset.acknowledge();

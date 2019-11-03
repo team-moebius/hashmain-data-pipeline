@@ -4,6 +4,7 @@ import com.moebius.backend.domain.commons.Base;
 import com.moebius.backend.domain.commons.Exchange;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
+@ToString(exclude = "apiKeyId")
 @Document(collection = "orders")
 @CompoundIndex(def = "{'exchange': 1, 'symbol': 1}")
 public class Order extends Base {
