@@ -23,7 +23,7 @@ public class PurchaseOrdersFactory implements OrdersFactory {
 
 	@Override
 	public Flux<Order> gerOrders(TradeDocument tradeDocument) {
-		return orderRepository.findAllByBidCondition(tradeDocument.getExchange(), tradeDocument.getSymbol(), OrderPosition.PURCHASE, tradeDocument.getPrice())
+		return orderRepository.findAndUpdateAllByBidCondition(tradeDocument.getExchange(), tradeDocument.getSymbol(), OrderPosition.PURCHASE, tradeDocument.getPrice())
 			.publishOn(IO.scheduler())
 			.subscribeOn(COMPUTE.scheduler());
 	}
