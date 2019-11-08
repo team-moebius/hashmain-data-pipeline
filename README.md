@@ -32,6 +32,9 @@ Moebius is a platform for supporting crypto currency trades conveniently, safely
 2. Trade DB : ElasticSearch
 3. Trade Message Queue : Kafka
 
+## Sequence diagram of services
+![Sequence diagram](https://user-images.githubusercontent.com/15190229/68497952-0ed03780-0299-11ea-9fd7-14406aa5d912.png)
+
 ## Vm options (backend)
 ```
 -Dspring.profiles.active=${profile}
