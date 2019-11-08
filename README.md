@@ -2,23 +2,35 @@
 
 ## Definition
 Moebius is a platform for supporting crypto currency trades conveniently, safely.
- 
-## Structure
-1. Moebius-backend (api, domain, service)
-2. Moebius-frontend
-3. Moebius-batch
 
-## Technical specification (backend)
-* Spring boot 2
-* Spring webflux
-* Spring security
-* Spring data with mongodb
-* Reactive stream based on [Project Reactor](https://projectreactor.io)
-* Mongodb 4.0.12
+## Goal
+* Supply flexible, automatic order functions (purchase & sale & stoploss) in trades.
+* Supply easy-to-use UI/UX in mobile & pc through all kinds of web browser.
+* Keep the latency of order execution under **100ms**.
+* Support user Information management with email verification.
 
-## Features
-* User management based on json web token & spring security
-* Flexible Stoploss in trades
+## Architecture & Technical specification
+![Architecture](https://user-images.githubusercontent.com/15190229/68171840-beb35580-ffb8-11e9-8084-dbfab6431819.png)
+### Front Layer
+
+1. Service Frontend
+   * React, Redux-thunk, Axios, Material-ui, Typescript
+   * Atomic design (Atom - Molecule - Organisms - Templates - Pages)
+2. Data (Trade) Visualizer
+   * kibana (ES visualizer), cerebro (ES monitor)
+
+### API, Core Layer
+
+1. Service Backend
+   * Java 8, Spring boot 2, Webflux, [Reactor](https://projectreactor.io) (reactive stream, kafka, mongo driver), Spring security, Springfox-swagger2, jjwt, lombok
+2. Trade Tracker
+   * Same as Service Backend except Java 8 replaced with kotlin
+
+### Data Layer
+
+1. Main DB : MongoDB 4.0.12
+2. Trade DB : ElasticSearch
+3. Trade Message Queue : Kafka
 
 ## Vm options (backend)
 ```
