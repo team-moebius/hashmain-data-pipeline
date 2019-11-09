@@ -23,8 +23,9 @@ import { actionCreators as pageActions } from 'pages/PageWidgets';
 import ajax, { addSignOutInterceptor, addJwtTokenInterceptor, ejectInterceptors } from 'utils/Ajax';
 import { ReduxState } from 'infra/redux/GlobalState';
 
+import HtsIcon from 'assets/icons/HtsIcon';
 import bgImage from 'assets/images/bg.png';
-import logo from 'assets/images/logo.png';
+// import logo from 'assets/images/logo.svg';
 import 'assets/scss/MainPage.scss';
 
 interface StateProps {
@@ -47,12 +48,34 @@ interface MainPageState {
 
 class MainPage extends React.Component<MainPageProps, MainPageState> {
   static readonly MENU_ITEMS: JSX.Element[] = [
-    <>HTS 설정</>,
-    <>자산관리</>,
-    <>아이디어</>,
-    <>코인정보</>,
-    <>이용안내</>,
-    <>프로필</>,
+    <div className="layout-menu__item">
+      <HtsIcon className="layout-menu__icon" />
+      HTS 설정
+    </div>,
+    <div className="layout-menu__item">
+      <HtsIcon className="layout-menu__icon" />
+      CTS 설정
+    </div>,
+    <div className="layout-menu__item">
+      <HtsIcon className="layout-menu__icon" />
+      TDS 설정
+    </div>,
+    <div className="layout-menu__item">
+      <HtsIcon className="layout-menu__icon" />
+      자산관리
+    </div>,
+    <div className="layout-menu__item">
+      <HtsIcon className="layout-menu__icon" />
+      아이디어
+    </div>,
+    <div className="layout-menu__item">
+      <HtsIcon className="layout-menu__icon" />
+      이용안내
+    </div>,
+    <div className="layout-menu__item">
+      <HtsIcon className="layout-menu__icon" />
+      프로필
+    </div>,
   ];
 
   constructor(props: MainPageProps) {
@@ -113,7 +136,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
       <div style={{ backgroundImage: bgImage }} className="layout">
         <AppBar className="layout-header" position="absolute" title="CRYPTO BOX GLOBAL.">
           {{
-            left: <img alt="logo" className="layout-header__logo" src={logo} />,
+            left: <img alt="logo" className="layout-header__logo" />,
             right: (
               <div className="layout-header__icons">
                 <IconButton icon={<ApiKeyRegistIcon />} onClick={this.onClickApiKeyRegistButton} />
@@ -125,6 +148,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
         <Tab
           rootClassName="layout-contents"
           tabsClassName="layout-contents__menu"
+          tabHeaderItemClassName="layout-tab__item"
           value={this.state.index}
           items={MainPage.MENU_ITEMS}
           orientation="vertical"

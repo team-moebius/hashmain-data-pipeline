@@ -12,6 +12,7 @@ interface TabProps {
   items: JSX.Element[];
   rootClassName?: string;
   tabsClassName?: string;
+  tabHeaderItemClassName?: string;
   value: number;
   orientation: 'horizontal' | 'vertical';
   onChange: (e: React.ChangeEvent<{}>, value: any) => void;
@@ -41,8 +42,9 @@ const Tab: React.FC<TabProps> = props => {
   const verticalClasses = useVerticalStyles();
   const horizontalClasses = useHorizontalStyles();
   const classes = props.orientation === 'vertical' ? verticalClasses : horizontalClasses;
-  const rootClassName = classNames(props.rootClassName, classes.root);
-  const tabsClassName = classNames(props.tabsClassName, classes.tabs);
+  const rootClassName = classNames(classes.root, props.rootClassName);
+  const tabsClassName = classNames(classes.tabs, props.tabsClassName);
+  const tabHeaderItemClassName = classNames(classes.tab, props.tabHeaderItemClassName);
 
   return (
     <div className={rootClassName}>
@@ -54,7 +56,7 @@ const Tab: React.FC<TabProps> = props => {
         onChange={props.onChange}
       >
         {props.items.map((item, index) => (
-          <TabHeaderItem className={classes.tab} key={index} label={item} />
+          <TabHeaderItem className={tabHeaderItemClassName} key={index} label={item} />
         ))}
       </TabHeader>
       {props.children}
