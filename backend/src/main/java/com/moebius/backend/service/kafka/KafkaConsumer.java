@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
 
 @Slf4j
@@ -27,7 +28,9 @@ public abstract class KafkaConsumer<K, V> {
 
 		KafkaReceiver<K, V> receiver = KafkaReceiver.create(receiverOptions);
 		log.info("[Kafka] Start to read messages. [{}]", getTopic());
-		receiver.receive().subscribe(this::processRecord);
+		receiver.receive()
+			.publishOn(COMPUTE.scheduler())
+			.subscribe(this::processRecord);
 	}
 
 	public abstract String getTopic();

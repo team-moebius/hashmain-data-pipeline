@@ -41,7 +41,7 @@ public class ExchangeOrderService {
 		OrdersFactory ordersFactory = ordersFactoryManager.getOrdersFactory(orderPosition);
 
 		if (ordersFactory != null) {
-			return ordersFactory.gerOrders(tradeDocument);
+			return ordersFactory.getOrders(tradeDocument);
 		}
 
 		return Flux.empty();

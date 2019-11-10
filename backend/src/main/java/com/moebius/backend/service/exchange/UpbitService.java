@@ -44,6 +44,8 @@ public class UpbitService implements ExchangeService {
 
 	@Override
 	public Mono<String> getAuthToken(String accessKey, String secretKey) {
+		log.info("[Upbit] Start to get auth token. [accessKey: {}, secretKey: {}]", accessKey, secretKey);
+
 		return Mono.fromCallable(() -> {
 			Algorithm algorithm = Algorithm.HMAC256(secretKey);
 			return JWT.create()

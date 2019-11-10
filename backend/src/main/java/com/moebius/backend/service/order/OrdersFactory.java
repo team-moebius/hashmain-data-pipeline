@@ -8,5 +8,5 @@ import reactor.core.publisher.Flux;
 public interface OrdersFactory {
 	OrderPosition getPosition();
 
-	Flux<Order> gerOrders(TradeDocument tradeDocument);
+	Flux<Order> getOrders(TradeDocument tradeDocument);
 }
