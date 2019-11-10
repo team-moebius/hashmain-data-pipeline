@@ -8,6 +8,7 @@ import { TableColum, NewRowParams } from 'components/molecules/TableHeadLayer';
 import ajax from 'utils/Ajax';
 
 import 'assets/scss/MultiTradingMode.scss';
+import CircularLoader from 'components/molecules/CircularLoader';
 
 type EventType = 'READ' | 'UPDATE' | 'CREATE' | 'DELETE';
 type ExchangeType = 'UPBIT';
@@ -178,17 +179,21 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
   };
 
   fetchOrderData = () => {
-    ajax
-      .get('/api/orders')
-      .then(response => {
-        const responseData = this.convertData(response.data);
-        this.originalOrderData = Object.freeze(responseData.orderData);
-        this.setState({ ...responseData });
-        console.log(response.data);
-      })
-      .catch(error => {
-        // this.props.alert.error('Order data load fail');
-      });
+    this.setState({ fetching: true }, () => {
+      ajax
+        .get('/api/orders')
+        .then(response => {
+          const responseData = this.convertData(response.data);
+          this.originalOrderData = Object.freeze(responseData.orderData);
+          this.setState({ ...responseData });
+          console.log(response.data);
+        })
+        .catch(error => {
+          this.setState({ fetching: false });
+          // this.props.alert.error('Order data load fail');
+        })
+        .finally(() => this.setState({ fetching: false }));
+    });
   };
 
   convertData = (data: AjaxData) => {
@@ -302,7 +307,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     const viewData = _.groupBy(dataByCreated['false'], data => data.orderPosition);
 
     return (
-      <div>
+      <div style={{ position: 'relative' }}>
         <Grid<OrderData>
           columns={this.sellGridColums}
           rowClassNameFunc={this.getRowClassName}
@@ -330,7 +335,8 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
           onClickRowDeleteIcon={this.onClickRowDeleteIcon}
           onClickHeadLayerAddIcon={this.onClickStoplossGridAddIcon}
         />
-        <Button>주 문 등 록</Button>
+        {this.state.fetching && <CircularLoader />}
+        <Button disabled={this.state.fetching}>주 문 등 록</Button>
       </div>
     );
   }

@@ -5,7 +5,8 @@ import classNames from 'classnames';
 import Paper from 'components/atoms/Paper';
 import Text from 'components/atoms/Text';
 import PageTemplate from 'components/templates/PageTemplate';
-import MultiTradingMode from 'pages/sub/MultiTradingMode';
+import HtsConfigGrid from 'pages/sub/HtsConfigGrid';
+import CoinKinds from 'pages/sub/CoinKinds';
 
 import 'assets/scss/HtsConfig.scss';
 
@@ -20,7 +21,7 @@ interface ContentsState {
 
 class HtsConfig extends React.Component<ContentsProps, ContentsState> {
   private static TAB_HEADERS = [<Text variant="subtitle2">멀티거래 모드</Text>];
-  private static TAB_ITEMS = [<MultiTradingMode />];
+  private static TAB_ITEMS = [<HtsConfigGrid />];
   constructor(props: ContentsProps) {
     super(props);
     this.state = {
@@ -42,7 +43,9 @@ class HtsConfig extends React.Component<ContentsProps, ContentsState> {
           tabHeaders={HtsConfig.TAB_HEADERS}
           tabContents={HtsConfig.TAB_ITEMS}
         />
-        <Paper className="hts-config__sub">{123}</Paper>
+        <Paper className="hts-config__sub">
+          <CoinKinds />
+        </Paper>
       </>
     );
   }
