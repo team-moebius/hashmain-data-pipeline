@@ -21,7 +21,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			.where("orderPosition").is(orderPosition)
 			.where("price").gte(price));
 
-		// TODO : If needed, use inTransaction like this
+		// TODO : If needed, use inTransaction like below
 //		mongoTemplate.inTransaction()
 //			.execute(operations -> operations.find())
 //			.thenMany()
