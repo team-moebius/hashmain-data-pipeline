@@ -84,14 +84,13 @@ public class UpbitService implements ExchangeService {
 	public Mono<ClientResponse> order(String authToken, Order order) {
 		log.info("[Upbit] Start to request order. [{}]", order);
 
-		return Mono.empty();
-//		return webClient.post()
-//			.uri(publicUri + orderUri)
-//			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
-//			.body(getOrderBody(order), UpbitOrderDto.class)
-//			.exchange()
-//			.subscribeOn(IO.scheduler())
-//			.publishOn(COMPUTE.scheduler());
+		return webClient.post()
+			.uri(publicUri + orderUri)
+			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
+			.body(getOrderBody(order), UpbitOrderDto.class)
+			.exchange()
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
 	}
 
 	private Mono<UpbitOrderDto> getOrderBody(Order order) {
