@@ -33,12 +33,6 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 		ReceiverOffset offset = record.receiverOffset();
 		TradeDocument tradeDocument = record.value();
 
-		log.info("Received message: topic-partition={} offset={} timestamp={} key={} value={}",
-			offset.topicPartition(),
-			offset.offset(),
-			record.timestamp(),
-			record.key(),
-			record.value());
 		exchangeOrderService.order(tradeDocument);
 
 		offset.acknowledge();

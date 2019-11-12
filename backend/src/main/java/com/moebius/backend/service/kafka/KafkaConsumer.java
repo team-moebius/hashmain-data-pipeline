@@ -15,6 +15,8 @@ import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
 
 @Slf4j
 public abstract class KafkaConsumer<K, V> {
+	private KafkaReceiver<K, V> receiver;
+
 	public KafkaConsumer(Map<String, String> receiverDefaultProperties) {
 		Map<String, Object> properties = new HashMap<>(receiverDefaultProperties);
 		properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, getKeyDeserializerClass());
@@ -26,11 +28,7 @@ public abstract class KafkaConsumer<K, V> {
 			.addAssignListener(partitions -> log.debug("[Kafka] onPartitionsAssigned {}", partitions))
 			.addRevokeListener(partitions -> log.debug("[Kafka] onPartitionsRevoked {}", partitions));
 
-		KafkaReceiver<K, V> receiver = KafkaReceiver.create(receiverOptions);
-		log.info("[Kafka] Start to read messages. [{}]", getTopic());
-		receiver.receive()
-			.publishOn(COMPUTE.scheduler())
-			.subscribe(this::processRecord);
+		receiver = KafkaReceiver.create(receiverOptions);
 	}
 
 	public abstract String getTopic();
@@ -40,4 +38,11 @@ public abstract class KafkaConsumer<K, V> {
 	protected abstract Class<?> getKeyDeserializerClass();
 
 	protected abstract Class<?> getValueDeserializerClass();
+
+	public void consumeMessages() {
+		log.info("[Kafka] Start to read messages. [{}]", getTopic());
+		receiver.receive()
+			.publishOn(COMPUTE.scheduler())
+			.subscribe(this::processRecord);
+	}
 }

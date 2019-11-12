@@ -22,11 +22,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			.and("orderStatus").is(OrderStatus.READY)
 			.and("exchange").is(exchange));
 
-		// TODO : If needed, use inTransaction like below
-//		mongoTemplate.inTransaction()
-//			.execute(operations -> operations.find())
-//			.thenMany()
-
 		return mongoTemplate.find(query, Order.class)
 			.flatMap(this::updateOrderStatusToExecuted);
 	}
