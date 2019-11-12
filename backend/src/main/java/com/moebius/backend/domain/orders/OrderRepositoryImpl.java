@@ -16,11 +16,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
 	@Override
 	public Flux<Order> findAndUpdateAllByAskCondition(Exchange exchange, String symbol, OrderPosition orderPosition, double price) {
-		Query query = new Query(Criteria.where("exchange").is(exchange)
+		Query query = new Query(Criteria.where("price").lte(price)
 			.and("symbol").is(symbol)
 			.and("orderPosition").is(orderPosition)
 			.and("orderStatus").is(OrderStatus.READY)
-			.and("price").lte(price));
+			.and("exchange").is(exchange));
 
 		// TODO : If needed, use inTransaction like below
 //		mongoTemplate.inTransaction()
@@ -33,11 +33,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
 	@Override
 	public Flux<Order> findAndUpdateAllByBidCondition(Exchange exchange, String symbol, OrderPosition orderPosition, double price) {
-		Query query = new Query(Criteria.where("exchange").is(exchange)
+		Query query = new Query(Criteria.where("price").gte(price)
 			.and("symbol").is(symbol)
 			.and("orderPosition").is(orderPosition)
 			.and("orderStatus").is(OrderStatus.READY)
-			.and("price").gte(price));
+			.and("exchange").is(exchange));
 
 		return mongoTemplate.find(query, Order.class)
 			.flatMap(this::updateOrderStatusToExecuted);
