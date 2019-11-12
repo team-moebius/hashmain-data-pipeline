@@ -79,7 +79,17 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ").")))));
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ") and exchange (" + exchange + ")")))));
+	}
+
+	public Mono<ApiKey> getApiKeyById(String id) {
+		Verifier.checkBlankString(id);
+
+		return apiKeyRepository.findById(new ObjectId(id))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on id(" + id + ")")))));
 	}
 
 	public Mono<String> getExchangeAuthToken(String memberId, Exchange exchange) {
@@ -94,9 +104,9 @@ public class ApiKeyService {
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {
 		log.info("[ApiKey] Start to verify api key. [{}]", apiKeyDto);
 
-		ExchangeService<?> exchangeService = exchangeServiceFactory.getService(apiKeyDto.getExchange());
+		ExchangeService exchangeService = exchangeServiceFactory.getService(apiKeyDto.getExchange());
 		return exchangeService.getAuthToken(apiKeyDto.getAccessKey(), apiKeyDto.getSecretKey())
-			.flatMap(exchangeService::doHealthCheck);
+			.flatMap(exchangeService::checkHealth);
 	}
 
 	private Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(ApiKeyDto apiKeyDto, String memberId) {

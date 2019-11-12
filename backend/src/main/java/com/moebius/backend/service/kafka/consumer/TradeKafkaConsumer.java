@@ -2,6 +2,7 @@ package com.moebius.backend.service.kafka.consumer;
 
 import com.moebius.backend.domain.trades.TradeDocument;
 import com.moebius.backend.service.kafka.KafkaConsumer;
+import com.moebius.backend.service.order.ExchangeOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -15,9 +16,11 @@ import java.util.Map;
 @Component
 public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
+	private final ExchangeOrderService exchangeOrderService;
 
-	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties) {
+	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService) {
 		super(receiverDefaultProperties);
+		this.exchangeOrderService = exchangeOrderService;
 	}
 
 	@Override
@@ -28,12 +31,9 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	@Override
 	public void processRecord(ReceiverRecord<String, TradeDocument> record) {
 		ReceiverOffset offset = record.receiverOffset();
-		log.info("Received message: topic-partition={} offset={} timestamp={} key={} value={}\n",
-			offset.topicPartition(),
-			offset.offset(),
-			record.timestamp(),
-			record.key(),
-			record.value());
+		TradeDocument tradeDocument = record.value();
+
+		exchangeOrderService.order(tradeDocument);
 
 		offset.acknowledge();
 	}
