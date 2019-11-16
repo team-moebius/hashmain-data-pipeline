@@ -39,6 +39,8 @@ Moebius is a platform for supporting crypto currency trades conveniently, safely
 ```
 -Dspring.profiles.active=${profile}
 -Dreactor.netty.http.server.accessLogEnabled=true
--Xms64m
--Xmx448m
+-Xmx1024m
+–Xms1024m
+-XX:MaxNewSize=384m
+-XX:MaxPermSize=128m
 ```
