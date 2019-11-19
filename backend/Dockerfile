@@ -11,4 +11,4 @@ RUN ./gradlew clean build --exclude-task batch:build
 FROM openjdk:8-jre-alpine
 ENV ARTIFACT_PATH=app/build/libs/app-0.0.1-RELEASE.jar
 COPY --from=build $ARTIFACT_PATH app.jar
-ENTRYPOINT ["java","-Dspring.profiles.active=production","-Dreactor.netty.http.server.accessLogEnabled=true","-Xmx1024m","–Xms1024m","-XX:MaxNewSize=384m","-XX:MaxPermSize=128m","-jar","app.jar"]
+ENTRYPOINT ["java","-Dspring.profiles.active=production","-Dreactor.netty.http.server.accessLogEnabled=true","-Xmx1024m","–Xms1024m","-XX:MaxNewSize=384m","-XX:MaxPermSize=128m","-XX:+UseParallelGC","-jar","app.jar"]
