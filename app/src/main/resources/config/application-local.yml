@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: local
+  kafka:
+    consumer:
+      group-id: moebius-consumer-local
 
 logging:
   level:

@@ -2,7 +2,10 @@ package com.moebius.backend.service.exchange;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
+import com.moebius.backend.domain.orders.Order;
+import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.exchange.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.VerificationFailedException;
@@ -23,13 +26,16 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UpbitService implements ExchangeService<UpbitOrderDto> {
+public class UpbitService implements ExchangeService {
 	@Value("${exchange.upbit.rest.public-uri}")
 	private String publicUri;
 	@Value("${exchange.upbit.rest.asset}")
 	private String assetUri;
+	@Value("${exchange.upbit.rest.order}")
+	private String orderUri;
 
 	private final WebClient webClient;
+	private final UpbitAssembler upbitAssembler;
 
 	@Override
 	public Exchange getExchange() {
@@ -38,7 +44,7 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 
 	@Override
 	public Mono<String> getAuthToken(String accessKey, String secretKey) {
-		log.info("[ApiKey] Start to get upbit auth token.");
+		log.info("[Upbit] Start to get auth token. [accessKey: {}, secretKey: {}]", accessKey, secretKey);
 
 		return Mono.fromCallable(() -> {
 			Algorithm algorithm = Algorithm.HMAC256(secretKey);
@@ -50,8 +56,19 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	}
 
 	@Override
-	public Mono<ClientResponse> doHealthCheck(String authToken) {
-		log.info("[ApiKey] Start to do health check.");
+	public Mono<AssetsDto> getAssets(String authToken) {
+		return webClient.get()
+			.uri(publicUri + assetUri)
+			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
+			.retrieve()
+			.bodyToMono(AssetsDto.class)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
+	@Override
+	public Mono<ClientResponse> checkHealth(String authToken) {
+		log.info("[Upbit] Start to do health check. [authToken: {}]", authToken);
 
 		return webClient.get()
 			.uri(publicUri + assetUri)
@@ -64,8 +81,20 @@ public class UpbitService implements ExchangeService<UpbitOrderDto> {
 	}
 
 	@Override
-	public Mono<ClientResponse> doOrder(UpbitOrderDto exchangeOrderDto) {
-		return null;
+	public Mono<ClientResponse> order(String authToken, Order order) {
+		log.info("[Upbit] Start to request order. [{}]", order);
+
+		return webClient.post()
+			.uri(publicUri + orderUri)
+			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
+			.body(getOrderBody(order), UpbitOrderDto.class)
+			.exchange()
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
 	}
 
+	private Mono<UpbitOrderDto> getOrderBody(Order order) {
+		return Mono.fromCallable(() -> upbitAssembler.toOrderDto(order))
+			.subscribeOn(COMPUTE.scheduler());
+	}
 }

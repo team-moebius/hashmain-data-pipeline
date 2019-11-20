@@ -6,10 +6,12 @@ import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
+import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
+import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +30,11 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class InternalOrderService {
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
 	private final ApiKeyService apiKeyService;
-	private final AssetService assetService;
+	private final ExchangeServiceFactory exchangeServiceFactory;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
@@ -45,8 +47,8 @@ public class OrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetByMemberIdAndExchange(String memberId, Exchange exchange) {
-		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), assetService.getAssetsByMemberId(memberId, exchange))
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsByMemberIdAndExchange(String memberId, Exchange exchange) {
+		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), getAssetsByMemberIdAndExchange(memberId, exchange))
 			.subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
 			.map(ResponseEntity::ok);
@@ -63,17 +65,22 @@ public class OrderService {
 				.collectList());
 	}
 
+	private Mono<AssetsDto> getAssetsByMemberIdAndExchange(String memberId, Exchange exchange) {
+		return apiKeyService.getExchangeAuthToken(memberId, exchange)
+			.flatMap(authToken -> exchangeServiceFactory.getService(exchange)
+				.getAssets(authToken))
+			.subscribeOn(COMPUTE.scheduler());
+	}
+
 	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
 		EventType eventType = orderDto.getEventType();
 		if (eventType == DELETE) {
 			deleteOrder(orderDto.getId()).subscribe();
-			log.info("deleted order.");
 			return orderAssembler.toSimpleDto(orderDto.getId(), DELETE);
 		}
 
 		Order order = orderAssembler.toOrder(apiKey, orderDto);
 		upsertOrder(order).subscribe();
-		log.info("updated order.");
 		return orderAssembler.toDto(order, eventType);
 	}
 

@@ -52,7 +52,6 @@ public abstract class KafkaProducer<K, V, T> {
 	}
 
 	public Flux<SenderResult<T>> produceMessages(V message) {
-		log.info("[Kafka] Start to send message. [{}]", message);
 		return sender.send(Mono.just(SenderRecord.create(new ProducerRecord<>(getTopic(), getKey(message), message), getCorrelationMetadata(message))));
 	}
 }
