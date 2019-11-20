@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.markets.MarketRepository
 import com.moebius.backend.domain.trades.TradeDocumentRepository
+import com.moebius.backend.service.kafka.producer.TradeKafkaProducer
 import com.moebius.backend.utils.ThreadScheduler.COMPUTE
 import com.moebius.backend.utils.ThreadScheduler.IO
 import com.moebius.tracker.assembler.TradeAssembler
@@ -54,6 +55,9 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
     @Autowired
     private lateinit var tradeAssembler: TradeAssembler
 
+    @Autowired
+    private lateinit var tradeKafkaProducer: TradeKafkaProducer
+
     @Value("\${exchange.upbit.websocket.uri}")
     private lateinit var uri: String
 
@@ -79,6 +83,7 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                                     try {
                                         val tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto::class.java)
                                         accumulateTrade(tradeDto)
+                                        tradeKafkaProducer.produceMessages(tradeAssembler.toTradeDocument(tradeDto)).subscribe()
                                     } catch (e: IOException) {
                                         log.error(e.message)
                                     }

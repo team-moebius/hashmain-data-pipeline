@@ -5,14 +5,15 @@ ext {
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('org.springframework.boot:spring-boot-starter-mail')
-    implementation('org.springframework.boot:spring-boot-starter-data-mongodb')
     implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
     implementation('org.springframework.boot:spring-boot-starter-cache')
-
+    implementation('org.springframework.data:spring-data-mongodb:2.2.1.RELEASE')
+    implementation('org.springframework.kafka:spring-kafka:2.2.8.RELEASE')
     implementation('org.mongodb:mongodb-driver-reactivestreams:1.11.0')
     implementation('org.modelmapper:modelmapper:2.3.2')
     implementation('org.apache.commons:commons-lang3:3.9')
     implementation('io.jsonwebtoken:jjwt-api:0.10.5')
+    implementation('io.projectreactor.kafka:reactor-kafka:1.1.1.RELEASE')
     implementation('io.springfox:springfox-swagger2:3.0.0-SNAPSHOT')
     implementation('io.springfox:springfox-swagger-ui:3.0.0-SNAPSHOT')
     implementation('io.springfox:springfox-spring-webflux:3.0.0-SNAPSHOT')
@@ -24,7 +25,6 @@ dependencies {
     compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.7'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.7'
-
 
     runtime 'io.jsonwebtoken:jjwt-impl:0.10.5',
             // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:

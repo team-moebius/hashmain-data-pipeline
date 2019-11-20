@@ -29,8 +29,8 @@ Moebius is a platform for supporting crypto currency trades conveniently, safely
 ### Data Layer
 
 1. Main DB : MongoDB 4.0.12
-2. Trade DB : ElasticSearch
-3. Trade Message Queue : Kafka
+2. Trade DB : ElasticSearch 7.1.1
+3. Trade Message Queue : Kafka 2.0.1
 
 ## Sequence diagram of services
 ![Sequence diagram](https://user-images.githubusercontent.com/15190229/68497952-0ed03780-0299-11ea-9fd7-14406aa5d912.png)
@@ -39,6 +39,8 @@ Moebius is a platform for supporting crypto currency trades conveniently, safely
 ```
 -Dspring.profiles.active=${profile}
 -Dreactor.netty.http.server.accessLogEnabled=true
--Xms64m
--Xmx448m
+-Xmx1024m
+–Xms1024m
+-XX:MaxNewSize=384m
+-XX:MaxPermSize=128m
 ```

@@ -4,7 +4,7 @@ import com.moebius.backend.dto.frontend.ApiKeyDto;
 import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;
-import com.moebius.backend.exception.DuplicateDataException;
+import com.moebius.backend.exception.DuplicatedDataException;
 import com.moebius.backend.service.member.ApiKeyService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +34,7 @@ public class ApiKeyController {
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = String.class),
 		@ApiResponse(code = 400, message = "Api key is not verified", response = DataNotVerifiedException.class),
-		@ApiResponse(code = 400, message = "Api key already exists", response = DuplicateDataException.class),
+		@ApiResponse(code = 400, message = "Api key already exists", response = DuplicatedDataException.class),
 	})
 	@PostMapping("")
 	public Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(@RequestBody @Valid ApiKeyDto apiKeyDto, Principal principal) {

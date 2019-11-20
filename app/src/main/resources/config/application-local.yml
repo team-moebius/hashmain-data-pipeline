@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: local
+  kafka:
+    consumer:
+      group-id: moebius-consumer-local
 
 logging:
   level:
@@ -22,8 +25,9 @@ moebius:
       /webjars/**,
       /api/member/**,
       /api/members/**,
-      /api/markets/**,
+      /api/orders/**,
       /login
-    admin: /admin
+    admin: /admin,
+      /api/markets/**
     member: /api/stoplosses/**,
       /api/api-keys/**
