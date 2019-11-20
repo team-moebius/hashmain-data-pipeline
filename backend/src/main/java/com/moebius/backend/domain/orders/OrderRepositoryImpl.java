@@ -22,8 +22,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			.and("orderStatus").is(OrderStatus.READY)
 			.and("exchange").is(exchange));
 
-		return mongoTemplate.find(query, Order.class)
-			.flatMap(this::updateOrderStatusToExecuted);
+		return executeTransactionalQuery(query);
 	}
 
 	@Override
@@ -34,8 +33,13 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			.and("orderStatus").is(OrderStatus.READY)
 			.and("exchange").is(exchange));
 
-		return mongoTemplate.find(query, Order.class)
-			.flatMap(this::updateOrderStatusToExecuted);
+		return executeTransactionalQuery(query);
+	}
+
+	private Flux<Order> executeTransactionalQuery(Query query) {
+		return mongoTemplate.inTransaction()
+			.execute(operations -> operations.find(query, Order.class)
+				.flatMap(this::updateOrderStatusToExecuted));
 	}
 
 	private Mono<Order> updateOrderStatusToExecuted(Order order) {
