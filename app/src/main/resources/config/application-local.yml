@@ -3,8 +3,6 @@ spring:
     active: local
   kafka:
     consumer:
-      client-id: moebius-consumer
-      auto-offset-reset: earliest
       group-id: moebius-consumer-local
 
 logging:
