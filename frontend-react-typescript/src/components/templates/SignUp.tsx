@@ -141,7 +141,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
       <form onSubmit={this.onSubmit}>
         <Input
           autoFocus
-          error={this.state.errors.email ? true : false}
+          error={!!this.state.errors.email}
           helperText={this.state.errors.email}
           inputRef={this.emailRef}
           onBlur={this.isValidId}
@@ -149,7 +149,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         />
         {this.props.children && this.props.children.idHelp}
         <Input
-          error={this.state.errors.name ? true : false}
+          error={!!this.state.errors.name}
           helperText={this.state.errors.name}
           inputRef={this.nameRef}
           onBlur={this.isValidName}
@@ -157,7 +157,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           style={{ marginBottom: '8px' }}
         />
         <Input
-          error={this.state.errors.password ? true : false}
+          error={!!this.state.errors.password}
           helperText={this.state.errors.password}
           inputRef={this.passwordRef}
           onBlur={this.isValidPassword}
@@ -166,7 +166,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           style={{ marginBottom: '8px' }}
         />
         <Input
-          error={this.state.errors.passwordConfirm ? true : false}
+          error={!!this.state.errors.passwordConfirm}
           helperText={this.state.errors.passwordConfirm}
           inputRef={this.passwordConfirmRef}
           onBlur={this.isValidPasswordConfirm}

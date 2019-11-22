@@ -132,6 +132,8 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
 
   render() {
     if (!this.props.signing) return <Redirect to="/sign" />;
+    const { index } = this.state;
+
     return (
       <div style={{ backgroundImage: bgImage }} className="layout">
         <AppBar className="layout-header" position="absolute" title="CRYPTO BOX GLOBAL.">
@@ -149,18 +151,18 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
           rootClassName="layout-contents"
           tabsClassName="layout-contents__menu"
           tabHeaderItemClassName="layout-tab__item"
-          value={this.state.index}
+          value={index}
           items={MainPage.MENU_ITEMS}
           orientation="vertical"
           onChange={this.onChangeMenuIndex}
         >
           <div className="layout-contents__item-wrapper">
-            {this.state.index === 0 && <HtsConfig className="layout-contents__item-contents" />}
-            {this.state.index === 1 && <Assets className="layout-contents__item-contents" />}
-            {this.state.index === 2 && <Idea className="layout-contents__item-contents" />}
-            {this.state.index === 3 && <CoinInfo className="layout-contents__item-contents" />}
-            {this.state.index === 4 && <UseGuide className="layout-contents__item-contents" />}
-            {this.state.index === 5 && <Profile className="layout-contents__item-contents" />}
+            {index === 0 && <HtsConfig className="layout-contents__item-contents" />}
+            {index === 1 && <Assets className="layout-contents__item-contents" />}
+            {index === 2 && <Idea className="layout-contents__item-contents" />}
+            {index === 3 && <CoinInfo className="layout-contents__item-contents" />}
+            {index === 4 && <UseGuide className="layout-contents__item-contents" />}
+            {index === 5 && <Profile className="layout-contents__item-contents" />}
           </div>
         </Tab>
         <Paper className="layout-footer">Footer</Paper>

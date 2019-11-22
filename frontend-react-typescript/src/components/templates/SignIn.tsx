@@ -56,14 +56,14 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         <Input
           autoComplete="off"
           autoFocus
-          error={this.state.errors.email ? true : false}
+          error={!!this.state.errors.email}
           helperText={this.state.errors.email}
           inputRef={this.emailRef}
           placeholder="E-Mail"
           style={{ marginBottom: '8px' }}
         />
         <Input
-          error={this.state.errors.password ? true : false}
+          error={!!this.state.errors.password}
           helperText={this.state.errors.password}
           inputRef={this.passwordRef}
           type="password"
