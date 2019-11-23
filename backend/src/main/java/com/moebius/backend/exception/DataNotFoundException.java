@@ -5,6 +5,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class DataNotFoundException extends ResponseStatusException {
 	public DataNotFoundException(String message) {
-		super(HttpStatus.NOT_FOUND, message);
+		super(HttpStatus.BAD_REQUEST, message);
 	}
 }
