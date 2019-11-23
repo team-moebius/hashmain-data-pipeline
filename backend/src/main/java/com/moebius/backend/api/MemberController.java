@@ -35,9 +35,9 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = LoginResponseDto.class),
+		@ApiResponse(code = 400, message = "Email is not found", response = DataNotFoundException.class),
 		@ApiResponse(code = 400, message = "Password is wrong", response = VerificationFailedException.class),
 		@ApiResponse(code = 401, message = "Email is not verified", response = DataNotVerifiedException.class),
-		@ApiResponse(code = 404, message = "Email is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("")
 	public Mono<ResponseEntity<?>> login(@RequestBody @Valid @ApiParam(value = "로그인 시 필요한 정보", required = true) LoginDto loginDto) {
