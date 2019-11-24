@@ -1,5 +1,7 @@
-package com.moebius.backend.domain.trades
+package trades
 
+import com.moebius.tracker.domain.trades.TradeDocumentRepository
+import com.moebius.tracker.domain.trades.TradeDocumentRepositoryImpl
 import org.apache.http.HttpHost
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.client.RestClient

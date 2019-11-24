@@ -1,4 +1,4 @@
-package com.moebius.backend.dto.exchange;
+package com.moebius.backend.dto.exchange.upbit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
