@@ -8,5 +8,4 @@ import org.springframework.context.annotation.Import
 @Configuration
 @ComponentScan("com.moebius.backend.service.kafka.producer")
 @Import(value = [KafkaConfiguration::class])
-class KafkaConfiguration {
-}
+class KafkaConfiguration

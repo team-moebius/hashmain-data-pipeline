@@ -6,7 +6,7 @@ import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.dto.AssetsDto;
-import com.moebius.backend.dto.exchange.UpbitOrderDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.VerificationFailedException;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package com.moebius.backend.service.order;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;
 import com.moebius.backend.domain.orders.OrderRepository;
-import com.moebius.backend.domain.trades.TradeDocument;
+import com.moebius.backend.dto.TradeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,8 +24,8 @@ public class StoplossOrdersFactory implements OrdersFactory {
 	}
 
 	@Override
-	public Flux<Order> getOrders(TradeDocument tradeDocument) {
-		return orderRepository.findAndUpdateAllByAskCondition(tradeDocument.getExchange(), tradeDocument.getSymbol(), OrderPosition.STOPLOSS, tradeDocument.getPrice())
+	public Flux<Order> getOrders(TradeDto tradeDto) {
+		return orderRepository.findAndUpdateAllByBidCondition(tradeDto.getExchange(), tradeDto.getSymbol(), OrderPosition.STOPLOSS, tradeDto.getPrice())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}
