@@ -1,18 +1,18 @@
 package com.moebius.tracker.batch
 
-import com.moebius.backend.domain.trades.TradeStatsDocumentRepository
-import com.moebius.backend.utils.ElasticUtils
+import com.moebius.tracker.domain.trades.TradeStatsDocumentRepository
+import com.moebius.tracker.utils.ElasticUtils
 import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
+@Profile("!local")
 class TradeStatsBatch(
-        @Autowired val tradeStatsDocumentRepository: TradeStatsDocumentRepository
+        private val tradeStatsDocumentRepository: TradeStatsDocumentRepository
 ) {
-
     private val log = KotlinLogging.logger {}
 
     @Scheduled(cron = "0 * * * * *")

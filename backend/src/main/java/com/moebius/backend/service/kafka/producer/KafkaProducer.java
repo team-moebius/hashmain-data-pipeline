@@ -1,4 +1,4 @@
-package com.moebius.backend.service.kafka;
+package com.moebius.backend.service.kafka.producer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -17,6 +17,7 @@ import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
 
 /**
  * Base kafka message producer for concrete producer in moebius.
+ * Topic, KeySerializerClass, ValueSerializerClass should be determined by concrete producer.
  *
  * @param <K> Message key
  * @param <V> Message value

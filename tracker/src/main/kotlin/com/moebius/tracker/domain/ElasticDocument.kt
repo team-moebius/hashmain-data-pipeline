@@ -1,4 +1,4 @@
-package com.moebius.backend.domain
+package com.moebius.tracker.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 

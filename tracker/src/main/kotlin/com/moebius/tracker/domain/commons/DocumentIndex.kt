@@ -1,11 +1,11 @@
-package com.moebius.backend.domain.commons
+package com.moebius.tracker.domain.commons
 
 import java.time.LocalDate
 
 object DocumentIndex {
     val tradeStream: ElasticIndex = ElasticIndex("trade-stream",
             { name -> "$name-${LocalDate.now()}" },
-{ name -> "$name-search" })
+            { name -> "$name-search" })
 val tradeStats: ElasticIndex = ElasticIndex("trade-stats")
 
 class ElasticIndex(

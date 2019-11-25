@@ -1,4 +1,4 @@
-package com.moebius.tracker.dto
+package com.moebius.tracker.dto.upbit
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -7,7 +7,7 @@ import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.commons.TradeType
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class TradeDto(
+data class UpbitTradeDto(
         @JsonProperty("ty")
         val type: String,
         @JsonProperty("cd")

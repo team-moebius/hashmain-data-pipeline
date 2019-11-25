@@ -2,7 +2,7 @@ package com.moebius.backend.service.order;
 
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;
-import com.moebius.backend.domain.trades.TradeDocument;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
@@ -25,23 +25,23 @@ public class ExchangeOrderService {
 	private final ExchangeServiceFactory exchangeServiceFactory;
 	private final OrdersFactoryManager ordersFactoryManager;
 
-	public void order(TradeDocument tradeDocument) {
-		Verifier.checkNullFields(tradeDocument);
+	public void order(TradeDto tradeDto) {
+		Verifier.checkNullFields(tradeDto);
 
-		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDocument.getExchange());
+		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 
 		Arrays.stream(OrderPosition.values())
-			.forEach(orderPosition -> getOrders(orderPosition, tradeDocument)
+			.forEach(orderPosition -> getOrders(orderPosition, tradeDto)
 				.subscribeOn(COMPUTE.scheduler())
 				.map(order -> executeOrder(exchangeService, order))
 				.subscribe());
 	}
 
-	private Flux<Order> getOrders(OrderPosition orderPosition, TradeDocument tradeDocument) {
+	private Flux<Order> getOrders(OrderPosition orderPosition, TradeDto tradeDto) {
 		OrdersFactory ordersFactory = ordersFactoryManager.getOrdersFactory(orderPosition);
 
 		if (ordersFactory != null) {
-			return ordersFactory.getOrders(tradeDocument);
+			return ordersFactory.getOrders(tradeDto);
 		}
 
 		return Flux.empty();

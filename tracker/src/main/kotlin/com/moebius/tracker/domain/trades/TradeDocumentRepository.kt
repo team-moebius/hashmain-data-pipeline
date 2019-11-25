@@ -1,6 +1,6 @@
-package com.moebius.backend.domain.trades
+package com.moebius.tracker.domain.trades
 
-import com.moebius.backend.domain.ElasticDocumentRepository
+import com.moebius.tracker.domain.ElasticDocumentRepository
 import java.time.LocalDateTime
 
 interface TradeDocumentRepository : ElasticDocumentRepository<TradeDocument> {

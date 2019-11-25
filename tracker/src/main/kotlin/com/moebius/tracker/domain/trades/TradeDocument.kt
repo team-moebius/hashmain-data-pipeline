@@ -1,10 +1,10 @@
-package com.moebius.backend.domain.trades
+package com.moebius.tracker.domain.trades
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.moebius.backend.domain.ElasticDocument
 import com.moebius.backend.domain.commons.Change
 import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.commons.TradeType
+import com.moebius.tracker.domain.ElasticDocument
 import java.time.Instant
 import java.util.*
 

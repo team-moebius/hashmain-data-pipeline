@@ -25,7 +25,7 @@ class TradeStatsDocumentRepositoryTest {
     @Before
     fun init() {
         subject = TradeStatsDocumentRepositoryImpl(
-                RestHighLevelClient(RestClient.builder(HttpHost.create("http://localhost:9200")))
+                RestHighLevelClient(RestClient.builder(HttpHost.create("http://localhost:9200"))), 0
         )
     }
 

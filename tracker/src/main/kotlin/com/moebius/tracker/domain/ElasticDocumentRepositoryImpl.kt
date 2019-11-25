@@ -1,8 +1,8 @@
-package com.moebius.backend.domain
+package com.moebius.tracker.domain
 
-import com.moebius.backend.domain.commons.DocumentIndex
-import com.moebius.backend.utils.ElasticUtils
-import com.moebius.backend.utils.ElasticUtils.indexRequest
+import com.moebius.tracker.domain.commons.DocumentIndex
+import com.moebius.tracker.utils.ElasticUtils
+import com.moebius.tracker.utils.ElasticUtils.indexRequest
 import mu.KotlinLogging
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.search.SearchRequest
@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 
 open class ElasticDocumentRepositoryImpl<T>(
-        open val client: RestHighLevelClient,
+        open val restHighLevelClient: RestHighLevelClient,
         private val index: DocumentIndex.ElasticIndex,
         private val type: Class<T>
 ) : ElasticDocumentRepository<T> {
@@ -25,7 +25,7 @@ open class ElasticDocumentRepositoryImpl<T>(
 
     override fun get(id: String): T? = with(SearchRequest(index.searchIndex())) {
         this.source(SearchSourceBuilder().query(QueryBuilders.termQuery("_id", id)))
-        val response = client.search(this, RequestOptions.DEFAULT)
+        val response = restHighLevelClient.search(this, RequestOptions.DEFAULT)
         return if (response.hits.totalHits.value > 0) {
             deserializeSource(listOf(response.hits.hits[0].sourceAsString))[0]
         } else {
@@ -40,7 +40,7 @@ open class ElasticDocumentRepositoryImpl<T>(
     override fun getAsync(id: String): Mono<T?> = { get(id) }.toMono()
 
     override fun save(document: T): String = with(indexRequest(index, (document as ElasticDocument).getDocumentId(), document)) {
-        client.index(this, RequestOptions.DEFAULT).run { this.id }
+        restHighLevelClient.index(this, RequestOptions.DEFAULT).run { this.id }
     }
 
     override fun saveAsync(document: T): Mono<String> = { save(document) }.toMono()
@@ -49,7 +49,7 @@ open class ElasticDocumentRepositoryImpl<T>(
         if(documents.isEmpty()) return false
         val request = documents.map { indexRequest(index, (it as ElasticDocument).getDocumentId(), it) }.toSet()
         this.add(request)
-        return client.bulk(this, RequestOptions.DEFAULT).run {
+        return restHighLevelClient.bulk(this, RequestOptions.DEFAULT).run {
             !this.hasFailures()
         }
     }

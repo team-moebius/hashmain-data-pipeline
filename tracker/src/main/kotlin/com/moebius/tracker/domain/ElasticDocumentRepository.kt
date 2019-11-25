@@ -1,8 +1,7 @@
-package com.moebius.backend.domain
+package com.moebius.tracker.domain
 
 import org.springframework.data.repository.NoRepositoryBean
 import reactor.core.publisher.Mono
-import java.time.LocalDateTime
 
 @NoRepositoryBean
 interface ElasticDocumentRepository<T> {

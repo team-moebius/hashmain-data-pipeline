@@ -1,9 +1,9 @@
-package com.moebius.backend.domain.trades
+package com.moebius.tracker.domain.trades
 
-import com.moebius.backend.domain.commons.DocumentIndex
 import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.commons.TradeType
-import com.moebius.backend.utils.ElasticUtils
+import com.moebius.tracker.domain.commons.DocumentIndex
+import com.moebius.tracker.utils.ElasticUtils
 import mu.KotlinLogging
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
@@ -24,7 +24,7 @@ import java.time.ZonedDateTime
 
 class TradeStatsGenerator(private val startDateTime: LocalDateTime,
                           private val interval: ElasticUtils.AggregationInterval,
-                          private val marketCount: Long) {
+                          private val marketCount: Int) {
     private val log = KotlinLogging.logger {}
 
     private enum class AGGNAMES(name: String) {
@@ -59,7 +59,7 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
         log.info("TradeType aggregation size : ${TradeType.values().size}")
         return arrayOf(
                 AggregationBuilders.terms(AGGNAMES.EXCHANGE.name).field("exchange").size(Exchange.values().size),
-                AggregationBuilders.terms(AGGNAMES.SYMBOL.name).field("symbol").size(marketCount.toInt()),
+                AggregationBuilders.terms(AGGNAMES.SYMBOL.name).field("symbol").size(marketCount),
                 AggregationBuilders.terms(AGGNAMES.TRADE_TYPE.name).field("tradeType").size(TradeType.values().size)
         )
     }
@@ -129,9 +129,9 @@ class TradeStatsGenerator(private val startDateTime: LocalDateTime,
         return Triple(tradeType, docCount, sumValue)
     }
 
-    fun generate(client: RestHighLevelClient): List<TradeStatsDocument> {
+    fun generate(restHighLevelClient: RestHighLevelClient): List<TradeStatsDocument> {
         val query = aggregationSearchQuery()
-        val response = client.search(query, RequestOptions.DEFAULT)
+        val response = restHighLevelClient.search(query, RequestOptions.DEFAULT)
         return deserializeResponse(response)
     }
 }
