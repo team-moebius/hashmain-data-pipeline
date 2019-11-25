@@ -10,18 +10,18 @@ import java.util.*
 @Component
 class TradeAssembler {
     fun toCommonDto(upbitTradeDto: UpbitTradeDto): TradeDto = with(upbitTradeDto) {
-        TradeDto.builder()
-                .id(UUID.randomUUID().toString())
-                .exchange(exchange)
-                .symbol(symbol)
-                .tradeType(askBid)
-                .change(change)
-                .price(tradePrice)
-                .volume(tradeVolume)
-                .prevClosingPrice(prevClosingPrice)
-                .changePrice(changePrice)
-                .createdAt(LocalDateTime.now())
-                .build()
+        val tradeDto = TradeDto()
+        tradeDto.id = UUID.randomUUID().toString()
+        tradeDto.exchange = exchange
+        tradeDto.symbol = symbol
+        tradeDto.tradeType = askBid
+        tradeDto.change = change
+        tradeDto.price = tradePrice
+        tradeDto.volume = tradeVolume
+        tradeDto.prevClosingPrice = prevClosingPrice
+        tradeDto.changePrice = changePrice
+        tradeDto.createdAt = LocalDateTime.now()
+        tradeDto
     }
 
     fun toTradeDocument(upbitTradeDto: UpbitTradeDto): TradeDocument = with(upbitTradeDto) {
