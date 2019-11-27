@@ -1,10 +1,8 @@
 package com.moebius.backend.domain.orders;
 
 import com.moebius.backend.domain.commons.Exchange;
-import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
-import com.mongodb.TransactionOptions;
-import com.mongodb.WriteConcern;
+import com.mongodb.reactivestreams.client.MongoClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -19,6 +17,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
 	private final ReactiveMongoTemplate mongoTemplate;
+	private final MongoClient mongoClient;
 
 	@Override
 	public Flux<Order> findAndUpdateAllByAskCondition(Exchange exchange, String symbol, OrderPosition orderPosition, double price) {
@@ -43,19 +42,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 	}
 
 	private Flux<Order> executeTransactionalQuery(Query query) {
-//		log.info("[Mongo] Start to execute transactional query ({})", query);
-//		mongoTemplate.setReadPreference(ReadPreference.primary());
-
-		TransactionOptions transactionOptions = TransactionOptions.builder()
-			.readPreference(ReadPreference.primary())
-			.readConcern(ReadConcern.LOCAL)
-			.writeConcern(WriteConcern.MAJORITY)
-			.build();
-
-		return mongoTemplate.inTransaction()
+		mongoTemplate.setReadPreference(ReadPreference.primary());
+		return mongoTemplate.inTransaction(mongoClient.startSession())
 			.execute(operations -> operations.find(query, Order.class)
-				.flatMap(this::updateOrderStatusToExecuted));
-//			.doOnTerminate(() -> mongoTemplate.setReadPreference(ReadPreference.secondary()));
+				.flatMap(this::updateOrderStatusToExecuted))
+			.doOnTerminate(() -> mongoTemplate.setReadPreference(ReadPreference.secondary()));
 	}
 
 	private Mono<Order> updateOrderStatusToExecuted(Order order) {
