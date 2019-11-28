@@ -5,7 +5,7 @@ spring:
     web-application-type: reactive
   data:
     mongodb:
-      uri: mongodb+srv://moebius:highbal1!@mongodb-rs.cryptoboxglobal.com/?retryWrites=true&streamType=netty&readPreference=primary&ssl=false # TODO : Change to use ssl
+      uri: mongodb+srv://moebius:highbal1!@mongodb-rs.cryptoboxglobal.com/?retryWrites=true&streamType=netty&readPreference=secondary&ssl=false # TODO : Change to use ssl
       database: moebius
     elasticsearch:
       cluster-nodes: http://internal-moebius-es-1636081679.ap-northeast-2.elb.amazonaws.com

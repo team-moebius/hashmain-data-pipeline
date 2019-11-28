@@ -61,9 +61,7 @@ public class UpbitService implements ExchangeService {
 			.uri(publicUri + assetUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.retrieve()
-			.bodyToMono(AssetsDto.class)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
+			.bodyToMono(AssetsDto.class);
 	}
 
 	@Override
@@ -74,8 +72,6 @@ public class UpbitService implements ExchangeService {
 			.uri(publicUri + assetUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.exchange()
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
 			.filter(clientResponse -> clientResponse.statusCode() == HttpStatus.OK)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.UNVERIFIED_DATA.getMessage("AuthToken")))));
 	}
@@ -88,9 +84,7 @@ public class UpbitService implements ExchangeService {
 			.uri(publicUri + orderUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.body(getOrderBody(order), UpbitOrderDto.class)
-			.exchange()
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
+			.exchange();
 	}
 
 	private Mono<UpbitOrderDto> getOrderBody(Order order) {

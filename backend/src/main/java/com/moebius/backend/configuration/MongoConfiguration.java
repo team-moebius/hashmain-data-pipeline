@@ -1,6 +1,7 @@
 package com.moebius.backend.configuration;
 
 import com.moebius.backend.domain.Repositories;
+import com.mongodb.*;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,16 @@ public class MongoConfiguration {
 		converter.setTypeMapper(new DefaultMongoTypeMapper(null));
 
 		return template;
+	}
+
+	@Bean
+	public ClientSessionOptions transactionalSession() {
+		return ClientSessionOptions.builder()
+			.defaultTransactionOptions(TransactionOptions.builder()
+				.readConcern(ReadConcern.LOCAL)
+				.writeConcern(WriteConcern.MAJORITY)
+				.readPreference(ReadPreference.primary()).build())
+			.causallyConsistent(true)
+			.build();
 	}
 }

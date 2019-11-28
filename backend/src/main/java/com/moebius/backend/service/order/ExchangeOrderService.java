@@ -31,13 +31,12 @@ public class ExchangeOrderService {
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 
 		Arrays.stream(OrderPosition.values())
-			.forEach(orderPosition -> getOrders(orderPosition, tradeDto)
-				.subscribeOn(COMPUTE.scheduler())
+			.forEach(orderPosition -> getAndUpdateOrders(orderPosition, tradeDto)
 				.map(order -> executeOrder(exchangeService, order))
 				.subscribe());
 	}
 
-	private Flux<Order> getOrders(OrderPosition orderPosition, TradeDto tradeDto) {
+	private Flux<Order> getAndUpdateOrders(OrderPosition orderPosition, TradeDto tradeDto) {
 		OrdersFactory ordersFactory = ordersFactoryManager.getOrdersFactory(orderPosition);
 
 		if (ordersFactory != null) {
