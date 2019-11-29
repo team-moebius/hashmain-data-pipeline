@@ -15,8 +15,6 @@ import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
 
-import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,7 @@ public class ExchangeOrderService {
 
 	public void order(TradeDto tradeDto) {
 		Verifier.checkNullFields(tradeDto);
+		// TODO : Add cache filter before executing order.
 
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 

@@ -80,11 +80,11 @@ public class InternalOrderService {
 		}
 
 		Order order = orderAssembler.toOrder(apiKey, orderDto);
-		upsertOrder(order).subscribe();
+		saveOrder(order).subscribe();
 		return orderAssembler.toDto(order, eventType);
 	}
 
-	private Mono<Order> upsertOrder(Order order) {
+	private Mono<Order> saveOrder(Order order) {
 		return orderRepository.save(order)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());

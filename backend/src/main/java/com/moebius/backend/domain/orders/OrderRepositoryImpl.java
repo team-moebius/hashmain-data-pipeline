@@ -1,7 +1,7 @@
 package com.moebius.backend.domain.orders;
 
 import com.moebius.backend.domain.commons.Exchange;
-import com.mongodb.*;
+import com.mongodb.ClientSessionOptions;
 import com.mongodb.reactivestreams.client.ClientSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 	private Flux<Order> executeTransactionalQuery(Query query) {
 		return mongoTemplate.inTransaction(getClientSession())
 			.execute(operations -> operations.find(query, Order.class)
-				.flatMap(this::updateOrderStatusToExecuted));
+				.flatMap(this::updateOrderStatusToExecuted), session -> session.close());
 	}
 
 	private Mono<ClientSession> getClientSession() {
