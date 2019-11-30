@@ -20,13 +20,14 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class ExchangeOrderService {
 	private final ApiKeyService apiKeyService;
+	private final InternalOrderService internalOrderService;
 	private final ExchangeServiceFactory exchangeServiceFactory;
 	private final OrdersFactoryManager ordersFactoryManager;
 
 	public void order(TradeDto tradeDto) {
 		Verifier.checkNullFields(tradeDto);
-		// TODO : Add cache filter before executing order.
-
+		internalOrderService.findAllByTradeDto(tradeDto)
+			.filter(orderDtos -> orderDtos.size() > 0);
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 
 		Arrays.stream(OrderPosition.values())

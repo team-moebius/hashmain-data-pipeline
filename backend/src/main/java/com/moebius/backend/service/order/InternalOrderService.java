@@ -6,8 +6,10 @@ import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
+import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
@@ -16,6 +18,7 @@ import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -52,6 +55,15 @@ public class InternalOrderService {
 			.subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
 			.map(ResponseEntity::ok);
+	}
+
+	@Cacheable("orders")
+	public Mono<List<OrderDto>> findAllByTradeDto(TradeDto tradeDto) {
+		return orderRepository.findAllBySymbolAndOrderStatusAndExchange(tradeDto.getSymbol(), OrderStatus.READY, tradeDto.getExchange())
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.map(order -> orderAssembler.toDto(order, EventType.READ))
+			.collectList();
 	}
 
 	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {
