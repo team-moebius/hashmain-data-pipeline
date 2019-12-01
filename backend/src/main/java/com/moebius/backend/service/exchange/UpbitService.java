@@ -83,7 +83,8 @@ public class UpbitService implements ExchangeService {
 			.uri(publicUri + orderUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.body(getOrderBody(order), UpbitOrderDto.class)
-			.exchange();
+			.exchange()
+			.publishOn(COMPUTE.scheduler());
 	}
 
 	private Mono<UpbitOrderDto> getOrderBody(Order order) {

@@ -28,8 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.moebius.backend.domain.commons.EventType.DELETE;
-import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-import static com.moebius.backend.utils.ThreadScheduler.IO;
+import static com.moebius.backend.utils.ThreadScheduler.*;
 
 @Slf4j
 @Service
@@ -69,7 +68,7 @@ public class InternalOrderService {
 
 	@CacheEvict(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
 	public void evictOrderCount(TradeDto tradeDto) {
-		log.info("[Order] [{}/{}/{}] Evict cache.", tradeDto.getSymbol(), OrderStatus.READY, tradeDto.getExchange());
+		log.info("[Order] [{}/{}/{}] Evict cache.", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY);
 	}
 
 	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {
