@@ -2,7 +2,6 @@ package com.moebius.backend.service.order;
 
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;
-import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
@@ -31,12 +30,7 @@ public class ExchangeOrderService {
 		Verifier.checkNullFields(tradeDto);
 
 		internalOrderService.findOrderCountByTradeDto(tradeDto)
-			.filter(orderCount -> {
-				if (orderCount != 0) {
-					log.info("[Order] {}/{}/{} : {}", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY, orderCount);
-				}
-				return orderCount == 0;
-			})
+			.filter(orderCount -> orderCount == 0)
 			.switchIfEmpty(Mono.defer(() -> execute(tradeDto)))
 			.subscribe();
 	}
