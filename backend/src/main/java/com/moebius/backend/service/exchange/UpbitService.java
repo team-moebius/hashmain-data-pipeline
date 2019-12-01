@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-import static com.moebius.backend.utils.ThreadScheduler.IO;
 
 @Slf4j
 @Service

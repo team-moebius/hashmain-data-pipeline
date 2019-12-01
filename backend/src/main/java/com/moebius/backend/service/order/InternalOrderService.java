@@ -18,6 +18,7 @@ import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -57,13 +58,18 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	@Cacheable("orders")
-	public Mono<List<OrderDto>> findAllByTradeDto(TradeDto tradeDto) {
-		return orderRepository.findAllBySymbolAndOrderStatusAndExchange(tradeDto.getSymbol(), OrderStatus.READY, tradeDto.getExchange())
+	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
+	public Mono<Long> findOrderCountByTradeDto(TradeDto tradeDto) {
+		log.info("[Order] [{}/{}/{}] Start to get count of orders from repository because not found in cache.", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY);
+		return orderRepository.countBySymbolAndOrderStatusAndExchange(tradeDto.getSymbol(), OrderStatus.READY, tradeDto.getExchange())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(order -> orderAssembler.toDto(order, EventType.READ))
-			.collectList();
+			.cache();
+	}
+
+	@CacheEvict(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
+	public void evictOrderCount(TradeDto tradeDto) {
+		log.info("[Order] [{}/{}/{}] Evict cache.", tradeDto.getSymbol(), OrderStatus.READY, tradeDto.getExchange());
 	}
 
 	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {

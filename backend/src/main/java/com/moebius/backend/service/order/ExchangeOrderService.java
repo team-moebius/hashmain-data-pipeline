@@ -2,6 +2,7 @@ package com.moebius.backend.service.order;
 
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;
+import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
@@ -10,10 +11,12 @@ import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.Disposable;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -26,30 +29,46 @@ public class ExchangeOrderService {
 
 	public void order(TradeDto tradeDto) {
 		Verifier.checkNullFields(tradeDto);
-		internalOrderService.findAllByTradeDto(tradeDto)
-			.filter(orderDtos -> orderDtos.size() > 0);
+
+		internalOrderService.findOrderCountByTradeDto(tradeDto)
+			.filter(orderCount -> {
+				if (orderCount != 0) {
+					log.info("[Order] {}/{}/{} : {}", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY, orderCount);
+				}
+				return orderCount == 0;
+			})
+			.switchIfEmpty(Mono.defer(() -> execute(tradeDto)))
+			.subscribe();
+	}
+
+	private Mono<Long> execute(TradeDto tradeDto) {
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 
-		Arrays.stream(OrderPosition.values())
-			.forEach(orderPosition -> getAndUpdateOrders(orderPosition, tradeDto)
-				.map(order -> executeOrder(exchangeService, order))
-				.subscribe());
+		return getAndUpdateOrders(tradeDto)
+			.flatMap(order -> executeOrder(exchangeService, order))
+			.count()
+			.doOnSuccess(count -> evictIfCountNotZero(tradeDto, count));
 	}
 
-	private Flux<Order> getAndUpdateOrders(OrderPosition orderPosition, TradeDto tradeDto) {
-		OrdersFactory ordersFactory = ordersFactoryManager.getOrdersFactory(orderPosition);
-
-		if (ordersFactory != null) {
-			return ordersFactory.getAndUpdateOrders(tradeDto);
-		}
-
-		return Flux.empty();
+	private Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
+		return Flux.concat(
+			Flux.fromStream(Arrays.stream(OrderPosition.values())
+				.map(ordersFactoryManager::getOrdersFactory)
+				.filter(Objects::nonNull)
+				.map(ordersFactory -> ordersFactory.getAndUpdateOrders(tradeDto))
+			)
+		);
 	}
 
-	private Disposable executeOrder(ExchangeService exchangeService, Order order) {
+	private Mono<ClientResponse> executeOrder(ExchangeService exchangeService, Order order) {
 		return apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
 			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()))
-			.flatMap(authToken -> exchangeService.order(authToken, order))
-			.subscribe();
+			.flatMap(authToken -> exchangeService.order(authToken, order));
+	}
+
+	private void evictIfCountNotZero(TradeDto tradeDto, long count) {
+		if (count != 0) {
+			internalOrderService.evictOrderCount(tradeDto);
+		}
 	}
 }
