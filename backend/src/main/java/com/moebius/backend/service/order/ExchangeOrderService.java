@@ -9,6 +9,7 @@ import com.moebius.backend.service.member.ApiKeyService;
 import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -44,7 +45,8 @@ public class ExchangeOrderService {
 			.flatMap(order -> requestOrder(exchangeService, order))
 			.count()
 			.flatMap(count -> evictIfCountNotZero(tradeDto, count))
-			.as(transactionalOperator::transactional);
+			.as(transactionalOperator::transactional)
+			.onErrorReturn(exception -> exception instanceof UncategorizedMongoDbException, 0L);
 	}
 
 	private Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
