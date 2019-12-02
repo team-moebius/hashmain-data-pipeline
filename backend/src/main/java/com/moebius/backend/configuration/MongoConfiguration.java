@@ -49,7 +49,7 @@ public class MongoConfiguration {
 	}
 
 	@Bean
-	public TransactionOptions transactionalSession() {
+	public TransactionOptions transactionalOptions() {
 		return TransactionOptions.builder()
 			.readConcern(ReadConcern.LOCAL)
 			.writeConcern(WriteConcern.MAJORITY)

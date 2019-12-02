@@ -46,7 +46,7 @@ public class ExchangeOrderService {
 			.count()
 			.flatMap(count -> evictIfCountNotZero(tradeDto, count))
 			.as(transactionalOperator::transactional)
-			.onErrorReturn(exception -> exception instanceof UncategorizedMongoDbException, 0L);
+			.onErrorReturn(UncategorizedMongoDbException.class, 0L);
 	}
 
 	private Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
