@@ -6,16 +6,14 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.moebius.backend.domain.commons.Exchange
-import com.moebius.backend.domain.markets.MarketRepository
-import com.moebius.backend.domain.trades.TradeDocumentRepository
 import com.moebius.backend.service.kafka.producer.TradeKafkaProducer
 import com.moebius.backend.utils.ThreadScheduler.COMPUTE
 import com.moebius.backend.utils.ThreadScheduler.IO
 import com.moebius.tracker.assembler.TradeAssembler
+import com.moebius.tracker.domain.trades.TradeDocumentRepository
 import com.moebius.tracker.dto.ExchangeRequestDto
-import com.moebius.tracker.dto.TradeDto
+import com.moebius.tracker.dto.upbit.UpbitTradeDto
 import lombok.RequiredArgsConstructor
-import lombok.extern.slf4j.Slf4j
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -29,7 +27,6 @@ import reactor.core.publisher.Mono
 import java.io.IOException
 import java.net.URI
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 class TrackerService : ApplicationListener<ApplicationReadyEvent> {
@@ -44,7 +41,7 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
     private lateinit var webSocketClient: WebSocketClient
 
     @Autowired
-    private lateinit var marketRepository: MarketRepository
+    private lateinit var marketService: MarketService
 
     @Autowired
     private lateinit var openedSessions: MutableMap<String, WebSocketSession>
@@ -66,14 +63,9 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
     }
 
     private fun trackTrades() {
-        marketRepository.findAllByExchange(Exchange.UPBIT)
-                .subscribeOn(IO.scheduler())
-                .publishOn(COMPUTE.scheduler())
-                .map { it.symbol }
-                .collectList()
-                .map {
-                    objectMapper.writeValueAsString(ExchangeRequestDto(it))
-                }.map { message ->
+        marketService.getSymbolsByExchange(Exchange.UPBIT)
+                .map { objectMapper.writeValueAsString(ExchangeRequestDto(it)) }
+                .map { message ->
                     log.info("[Tracker] Start to track trades. [{}]", message)
                     webSocketClient.execute(URI.create(uri)) { session ->
                         log.info("[Tracker] New session has been opened. [id : {}]", session.id)
@@ -81,9 +73,9 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                         session.send(Mono.just(session.textMessage(message)))
                                 .thenMany<WebSocketMessage>(session.receive().map<WebSocketMessage> { webSocketMessage ->
                                     try {
-                                        val tradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), TradeDto::class.java)
-                                        accumulateTrade(tradeDto)
-                                        tradeKafkaProducer.produceMessages(tradeAssembler.toTradeDocument(tradeDto)).subscribe()
+                                        val upbitTradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), UpbitTradeDto::class.java)
+                                        accumulateTrade(upbitTradeDto)
+                                        tradeKafkaProducer.produceMessages(tradeAssembler.toCommonDto(upbitTradeDto)).subscribe()
                                     } catch (e: IOException) {
                                         log.error(e.message)
                                     }
@@ -99,8 +91,8 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                 }.subscribe()
     }
 
-    private fun accumulateTrade(tradeDto: TradeDto) {
-        Mono.fromCallable { tradeAssembler.toTradeDocument(tradeDto) }
+    private fun accumulateTrade(upbitTradeDto: UpbitTradeDto) {
+        Mono.fromCallable { tradeAssembler.toTradeDocument(upbitTradeDto) }
                 .subscribeOn(COMPUTE.scheduler())
                 .publishOn(IO.scheduler())
                 .flatMap { tradeDocumentRepository.saveAsync(it) }

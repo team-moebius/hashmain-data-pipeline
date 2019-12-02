@@ -3,7 +3,7 @@ package com.moebius.backend.assembler.exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;
 import com.moebius.backend.domain.orders.OrderType;
-import com.moebius.backend.dto.exchange.UpbitOrderDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import org.springframework.stereotype.Component;
 
 @Component

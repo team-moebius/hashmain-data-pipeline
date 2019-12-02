@@ -62,7 +62,7 @@ public class EmailService {
 			.filter(member -> !member.isActive() && member.getVerificationCode() != null)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(verificationDto.getEmail())))))
 			.filter(member -> member.getVerificationCode() != null && member.getVerificationCode().equals(verificationDto.getCode()))
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.INVALID_CODE.getMessage()))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_DATA.getMessage("Entered code")))))
 			.flatMap(this::updateMember)
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}

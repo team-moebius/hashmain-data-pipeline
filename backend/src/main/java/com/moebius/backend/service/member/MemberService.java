@@ -64,7 +64,7 @@ public class MemberService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(loginDto.getEmail())))))
 			.filter(member -> passwordEncoder.matches(loginDto.getPassword(), member.getPassword()))
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_PASSWORD.getMessage()))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_DATA.getMessage("Email or password")))))
 			.filter(Member::isActive)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(loginDto.getEmail())))))
 			.map(member -> ResponseEntity.ok(new LoginResponseDto(JwtUtil.generateToken(new MoebiusPrincipal(member)))));
