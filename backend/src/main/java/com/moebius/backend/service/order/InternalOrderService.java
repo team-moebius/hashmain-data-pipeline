@@ -6,8 +6,10 @@ import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
+import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
@@ -16,6 +18,8 @@ import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -24,8 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.moebius.backend.domain.commons.EventType.DELETE;
-import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-import static com.moebius.backend.utils.ThreadScheduler.IO;
+import static com.moebius.backend.utils.ThreadScheduler.*;
 
 @Slf4j
 @Service
@@ -54,6 +57,20 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
+	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
+	public Mono<Long> findOrderCountByTradeDto(TradeDto tradeDto) {
+		log.info("[Order] [{}/{}/{}] Start to get count of orders from repository because not found in cache.", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY);
+		return orderRepository.countBySymbolAndOrderStatusAndExchange(tradeDto.getSymbol(), OrderStatus.READY, tradeDto.getExchange())
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.cache();
+	}
+
+	@CacheEvict(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
+	public void evictOrderCount(TradeDto tradeDto) {
+		log.info("[Order] [{}/{}/{}] Evict cache.", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY);
+	}
+
 	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.map(apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
@@ -80,11 +97,11 @@ public class InternalOrderService {
 		}
 
 		Order order = orderAssembler.toOrder(apiKey, orderDto);
-		upsertOrder(order).subscribe();
+		saveOrder(order).subscribe();
 		return orderAssembler.toDto(order, eventType);
 	}
 
-	private Mono<Order> upsertOrder(Order order) {
+	private Mono<Order> saveOrder(Order order) {
 		return orderRepository.save(order)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());

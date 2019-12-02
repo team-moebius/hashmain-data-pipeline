@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.moebius.backend.domain.commons.Change
 import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.commons.TradeType
-import com.moebius.backend.domain.trades.TradeDocument
+import com.moebius.tracker.domain.trades.TradeDocument
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

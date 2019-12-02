@@ -3,9 +3,11 @@ package com.moebius.backend.assembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
+import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.AssetDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,7 @@ public class OrderAssembler {
 		order.setExchange(dto.getExchange());
 		order.setSymbol(dto.getSymbol());
 		order.setOrderType(dto.getOrderType());
+		order.setOrderStatus(OrderStatus.READY);
 		order.setOrderPosition(dto.getOrderPosition());
 		order.setPrice(dto.getPrice());
 		order.setVolume(dto.getVolume());
@@ -39,7 +42,9 @@ public class OrderAssembler {
 
 	public OrderDto toDto(@NotNull Order order, EventType eventType) {
 		OrderDto orderDto = new OrderDto();
-		orderDto.setId(order.getId().toHexString());
+		if (ObjectUtils.allNotNull(order.getId())) {
+			orderDto.setId(order.getId().toHexString());
+		}
 		orderDto.setEventType(eventType);
 		orderDto.setExchange(order.getExchange());
 		orderDto.setSymbol(order.getSymbol());

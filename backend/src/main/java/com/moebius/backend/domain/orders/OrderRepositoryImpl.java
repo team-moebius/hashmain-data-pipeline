@@ -2,6 +2,7 @@ package com.moebius.backend.domain.orders;
 
 import com.moebius.backend.domain.commons.Exchange;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
@@ -38,7 +40,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
 	private Flux<Order> executeQuery(Query query) {
 		return mongoTemplate.find(query, Order.class)
-			.flatMap(this::updateOrderStatusToExecuted);
+				.flatMap(this::updateOrderStatusToExecuted);
 	}
 
 	private Mono<Order> updateOrderStatusToExecuted(Order order) {

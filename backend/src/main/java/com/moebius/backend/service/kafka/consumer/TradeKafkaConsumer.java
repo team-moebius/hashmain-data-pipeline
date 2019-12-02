@@ -1,7 +1,6 @@
 package com.moebius.backend.service.kafka.consumer;
 
-import com.moebius.backend.domain.trades.TradeDocument;
-import com.moebius.backend.service.kafka.KafkaConsumer;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.order.ExchangeOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -14,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
+public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
 	private final ExchangeOrderService exchangeOrderService;
 
@@ -29,11 +28,11 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDocument> {
 	}
 
 	@Override
-	public void processRecord(ReceiverRecord<String, TradeDocument> record) {
+	public void processRecord(ReceiverRecord<String, TradeDto> record) {
 		ReceiverOffset offset = record.receiverOffset();
-		TradeDocument tradeDocument = record.value();
+		TradeDto tradeDto = record.value();
 
-		exchangeOrderService.order(tradeDocument);
+		exchangeOrderService.order(tradeDto);
 
 		offset.acknowledge();
 	}

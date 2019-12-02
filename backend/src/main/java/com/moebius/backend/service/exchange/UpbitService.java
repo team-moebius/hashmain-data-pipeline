@@ -6,7 +6,7 @@ import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.dto.AssetsDto;
-import com.moebius.backend.dto.exchange.UpbitOrderDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.VerificationFailedException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-import static com.moebius.backend.utils.ThreadScheduler.IO;
 
 @Slf4j
 @Service
@@ -61,9 +60,7 @@ public class UpbitService implements ExchangeService {
 			.uri(publicUri + assetUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.retrieve()
-			.bodyToMono(AssetsDto.class)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
+			.bodyToMono(AssetsDto.class);
 	}
 
 	@Override
@@ -74,8 +71,6 @@ public class UpbitService implements ExchangeService {
 			.uri(publicUri + assetUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.exchange()
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
 			.filter(clientResponse -> clientResponse.statusCode() == HttpStatus.OK)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.UNVERIFIED_DATA.getMessage("AuthToken")))));
 	}
@@ -89,7 +84,6 @@ public class UpbitService implements ExchangeService {
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.body(getOrderBody(order), UpbitOrderDto.class)
 			.exchange()
-			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}
 
