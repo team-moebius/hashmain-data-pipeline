@@ -15,10 +15,10 @@ import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
+import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.moebius.backend.domain.commons.EventType.DELETE;
-import static com.moebius.backend.utils.ThreadScheduler.*;
+import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
+import static com.moebius.backend.utils.ThreadScheduler.IO;
 
 @Slf4j
 @Service
@@ -37,6 +38,7 @@ public class InternalOrderService {
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
 	private final ApiKeyService apiKeyService;
+	private final OrderCacheService orderCacheService;
 	private final ExchangeServiceFactory exchangeServiceFactory;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
@@ -46,7 +48,8 @@ public class InternalOrderService {
 				.map(orderDto -> processOrder(apiKey, orderDto))
 				.collect(Collectors.toList()))
 			.collectList()
-			.map(ordersDto -> orderAssembler.toResponseDto(ordersDto, null))
+			.doOnSuccess(this::evictOrderCaches)
+			.map(dtos -> orderAssembler.toResponseDto(dtos, null))
 			.map(ResponseEntity::ok);
 	}
 
@@ -66,11 +69,6 @@ public class InternalOrderService {
 			.cache();
 	}
 
-	@CacheEvict(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
-	public void evictOrderCount(TradeDto tradeDto) {
-		log.info("[Order] [{}/{}/{}] Evict cache.", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY);
-	}
-
 	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.map(apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
@@ -78,7 +76,7 @@ public class InternalOrderService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
-			.flatMap(orderFlux -> orderFlux.map(order -> orderAssembler.toDto(order, EventType.READ))
+			.flatMap(orders -> orders.map(order -> orderAssembler.toDto(order, EventType.READ))
 				.collectList());
 	}
 
@@ -93,12 +91,11 @@ public class InternalOrderService {
 		EventType eventType = orderDto.getEventType();
 		if (eventType == DELETE) {
 			deleteOrder(orderDto.getId()).subscribe();
-			return orderAssembler.toSimpleDto(orderDto.getId(), DELETE);
+		} else {
+			Order order = orderAssembler.toOrder(apiKey, orderDto);
+			saveOrder(order).subscribe();
 		}
-
-		Order order = orderAssembler.toOrder(apiKey, orderDto);
-		saveOrder(order).subscribe();
-		return orderAssembler.toDto(order, eventType);
+		return orderDto;
 	}
 
 	private Mono<Order> saveOrder(Order order) {
@@ -108,8 +105,17 @@ public class InternalOrderService {
 	}
 
 	private Mono<Void> deleteOrder(String id) {
+		Verifier.checkBlankString(id);
+
 		return orderRepository.deleteById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
+	}
+
+	private void evictOrderCaches(List<OrderDto> orderDtos) {
+		orderDtos.stream()
+			.collect(Collectors.groupingBy(OrderDto::getSymbol))
+			.keySet()
+			.forEach(symbol -> orderCacheService.evictOrderCount(orderDtos.get(0).getExchange(), symbol));
 	}
 }
