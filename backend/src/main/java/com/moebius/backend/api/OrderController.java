@@ -34,7 +34,7 @@ public class OrderController {
 		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("")
-	public Mono<ResponseEntity<OrderResponseDto>> processOrders(@RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos, Principal principal) {
+	public Mono<ResponseEntity<OrderResponseDto>> processOrders(Principal principal, @RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos) {
 		return internalOrderService.processOrders(principal.getName(), Exchange.UPBIT, orderDtos);
 	}
 

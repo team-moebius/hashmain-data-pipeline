@@ -25,6 +25,7 @@ import java.util.Objects;
 public class ExchangeOrderService {
 	private final ApiKeyService apiKeyService;
 	private final InternalOrderService internalOrderService;
+	private final OrderCacheService orderCacheService;
 	private final ExchangeServiceFactory exchangeServiceFactory;
 	private final OrdersFactoryManager ordersFactoryManager;
 	private final TransactionalOperator transactionalOperator;
@@ -67,7 +68,7 @@ public class ExchangeOrderService {
 
 	private Mono<Long> evictIfCountNotZero(TradeDto tradeDto, long count) {
 		if (count != 0) {
-			internalOrderService.evictOrderCount(tradeDto);
+			orderCacheService.evictOrderCount(tradeDto.getExchange(), tradeDto.getSymbol());
 		}
 		return Mono.just(count);
 	}
