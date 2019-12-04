@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,17 +48,10 @@ public class OrderAssembler {
 		orderDto.setExchange(order.getExchange());
 		orderDto.setSymbol(order.getSymbol());
 		orderDto.setOrderType(order.getOrderType());
+		orderDto.setOrderStatus(order.getOrderStatus());
 		orderDto.setOrderPosition(order.getOrderPosition());
 		orderDto.setPrice(order.getPrice());
 		orderDto.setVolume(order.getVolume());
-
-		return orderDto;
-	}
-
-	public OrderDto toSimpleDto(@NotBlank String id, EventType eventType) {
-		OrderDto orderDto = new OrderDto();
-		orderDto.setId(id);
-		orderDto.setEventType(eventType);
 
 		return orderDto;
 	}

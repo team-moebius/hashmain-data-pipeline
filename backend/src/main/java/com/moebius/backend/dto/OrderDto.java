@@ -3,6 +3,7 @@ package com.moebius.backend.dto;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.OrderPosition;
+import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.domain.orders.OrderType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class OrderDto {
 	private String symbol;
 	@NotNull
 	private OrderType orderType;
+	private OrderStatus orderStatus;
 	@NotNull
 	private OrderPosition orderPosition;
 	@PositiveOrZero
