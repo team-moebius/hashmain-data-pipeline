@@ -31,4 +31,5 @@ public class Order extends Base {
     private OrderType orderType;
     private double price;
     private double volume;
+    private int level;
 }
