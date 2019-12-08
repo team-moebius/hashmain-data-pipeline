@@ -29,6 +29,7 @@ public class OrderDto {
 	private String symbol;
 	@NotNull
 	private OrderType orderType;
+	@NotNull
 	private OrderStatus orderStatus;
 	@NotNull
 	private OrderPosition orderPosition;
@@ -36,4 +37,6 @@ public class OrderDto {
 	private double price;
 	@PositiveOrZero
 	private double volume;
+	@PositiveOrZero
+	private int level;
 }
