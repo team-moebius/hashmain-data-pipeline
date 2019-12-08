@@ -10,6 +10,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -29,7 +33,9 @@ public class Order extends Base {
     private OrderPosition orderPosition;
     private OrderStatus orderStatus;
     private OrderType orderType;
-    private double price;
-    private double volume;
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal price;
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal volume;
     private int level;
 }
