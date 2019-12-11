@@ -2,9 +2,13 @@ package com.moebius.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AssetDto {
 	@ApiModelProperty(notes = "화폐를 의미하는 영문 대문자 코드(KRW, BTC, ETH ...)")

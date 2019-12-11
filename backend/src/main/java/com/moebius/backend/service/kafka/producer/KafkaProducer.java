@@ -13,8 +13,6 @@ import reactor.kafka.sender.SenderResult;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
-
 /**
  * Base kafka message producer for concrete producer in moebius.
  * Topic, KeySerializerClass, ValueSerializerClass should be determined by concrete producer.
@@ -33,7 +31,6 @@ public abstract class KafkaProducer<K, V, T> {
 		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, getValueSerializerClass());
 
 		SenderOptions<K, V> senderOptions = SenderOptions.create(properties);
-		senderOptions.scheduler(KAFKA.scheduler());
 
 		sender = KafkaSender.create(senderOptions);
 	}

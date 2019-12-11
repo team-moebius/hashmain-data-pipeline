@@ -8,13 +8,17 @@ import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @ToString(exclude = "apiKeyId")
 @Document(collection = "orders")
-@CompoundIndex(def = "{'price': 1, 'symbol': 1, 'orderPosition': 1, 'orderStatus': 1, 'orderType': 1, 'exchange': 1}")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'price': 1, 'symbol': 1, 'orderPosition': 1, 'orderStatus': 1, 'orderType': 1, 'exchange': 1}"),
+    @CompoundIndex(def = "{'symbol': 1, 'orderStatus': 1, 'exchange': 1}")
+})
 public class Order extends Base {
     @Id
     private ObjectId id;
