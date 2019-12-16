@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.security.Principal;
 import java.util.List;
 
@@ -30,27 +31,47 @@ public class OrderController {
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
+		@ApiResponse(code = 400, message = "Api key is not found", response = DataNotFoundException.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
-		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("")
-	public Mono<ResponseEntity<OrderResponseDto>> processOrders(Principal principal, @RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos) {
+	public Mono<ResponseEntity<OrderResponseDto>> processOrders(Principal principal,
+		@RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos) {
 		return internalOrderService.processOrders(principal.getName(), Exchange.UPBIT, orderDtos);
 	}
 
 	@ApiOperation(
-		value = "주문(매수, 매도, 역지정) 및 자산 정보 제공",
+		value = "거래소에 따른 전체 주문(매수, 매도, 역지정) 및 자산 정보 제공",
 		httpMethod = "GET",
-		notes = "트레이더가 저장한 주문 정보 및 자산 정보를 제공한다. 트레이더의 거래소 api key를 기반으로 등록되어 있는 모든 주문 정보가 제공되며 현재 트레이더의 자산 정보도 같이 제공된다."
+		notes = "트레이더가 저장한 주문 정보 및 자산 정보를 제공한다. 트레이더의 거래소 api key를 기반으로 특정 거래소에 등록되어 있는 모든 주문 정보가 제공되며 현재 트레이더의 자산 정보도 같이 제공된다."
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
+		@ApiResponse(code = 400, message = "Api key or Exchange is wrong (not found)", response = DataNotFoundException.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
-		@ApiResponse(code = 404, message = "Api key is not found", response = DataNotFoundException.class),
 	})
-	@GetMapping("")
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(Principal principal) {
-		return internalOrderService.getOrdersAndAssetsByMemberIdAndExchange(principal.getName(), Exchange.UPBIT);
+	@GetMapping("/{exchange}")
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(Principal principal,
+		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
+		return internalOrderService.getOrdersAndAssets(principal.getName(), exchange);
+	}
+
+	@ApiOperation(
+		value = "거래소 및 종목에 따른 주문(매수, 매도, 역지정) 및 자산 정보 제공",
+		httpMethod = "GET",
+		notes = "트레이더가 저장한 주문 정보 및 자산 정보를 제공한다. 트레이더의 거래소 api key를 기반으로, 거래소 및 종목을 조건으로 주문 정보가 제공되며 현재 트레이더의 자산 정보도 같이 제공된다."
+	)
+	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
+		@ApiResponse(code = 400, message = "Api key or Exchange is wrong (not found)", response = DataNotFoundException.class),
+		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
+	})
+	@GetMapping("/{exchange}/{symbol}")
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsByExchangeAndSymbol(Principal principal,
+		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange,
+		@PathVariable @NotBlank @ApiParam(value = "종목", required = true) String symbol) {
+		return internalOrderService.getOrdersAndAssets(principal.getName(), exchange, symbol);
 	}
 }

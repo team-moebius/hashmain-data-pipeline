@@ -31,6 +31,7 @@ public class OrderAssembler {
 		order.setOrderPosition(dto.getOrderPosition());
 		order.setPrice(dto.getPrice());
 		order.setVolume(dto.getVolume());
+		order.setLevel(dto.getLevel());
 		if (StringUtils.isBlank(dto.getId()) && dto.getEventType() == EventType.CREATE) {
 			order.setCreatedAt(LocalDateTime.now());
 		}
@@ -52,6 +53,7 @@ public class OrderAssembler {
 		orderDto.setOrderPosition(order.getOrderPosition());
 		orderDto.setPrice(order.getPrice());
 		orderDto.setVolume(order.getVolume());
+		orderDto.setLevel(order.getLevel());
 
 		return orderDto;
 	}

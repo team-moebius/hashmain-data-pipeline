@@ -9,5 +9,5 @@ import reactor.core.publisher.Mono;
 public interface OrderRepository extends ReactiveMongoRepository<Order, ObjectId>, OrderRepositoryCustom {
 	Flux<Order> findAllByApiKeyId(ObjectId apiKeyId);
 
-	Mono<Long> countBySymbolAndOrderStatusAndExchange(String symbol, OrderStatus orderStatus, Exchange exchange);
+	Mono<Long> countBySymbolAndExchangeAndOrderStatus(String symbol, Exchange exchange, OrderStatus orderStatus);
 }
