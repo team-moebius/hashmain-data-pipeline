@@ -53,7 +53,15 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsByMemberIdAndExchange(String memberId, Exchange exchange) {
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, Exchange exchange) {
+		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), getAssetsByMemberIdAndExchange(memberId, exchange))
+			.subscribeOn(COMPUTE.scheduler())
+			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
+			.map(ResponseEntity::ok);
+	}
+
+	// FIXME
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, Exchange exchange, String symbol) {
 		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), getAssetsByMemberIdAndExchange(memberId, exchange))
 			.subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))

@@ -28,11 +28,11 @@ public class OrderDto {
 	@NotNull
 	private String symbol;
 	@NotNull
-	private OrderType orderType;
+	private OrderPosition orderPosition;
 	@NotNull
 	private OrderStatus orderStatus;
 	@NotNull
-	private OrderPosition orderPosition;
+	private OrderType orderType;
 	@PositiveOrZero
 	private double price;
 	@PositiveOrZero

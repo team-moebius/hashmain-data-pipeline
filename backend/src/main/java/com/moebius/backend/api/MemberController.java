@@ -53,7 +53,7 @@ public class MemberController {
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = MemberDto.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
-		@ApiResponse(code = 404, message = "Member is not found", response = DataNotFoundException.class),
+		@ApiResponse(code = 400, message = "Member is not found", response = DataNotFoundException.class),
 	})
 	@PreAuthorize("hasAuthority('MEMBER')")
 	@GetMapping("")
@@ -70,7 +70,7 @@ public class MemberController {
 		@ApiResponse(code = 200, message = "Success", response = String.class),
 		@ApiResponse(code = 400, message = "Requested email already exists.", response = DuplicatedDataException.class),
 		@ApiResponse(code = 400, message = "Requested email already verified", response = VerificationFailedException.class),
-		@ApiResponse(code = 404, message = "Requested email is not found", response = DataNotFoundException.class),
+		@ApiResponse(code = 400, message = "Requested email is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("/signup")
 	public Mono<ResponseEntity<?>> signup(@RequestBody @Valid @ApiParam(value = "회원가입 시 필요한 정보", required = true) SignupDto signupDto) {
@@ -90,11 +90,11 @@ public class MemberController {
 	@ApiOperation(
 		value = "중복된 이메일 여부 조회",
 		httpMethod = "GET",
-		notes = "회원 가입 시 중복된 이메일을 확인할 때 사용한다. 중복이면 OK(200), 중복이 아닐 경우 Not Found(404)을 반환한다."
+		notes = "회원 가입 시 중복된 이메일을 확인할 때 사용한다. 중복이면 OK(200), 중복이 아닐 경우 Not Found(400)을 반환한다."
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Requested email already exists", response = String.class),
-		@ApiResponse(code = 404, message = "Requested email doesn't exist", response = DataNotFoundException.class),
+		@ApiResponse(code = 400, message = "Requested email doesn't exist", response = DataNotFoundException.class),
 	})
 	@GetMapping("/duplicate/{email}")
 	public Mono<ResponseEntity<String>> checkDuplicateMember(@PathVariable String email) {
