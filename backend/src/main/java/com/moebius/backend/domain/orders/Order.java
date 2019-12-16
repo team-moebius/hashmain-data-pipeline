@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "orders")
 @CompoundIndexes({
     @CompoundIndex(def = "{'price': 1, 'symbol': 1, 'orderPosition': 1, 'orderStatus': 1, 'orderType': 1, 'exchange': 1}"),
-    @CompoundIndex(def = "{'symbol': 1, 'orderStatus': 1, 'exchange': 1}")
+    @CompoundIndex(def = "{'symbol': 1, 'exchange': 1, 'orderStatus': 1}")
 })
 public class Order extends Base {
     @Id
