@@ -88,9 +88,9 @@ public class MemberController {
 	}
 
 	@ApiOperation(
-		value = "중복된 이메일 여부 조회",
+		value = "이메일 존재 여부 조회",
 		httpMethod = "GET",
-		notes = "회원 가입 시 중복된 이메일을 확인할 때 사용한다. 중복이면 OK(200), 중복이 아닐 경우 Not Found(400)을 반환한다."
+		notes = "가입 되어있는 이메일인지 확인할 때 사용한다. 가입되어 있으면 OK(200), 그렇지 않을 경우 Bad request(400)을 반환한다."
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Requested email already exists", response = String.class),
