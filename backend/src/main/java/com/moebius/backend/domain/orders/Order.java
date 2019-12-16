@@ -9,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -22,6 +23,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Order extends Base {
     @Id
     private ObjectId id;
+    @Indexed
     private ObjectId apiKeyId;
     private Exchange exchange;
     // Symbol has been changed to String from Enum cause of real time changes in external exchanges.

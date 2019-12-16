@@ -7,6 +7,7 @@ import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
+import com.moebius.backend.dto.AssetDto;
 import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.TradeDto;
@@ -35,6 +36,10 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Service
 @RequiredArgsConstructor
 public class InternalOrderService {
+	private static final String DELIMITER = "-";
+	private static final int CURRENCY_INDEX = 1;
+	private static final int VALID_SYMBOL_INDEX = 2;
+
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
 	private final ApiKeyService apiKeyService;
@@ -53,31 +58,35 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, Exchange exchange) {
-		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), getAssetsByMemberIdAndExchange(memberId, exchange))
-			.subscribeOn(COMPUTE.scheduler())
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, String exchangeName) {
+		return Mono.zip(
+			getOrders(memberId, Exchange.getBy(exchangeName)),
+			getAssets(memberId, Exchange.getBy(exchangeName))
+		).subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
 			.map(ResponseEntity::ok);
 	}
 
-	// FIXME
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, Exchange exchange, String symbol) {
-		return Mono.zip(getOrdersByMemberIdAndExchange(memberId, exchange), getAssetsByMemberIdAndExchange(memberId, exchange))
-			.subscribeOn(COMPUTE.scheduler())
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, String exchangeName, String symbol) {
+		return Mono.zip(
+			getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> getOrdersBySymbol(orderDtos, symbol)),
+			getAssets(memberId, Exchange.getBy(exchangeName)).map(assetDtos -> getAssetsBySymbol(assetDtos, symbol))
+		).subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
 			.map(ResponseEntity::ok);
 	}
 
 	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
 	public Mono<Long> findOrderCountByTradeDto(TradeDto tradeDto) {
-		log.info("[Order] [{}/{}/{}] Start to get count of orders from repository because not found in cache.", tradeDto.getExchange(), tradeDto.getSymbol(), OrderStatus.READY);
+		log.info("[Order] [{}/{}/{}] Start to get count of orders from repository because not found in cache.", tradeDto.getExchange(),
+			tradeDto.getSymbol(), OrderStatus.READY);
 		return orderRepository.countBySymbolAndExchangeAndOrderStatus(tradeDto.getSymbol(), tradeDto.getExchange(), OrderStatus.READY)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.cache();
 	}
 
-	private Mono<List<OrderDto>> getOrdersByMemberIdAndExchange(String memberId, Exchange exchange) {
+	private Mono<List<OrderDto>> getOrders(String memberId, Exchange exchange) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.map(apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
 			.subscribeOn(IO.scheduler())
@@ -88,11 +97,34 @@ public class InternalOrderService {
 				.collectList());
 	}
 
-	private Mono<AssetsDto> getAssetsByMemberIdAndExchange(String memberId, Exchange exchange) {
+	private Mono<AssetsDto> getAssets(String memberId, Exchange exchange) {
 		return apiKeyService.getExchangeAuthToken(memberId, exchange)
 			.flatMap(authToken -> exchangeServiceFactory.getService(exchange)
 				.getAssets(authToken))
 			.subscribeOn(COMPUTE.scheduler());
+	}
+
+	private List<OrderDto> getOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
+		return orderDtos.stream()
+			.filter(orderDto -> orderDto.getSymbol().equals(symbol.toUpperCase()))
+			.collect(Collectors.toList());
+	}
+
+	private List<AssetDto> getAssetsBySymbol(List<AssetDto> assetDtos, String symbol) {
+		return assetDtos.stream()
+			.filter(assetDto -> assetDto.getCurrency().equals(getCurrencyFromSymbol(symbol)))
+			.collect(Collectors.toList());
+	}
+
+	private String getCurrencyFromSymbol(String symbol) {
+		String[] splitedSymbol = symbol.split(DELIMITER);
+
+		if (splitedSymbol.length != VALID_SYMBOL_INDEX) {
+			log.error("[Order] Failed to get currency from {}.", symbol);
+			throw new DataNotFoundException(ExceptionTypes.WRONG_DATA.getMessage("[Order] Symbol(" + symbol + ")"));
+		}
+
+		return splitedSymbol[CURRENCY_INDEX].toUpperCase();
 	}
 
 	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {

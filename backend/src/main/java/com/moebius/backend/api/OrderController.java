@@ -35,7 +35,8 @@ public class OrderController {
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 	})
 	@PostMapping("")
-	public Mono<ResponseEntity<OrderResponseDto>> processOrders(Principal principal, @RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos) {
+	public Mono<ResponseEntity<OrderResponseDto>> processOrders(Principal principal,
+		@RequestBody @Valid @ApiParam(value = "갱신된 주문 정보", required = true) List<OrderDto> orderDtos) {
 		return internalOrderService.processOrders(principal.getName(), Exchange.UPBIT, orderDtos);
 	}
 
@@ -47,13 +48,13 @@ public class OrderController {
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
-		@ApiResponse(code = 400, message = "Api key is not found", response = DataNotFoundException.class),
+		@ApiResponse(code = 400, message = "Api key or Exchange is wrong (not found)", response = DataNotFoundException.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 	})
 	@GetMapping("/{exchange}")
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
-		return internalOrderService.getOrdersAndAssets(principal.getName(), Exchange.valueOf(exchange.toUpperCase()));
+		return internalOrderService.getOrdersAndAssets(principal.getName(), exchange);
 	}
 
 	@ApiOperation(
@@ -64,14 +65,13 @@ public class OrderController {
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
-		@ApiResponse(code = 400, message = "Api key is not found", response = DataNotFoundException.class),
+		@ApiResponse(code = 400, message = "Api key or Exchange is wrong (not found)", response = DataNotFoundException.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 	})
-
 	@GetMapping("/{exchange}/{symbol}")
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsByExchangeAndSymbol(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange,
 		@PathVariable @NotBlank @ApiParam(value = "종목", required = true) String symbol) {
-		return internalOrderService.getOrdersAndAssets(principal.getName(), Exchange.valueOf(exchange.toUpperCase()), symbol);
+		return internalOrderService.getOrdersAndAssets(principal.getName(), exchange, symbol);
 	}
 }
