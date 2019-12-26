@@ -6,13 +6,13 @@ import { PersistGate } from 'redux-persist/integration/react';
 import setReduxStore from 'infra/redux/GlobalStore';
 import RouteHistory from 'infra/RouteHistory';
 
-interface ReduxProivderProps {
+interface ReduxProviderProps {
   children: React.ReactNode;
 }
 
 const mainStore = setReduxStore();
 
-const ReduxProvider: React.FC<ReduxProivderProps> = props => (
+const ReduxProvider: React.FC<ReduxProviderProps> = props => (
   <Provider store={mainStore.store}>
     <PersistGate loading={null} persistor={mainStore.persistor}>
       <ConnectedRouter history={RouteHistory.instance}>{props.children}</ConnectedRouter>

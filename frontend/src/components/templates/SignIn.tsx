@@ -39,7 +39,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     let passwordErrorText = '';
 
     if (InputValidator.nonValid('email', this.emailRef.current.value)) {
-      idErrorText = 'ID를 E-mail 형태로 입력해주세요.';
+      idErrorText = 'ID를 Email 형태로 입력해주세요.';
     }
     if (InputValidator.isBlank(this.passwordRef.current.value)) {
       passwordErrorText = '패스워드를 입력 해주세요.';
