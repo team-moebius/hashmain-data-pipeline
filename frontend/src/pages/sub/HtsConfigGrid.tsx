@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import Button from 'components/atoms/Button';
 import Grid, { GridData } from 'components/organisms/Grid';
-import { TableColum, NewRowParams } from 'components/molecules/TableHeadLayer';
+import { TableColumn, NewRowParams } from 'components/molecules/TableHeadLayer';
 import ajax from 'utils/Ajax';
 
 import 'assets/scss/MultiTradingMode.scss';
@@ -39,8 +39,6 @@ interface AjaxData {
   orders: OrderData[];
 }
 
-interface MultiTradingModeProps {}
-
 interface MultiTradingModeState {
   selectedCurrency: 'KRW';
   fetching: boolean;
@@ -48,8 +46,8 @@ interface MultiTradingModeState {
   orderData: { [key: string]: OrderData };
 }
 
-class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradingModeState> {
-  private commonColumns: { [key in GridColumn]: TableColum } = {
+class MultiTradingMode extends React.Component<{}, MultiTradingModeState> {
+  private commonColumns: { [key in GridColumn]: TableColumn } = {
     orderPosition: { id: 'orderPosition', label: '', align: 'left' },
     orderType: {
       id: 'orderType',
@@ -107,14 +105,14 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       format: value => `${this.formatNumber(value)} %`,
     },
   };
-  private sellGridColums: TableColum[] = [];
-  private stoplossGridColums: TableColum[] = [];
-  private purchaseGridColums: TableColum[] = [];
+  private sellGridColums: TableColumn[] = [];
+  private stoplossGridColums: TableColumn[] = [];
+  private purchaseGridColums: TableColumn[] = [];
   private originalOrderData: { [key: string]: OrderData } = {};
 
   private formatNumber = (num: number) => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
-  private toggleOrderType = (col: TableColum, rowId: string) => {
+  private toggleOrderType = (col: TableColumn, rowId: string) => {
     const selectedData = this.state.orderData[rowId];
     const newOrderType = selectedData.orderType === 'LIMIT' ? 'MARKET' : 'LIMIT';
     // DELETE 상태에선 현재 값 Update 불가능
@@ -132,9 +130,9 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     this.updateNewRowValue(e.currentTarget.value, newRow);
   };
 
-  private updateNewRowValue = (value: string, newRow: NewRowParams) => {
+  private readonly updateNewRowValue = (value: string, newRow: NewRowParams) => {
     const currentRow = this.state.orderData[newRow.rowId];
-    const editedRow = { ...currentRow, [newRow.colum.id]: value };
+    const editedRow = { ...currentRow, [newRow.column.id]: value };
     this.setState({ orderData: { ...this.state.orderData, [newRow.rowId]: editedRow } }, () =>
       console.log(this.state.orderData)
     );
@@ -161,7 +159,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     this.stoplossGridColums = Object.values(stoplossColums);
   };
 
-  constructor(props: MultiTradingModeProps) {
+  public constructor(props: {}) {
     super(props);
 
     this.setGridColumLabel();
@@ -174,11 +172,11 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     this.updateNewRowValue = _.debounce(this.updateNewRowValue, 500);
   }
 
-  componentDidMount = () => {
+  public componentDidMount = () => {
     this.fetchOrderData();
   };
 
-  fetchOrderData = () => {
+  private fetchOrderData = () => {
     this.setState({ fetching: true }, () => {
       ajax
         .get('/api/orders')
@@ -196,7 +194,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     });
   };
 
-  convertData = (data: AjaxData) => {
+  private convertData = (data: AjaxData) => {
     const assetData: { [key: string]: AssetData } = data.assets.reduce(
       (accumulator: { [key: string]: AssetData }, data: AssetData) => {
         accumulator[data.currency] = { ...data };
@@ -225,7 +223,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     return { assetData, orderData };
   };
 
-  onClickRowDeleteIcon = (e: React.MouseEvent<unknown, MouseEvent>, rowId: string) => {
+  private onClickRowDeleteIcon = (e: React.MouseEvent<unknown, MouseEvent>, rowId: string) => {
     e.preventDefault();
 
     const selectedData = this.state.orderData[rowId];
@@ -245,23 +243,23 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     }
   };
 
-  updateRow = (rowId: string, value: OrderData) => {
+  private updateRow = (rowId: string, value: OrderData) => {
     this.setState({ orderData: { ...this.state.orderData, [rowId]: value } });
   };
 
-  onClickSaleGridAddIcon = () => {
+  private onClickSaleGridAddIcon = () => {
     this.createNewRow('SALE');
   };
 
-  onClickPurchaseGridAddIcon = () => {
+  private onClickPurchaseGridAddIcon = () => {
     this.createNewRow('PURCHASE');
   };
 
-  onClickStoplossGridAddIcon = () => {
+  private onClickStoplossGridAddIcon = () => {
     this.createNewRow('STOPLOSS');
   };
 
-  createNewRow = (orderPosition: OrderPositionType) => {
+  private createNewRow = (orderPosition: OrderPositionType) => {
     const rowId = shortid.generate();
     const newRow: OrderData = {
       orderPosition,
@@ -279,7 +277,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     this.setState({ orderData: { ...this.state.orderData, [rowId]: newRow } });
   };
 
-  getRowClassName = (rowId: string) => {
+  private getRowClassName = (rowId: string) => {
     const rowEventType = this.state.orderData[rowId].eventType;
 
     switch (rowEventType) {
@@ -293,7 +291,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
     return '';
   };
 
-  onClickRegistOrderButton = () => {
+  private onClickRegistOrderButton = () => {
     const data = Object.values(this.state.orderData).filter(data => data.eventType !== 'READ');
     ajax
       .post('/api/orders', data)
@@ -301,7 +299,7 @@ class MultiTradingMode extends React.Component<MultiTradingModeProps, MultiTradi
       .catch(error => {});
   };
 
-  render() {
+  public render() {
     const dataByCreated = _.groupBy(Object.values(this.state.orderData), data => data.eventType === 'CREATE');
     const newData = _.groupBy(dataByCreated['true'], data => data.orderPosition);
     const viewData = _.groupBy(dataByCreated['false'], data => data.orderPosition);

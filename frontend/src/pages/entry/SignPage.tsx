@@ -1,21 +1,21 @@
-import * as React from 'react';
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
-import { withAlert, AlertManager } from 'react-alert';
+import * as React from "react";
+import { Dispatch } from "redux";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+import { withAlert, AlertManager } from "react-alert";
 
-import ajax from 'utils/Ajax';
-import { ReduxState } from 'infra/redux/GlobalState';
+import ajax from "utils/Ajax";
+import { ReduxState } from "infra/redux/GlobalState";
 
-import Paper from 'components/atoms/Paper';
-import Text from 'components/atoms/Text';
-import Tab from 'components/molecules/Tab';
-import CircularLoader from 'components/molecules/CircularLoader';
-import SignIn from 'components/templates/SignIn';
-import SignUp from 'components/templates/SignUp';
-import { actionCreators as pageActions } from 'pages/PageWidgets';
+import Paper from "components/atoms/Paper";
+import Text from "components/atoms/Text";
+import Tab from "components/molecules/Tab";
+import CircularLoader from "components/molecules/CircularLoader";
+import SignIn from "components/templates/SignIn";
+import SignUp from "components/templates/SignUp";
+import { actionCreators as pageActions } from "pages/PageWidgets";
 
-import 'assets/scss/SignPage.scss';
+import "assets/scss/SignPage.scss";
 
 interface StateProps {
   signing: boolean;
@@ -35,14 +35,14 @@ interface SignPageState {
 }
 
 class SignPage extends React.Component<SignPageProps, SignPageState> {
-  static readonly MENU_ITEMS: JSX.Element[] = [<>로그인</>, <>회원가입</>];
+  private static readonly MENU_ITEMS: JSX.Element[] = [<>로그인</>, <>회원가입</>];
 
-  constructor(props: SignPageProps) {
+  public constructor(props: SignPageProps) {
     super(props);
     this.state = { index: 0, pending: false };
   }
 
-  isDuplicatedId = async (id: string) => {
+  private isDuplicatedId = async (id: string) => {
     let isDuplicatedId = false;
     await this.setState({ pending: true });
     await ajax
@@ -58,48 +58,48 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
     return isDuplicatedId;
   };
 
-  onSubmitSignIn = (data: object) => {
+  private onSubmitSignIn = (data: object) => {
     this.setState({ pending: true }, () => {
       ajax
-        .post('/api/members', data)
+        .post("/api/members", data)
         .then(response => {
           this.setState({ pending: false }, () => this.props.signInSuccess(response.data.token));
         })
         .catch(error => {
           this.setState({ pending: false });
           if (error.response && error.response.status === 401) {
-            this.props.alert.error('이메일 인증을 완료하세요.');
+            this.props.alert.error("이메일 인증을 완료하세요.");
           } else {
-            this.props.alert.error('로그인 실패. ID/Password를 확인하세요.');
+            this.props.alert.error("로그인 실패. ID/Password를 확인하세요.");
           }
         });
     });
   };
 
-  onSubmitSignUp = (data: object) => {
+  private onSubmitSignUp = (data: object) => {
     this.setState({ pending: true }, () => {
       ajax
-        .post('/api/members/signup', data)
+        .post("/api/members/signup", data)
         .then(() => {
           this.setState({ index: 0, pending: false });
-          this.props.alert.success('가입 성공. 인증 메일을 확인하세요.');
+          this.props.alert.success("가입 성공. 인증 메일을 확인하세요.");
         })
         .catch(error => {
           this.setState({ pending: false });
-          this.props.alert.error('회원 가입 실패');
+          this.props.alert.error("회원 가입 실패");
         });
     });
   };
 
-  onChangeTabs = (e: React.ChangeEvent<{}>, value: any) => {
+  private onChangeTabs = (e: React.ChangeEvent<{}>, value: any) => {
     this.setState({ index: value });
   };
 
-  render() {
-    if (this.props.signing) return <Redirect to="/" />;
+  public render() {
+    if (this.props.signing) return <Redirect to="/"/>;
     return (
       <Paper className="sign-page">
-        {this.state.pending && <CircularLoader />}
+        {this.state.pending && <CircularLoader/>}
         <Paper className="sign-page__wrapper" square>
           <Tab
             centered
@@ -114,13 +114,24 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
                   <ul>
                     <li>
                       <Text gutterBottom variant="caption">
-                        로그인 후 CRYPYO BOX 의 서비스 이용 시 <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의하는
+                        로그인 후 CRYPYO BOX 의 서비스 이용 시
+                        {" "}
+                        <em>이용약관</em>
+                        {" "}
+                        및
+                        {" "}
+                        <em>개인 정보 정책</em>
+                        에 동의하는
                         것으로 간주합니다.
                       </Text>
                     </li>
                     <li>
                       <Text gutterBottom variant="caption">
-                        CRYPTO BOX 는 <em>모든 브라우저에 최적화</em> 되었습니다.
+                        CRYPTO BOX 는
+                        {" "}
+                        <em>모든 브라우저에 최적화</em>
+                        {" "}
+                        되었습니다.
                       </Text>
                     </li>
                   </ul>
@@ -137,19 +148,25 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
                       <ul>
                         <li>
                           <Text variant="caption" gutterBottom>
-                            <em>수신이 가능한 이메일 주소</em>를 입력하시기 바랍니다. 회원가입 이후{' '}
-                            <em>계정 인증용 메일</em>이 전송됩니다.
+                            <em>수신이 가능한 이메일 주소</em>
+                            를 입력하시기 바랍니다. 회원가입 이후
+                            {" "}
+                            <em>계정 인증용 메일</em>
+                            이 전송됩니다.
                           </Text>
                         </li>
                         <li>
                           <Text variant="caption" gutterBottom>
-                            메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에 <em>스팸 메일함을 확인</em>{' '}
+                            메일 전송은 60초 정도 소요될 수 있으며, 메일이 누락 될 경우에
+                            {" "}
+                            <em>스팸 메일함을 확인</em>
+                            {" "}
                             하시기 바랍니다.
                           </Text>
                         </li>
                       </ul>
                     ),
-                    end: '',
+                    end: "",
                   }}
                 </SignUp>
               )}

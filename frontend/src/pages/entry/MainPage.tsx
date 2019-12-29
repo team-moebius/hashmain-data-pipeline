@@ -12,7 +12,7 @@ import Dialog from 'components/atoms/Dialog';
 import Paper from 'components/atoms/Paper';
 import AppBar from 'components/molecules/AppBar';
 import Tab from 'components/molecules/Tab';
-import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
+import ApiKeyRegisterBox from 'components/organisms/ApiKeyRegisterBox';
 import HtsConfig from 'pages/menu/HtsConfig';
 import Assets from 'pages/menu/Assets';
 import Idea from 'pages/menu/Idea';
@@ -47,38 +47,38 @@ interface MainPageState {
 }
 
 class MainPage extends React.Component<MainPageProps, MainPageState> {
-  static readonly MENU_ITEMS: JSX.Element[] = [
-    <div className="layout-menu__item">
+  private static readonly MENU_ITEMS: JSX.Element[] = [
+    <div key="hts-config" className="layout-menu__item">
       <HtsIcon className="layout-menu__icon" />
       HTS 설정
     </div>,
-    <div className="layout-menu__item">
+    <div key="cts-config" className="layout-menu__item">
       <HtsIcon className="layout-menu__icon" />
       CTS 설정
     </div>,
-    <div className="layout-menu__item">
+    <div key="tds-config" className="layout-menu__item">
       <HtsIcon className="layout-menu__icon" />
       TDS 설정
     </div>,
-    <div className="layout-menu__item">
+    <div key="asset-management" className="layout-menu__item">
       <HtsIcon className="layout-menu__icon" />
       자산관리
     </div>,
-    <div className="layout-menu__item">
+    <div key="idea" className="layout-menu__item">
       <HtsIcon className="layout-menu__icon" />
       아이디어
     </div>,
-    <div className="layout-menu__item">
+    <div key="guide" className="layout-menu__item">
       <HtsIcon className="layout-menu__icon" />
       이용안내
     </div>,
-    <div className="layout-menu__item">
+    <div key="profile" className="layout-menu__item">
       <HtsIcon className="layout-menu__icon" />
       프로필
     </div>,
   ];
 
-  constructor(props: MainPageProps) {
+  public constructor(props: MainPageProps) {
     super(props);
     this.state = {
       apiKeyRegistDialogOpen: false,
@@ -89,26 +89,26 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
     addJwtTokenInterceptor(this.props.token);
   }
 
-  onClickApiKeyRegistButton = (e: React.MouseEvent<HTMLElement>) => {
+  private onClickApiKeyRegistButton = (e: React.MouseEvent<HTMLElement>) => {
     this.setState({ ...this.state, apiKeyRegistDialogOpen: true });
   };
 
-  onCloseApiKeyRegist = (e: React.MouseEvent<HTMLElement>) => {
+  private onCloseApiKeyRegist = (e: React.MouseEvent<HTMLElement>) => {
     this.setState({ ...this.state, apiKeyRegistDialogOpen: false });
   };
 
-  onClickSignOut = () => {
+  private onClickSignOut = () => {
     ejectInterceptors();
     this.props.signOut();
   };
 
-  onChangeMenuIndex = (e: React.ChangeEvent<{}>, value: any) => {
+  private onChangeMenuIndex = (e: React.ChangeEvent<{}>, value: any) => {
     this.setState({ index: value });
   };
 
-  // TODO: 어차피 Biz component 인 ApiKeyRegistBox로 해당 event 전부 옮기고 props로 api만 주입하는 식으로처리
+  // 어차피 Biz component 인 ApiKeyRegisterBox로 해당 event 전부 옮기고 props로 api만 주입하는 식으로 처리
   // 위처럼 해야 로딩처리까지 깔끔해짐
-  onSubmitApiRegist = (data: object) => {
+  private onSubmitApiRegist = (data: object) => {
     ajax
       .post('/api/api-keys', data)
       .then(response => {
@@ -119,7 +119,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
       });
   };
 
-  onClickViewMyApiKeyButton = () => {
+  private onClickViewMyApiKeyButton = () => {
     ajax
       .get('/api')
       .then(reponse => {
@@ -130,7 +130,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
       });
   };
 
-  render() {
+  public render() {
     if (!this.props.signing) return <Redirect to="/sign" />;
     const { index } = this.state;
 
@@ -167,7 +167,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
         </Tab>
         <Paper className="layout-footer">Footer</Paper>
         <Dialog open={this.state.apiKeyRegistDialogOpen} onClose={this.onCloseApiKeyRegist}>
-          <ApiKeyRegistBox
+          <ApiKeyRegisterBox
             className="layout-dialog__api-regist"
             onSubmit={this.onSubmitApiRegist}
             onClickViewMyApiKeyButton={this.onClickViewMyApiKeyButton}

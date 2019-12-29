@@ -1,9 +1,9 @@
 import { History, createBrowserHistory } from 'history';
 
 class RouteHistory {
-  static instance: History = createBrowserHistory();
+  private static instance: History = createBrowserHistory();
 
-  get instance(): History {
+  public get instance(): History {
     return RouteHistory.instance;
   }
 }

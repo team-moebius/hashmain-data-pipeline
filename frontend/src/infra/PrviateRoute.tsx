@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Redirect, Route, RouteProps } from 'react-router-dom';
+import * as React from "react";
+import { Redirect, Route, RouteProps } from "react-router-dom";
 
 interface PrivateRouteProps extends RouteProps {
   redirectPath: string;
@@ -7,10 +7,11 @@ interface PrivateRouteProps extends RouteProps {
 }
 
 const PrivateRoute: React.SFC<PrivateRouteProps> = ({ component, signing, redirectPath, ...rest }) => {
+  // eslint-disable-next-line react/display-name
   const render = (Component: any) => (props: RouteProps) =>
-    signing ? <Component {...props} /> : <Redirect to={{ pathname: redirectPath, state: { from: props.location } }} />;
+    signing ? <Component {...props} /> : <Redirect to={{ pathname: redirectPath, state: { from: props.location } }}/>;
 
-  return <Route {...rest} render={render(component)} />;
+  return <Route {...rest} render={render(component)}/>;
 };
 
 export default PrivateRoute;
