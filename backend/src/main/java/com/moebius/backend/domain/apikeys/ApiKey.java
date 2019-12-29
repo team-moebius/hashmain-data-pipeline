@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @Document(collection = "apikeys")
+@CompoundIndex(def = "{'memberId': 1, 'exchange': 1}", unique = true)
 public class ApiKey extends Base {
     @Id
     private ObjectId id;

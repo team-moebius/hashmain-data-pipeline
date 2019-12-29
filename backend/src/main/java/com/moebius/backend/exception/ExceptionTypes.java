@@ -6,14 +6,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ExceptionTypes {
-	WRONG_PASSWORD("Password is wrong."),
-	INVALID_EMAIL("Email is not valid in moebius."),
-	INVALID_CODE("Entered code is not valid in moebius."),
-
-	UNVERIFIED_DATA("The data is not verified.") {
+	WRONG_DATA("The data is wrong.") {
 		@Override
 		public String getMessage(String data) {
-			return data + " is not verified.";
+			return data + " is wrong.";
+		}
+	},
+	UNVERIFIED_DATA("The data is unverified.") {
+		@Override
+		public String getMessage(String data) {
+			return data + " is unverified.";
 		}
 	},
 	ALREADY_VERIFIED_DATA("The data already verified.") {
@@ -22,7 +24,7 @@ public enum ExceptionTypes {
 			return data + " is already verified.";
 		}
 	},
-	DUPLICATE_DATA("The data already exists.") {
+	DUPLICATED_DATA("The data already exists.") {
 		@Override
 		public String getMessage(String data) {
 			return data + " already exists.";

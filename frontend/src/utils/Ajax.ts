@@ -9,7 +9,7 @@ const CONNECTION_INFO = {
 };
 
 const ajax = axios.create({
-  baseURL: CONNECTION_INFO.develop,
+  baseURL: CONNECTION_INFO.production,
   // baseURL: 'http://api-dev.cryptoboxglobal.com/',
   responseType: 'json',
 });

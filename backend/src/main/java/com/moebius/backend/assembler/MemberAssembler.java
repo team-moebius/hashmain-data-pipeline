@@ -32,6 +32,7 @@ public class MemberAssembler {
 		member.setEmail(signupDto.getEmail());
 		member.setPassword(passwordEncoder.encode(signupDto.getPassword()));
 		member.setRoles(roles);
+		member.setVerificationCode(Verifier.generateCode());
 		member.setCreatedAt(LocalDateTime.now());
 		member.setUpdatedAt(LocalDateTime.now());
 

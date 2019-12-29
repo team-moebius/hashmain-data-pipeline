@@ -10,6 +10,7 @@ import com.moebius.backend.utils.Verifier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,9 +46,9 @@ public class EmailService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)))))
-			.filter(member -> !member.isActive())
+			.filter(member -> !member.isActive() && StringUtils.isNoneBlank(member.getVerificationCode()))
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(email)))))
-			.flatMap(this::updateVerificationCode)
+			.doOnSuccess(member -> sendVerificationEmail(member).subscribe())
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
 
@@ -61,21 +62,9 @@ public class EmailService {
 			.filter(member -> !member.isActive() && member.getVerificationCode() != null)
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(verificationDto.getEmail())))))
 			.filter(member -> member.getVerificationCode() != null && member.getVerificationCode().equals(verificationDto.getCode()))
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.INVALID_CODE.getMessage()))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_DATA.getMessage("Entered code")))))
 			.flatMap(this::updateMember)
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
-	}
-
-	private Mono<Member> updateVerificationCode(Member member) {
-		log.info("[Email] update verification code of member. [{}]", member);
-
-		return Mono.fromCallable(() -> {
-			sendVerificationEmail(member).subscribe();
-			member.setVerificationCode(Verifier.generateCode());
-			return member;
-		}).subscribeOn(COMPUTE.scheduler())
-			.publishOn(IO.scheduler())
-			.flatMap(memberRepository::save);
 	}
 
 	private Mono<String> sendVerificationEmail(Member member) {

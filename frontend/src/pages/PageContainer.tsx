@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import SignPage from 'pages/entry/SignPage';
-import MainPage from 'pages/entry/MainPage';
-import PrivateRoute from 'infra/PrviateRoute';
+import SignPage from 'pages/main/UserIntroPage';
+import MainPage from 'pages/main/MainPage';
+import PrivateRoute from 'infra/PrviateRouter';
 import { ReduxState } from 'infra/redux/GlobalState';
 
 interface PageProps {
