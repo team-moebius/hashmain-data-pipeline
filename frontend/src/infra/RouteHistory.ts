@@ -1,11 +1,5 @@
-import { History, createBrowserHistory } from 'history';
+import { History, createBrowserHistory } from "history";
 
-class RouteHistory {
-  private static instance: History = createBrowserHistory();
-
-  public get instance(): History {
-    return RouteHistory.instance;
-  }
-}
+const RouteHistory: History = createBrowserHistory();
 
 export default RouteHistory;
