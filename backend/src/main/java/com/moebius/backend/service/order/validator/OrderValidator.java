@@ -26,16 +26,16 @@ public class OrderValidator {
 
 	private boolean isNotValidPurchase(List<OrderDto> orderDtos) {
 		return IntStream.range(0, orderDtos.size() - 1)
-			.allMatch(index -> orderDtos.get(index).getPrice() > orderDtos.get(index + 1).getPrice());
+			.anyMatch(index -> orderDtos.get(index).getPrice() <= orderDtos.get(index + 1).getPrice());
 	}
 
 	private boolean isNotValidSale(List<OrderDto> orderDtos) {
 		return IntStream.range(0, orderDtos.size() - 1)
-			.allMatch(index -> orderDtos.get(index).getPrice() < orderDtos.get(index + 1).getPrice());
+			.anyMatch(index -> orderDtos.get(index).getPrice() >= orderDtos.get(index + 1).getPrice());
 	}
 
 	private boolean isNotValidStoploss(List<OrderDto> orderDtos) {
 		return IntStream.range(0, orderDtos.size() - 1)
-			.allMatch(index -> orderDtos.get(index).getPrice() > orderDtos.get(index + 1).getPrice());
+			.anyMatch(index -> orderDtos.get(index).getPrice() <= orderDtos.get(index + 1).getPrice());
 	}
 }
