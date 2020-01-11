@@ -27,7 +27,7 @@ public class ExchangeOrderService {
 	private final InternalOrderService internalOrderService;
 	private final OrderCacheService orderCacheService;
 	private final ExchangeServiceFactory exchangeServiceFactory;
-	private final OrdersFactoryManager ordersFactoryManager;
+	private final OrderFactoryManager orderFactoryManager;
 	private final TransactionalOperator transactionalOperator;
 
 	public void order(TradeDto tradeDto) {
@@ -53,7 +53,7 @@ public class ExchangeOrderService {
 	private Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
 		return Flux.concat(
 			Flux.fromStream(Arrays.stream(OrderPosition.values())
-				.map(ordersFactoryManager::getOrdersFactory)
+				.map(orderFactoryManager::getOrdersFactory)
 				.filter(Objects::nonNull)
 				.map(ordersFactory -> ordersFactory.getAndUpdateOrders(tradeDto))
 			)

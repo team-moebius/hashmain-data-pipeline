@@ -16,6 +16,7 @@ import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
+import com.moebius.backend.service.order.validator.OrderValidator;
 import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.moebius.backend.domain.commons.EventType.DELETE;
+import static com.moebius.backend.domain.commons.EventType.*;
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
 
@@ -42,11 +43,15 @@ public class InternalOrderService {
 
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
+	private final OrderValidator orderValidator;
 	private final ApiKeyService apiKeyService;
 	private final OrderCacheService orderCacheService;
 	private final ExchangeServiceFactory exchangeServiceFactory;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
+		if (orderValidator.isValidToSave(orderDtos)) {
+			return Mono.just(ResponseEntity.badRequest().build());
+		}
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
 			.flatMapIterable(apiKey -> orderDtos.stream()
@@ -69,8 +74,8 @@ public class InternalOrderService {
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, String exchangeName, String symbol) {
 		return Mono.zip(
-			getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> getOrdersBySymbol(orderDtos, symbol)),
-			getAssets(memberId, Exchange.getBy(exchangeName)).map(assetDtos -> getAssetsBySymbol(assetDtos, symbol))
+			getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol)),
+			getAssets(memberId, Exchange.getBy(exchangeName)).map(assetDtos -> filterAssetsBySymbol(assetDtos, symbol))
 		).subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
 			.map(ResponseEntity::ok);
@@ -84,6 +89,38 @@ public class InternalOrderService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.cache();
+	}
+
+	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
+		EventType eventType = orderDto.getEventType();
+		if (eventType == DELETE) {
+			deleteOrder(orderDto.getId()).subscribe();
+		} else {
+			Order order = orderAssembler.toOrder(apiKey, orderDto);
+			saveOrder(order).subscribe();
+		}
+		return orderDto;
+	}
+
+	private Mono<Void> deleteOrder(String id) {
+		Verifier.checkBlankString(id);
+
+		return orderRepository.deleteById(new ObjectId(id))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
+	private Mono<Order> saveOrder(Order order) {
+		return orderRepository.save(order)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
+	private void evictOrderCaches(List<OrderDto> orderDtos) {
+		orderDtos.stream()
+			.collect(Collectors.groupingBy(OrderDto::getSymbol))
+			.keySet()
+			.forEach(symbol -> orderCacheService.evictOrderCount(orderDtos.get(0).getExchange(), symbol));
 	}
 
 	private Mono<List<OrderDto>> getOrders(String memberId, Exchange exchange) {
@@ -104,13 +141,13 @@ public class InternalOrderService {
 			.subscribeOn(COMPUTE.scheduler());
 	}
 
-	private List<OrderDto> getOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
+	private List<OrderDto> filterOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
 		return orderDtos.stream()
 			.filter(orderDto -> orderDto.getSymbol().equals(symbol.toUpperCase()))
 			.collect(Collectors.toList());
 	}
 
-	private List<AssetDto> getAssetsBySymbol(List<AssetDto> assetDtos, String symbol) {
+	private List<AssetDto> filterAssetsBySymbol(List<AssetDto> assetDtos, String symbol) {
 		return assetDtos.stream()
 			.filter(assetDto -> assetDto.getCurrency().equals(getCurrencyFromSymbol(symbol)))
 			.collect(Collectors.toList());
@@ -125,37 +162,5 @@ public class InternalOrderService {
 		}
 
 		return splitedSymbol[CURRENCY_INDEX].toUpperCase();
-	}
-
-	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
-		EventType eventType = orderDto.getEventType();
-		if (eventType == DELETE) {
-			deleteOrder(orderDto.getId()).subscribe();
-		} else {
-			Order order = orderAssembler.toOrder(apiKey, orderDto);
-			saveOrder(order).subscribe();
-		}
-		return orderDto;
-	}
-
-	private Mono<Order> saveOrder(Order order) {
-		return orderRepository.save(order)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
-	private Mono<Void> deleteOrder(String id) {
-		Verifier.checkBlankString(id);
-
-		return orderRepository.deleteById(new ObjectId(id))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
-	private void evictOrderCaches(List<OrderDto> orderDtos) {
-		orderDtos.stream()
-			.collect(Collectors.groupingBy(OrderDto::getSymbol))
-			.keySet()
-			.forEach(symbol -> orderCacheService.evictOrderCount(orderDtos.get(0).getExchange(), symbol));
 	}
 }
