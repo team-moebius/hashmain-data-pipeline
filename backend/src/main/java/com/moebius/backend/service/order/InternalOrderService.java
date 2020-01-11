@@ -49,7 +49,7 @@ public class InternalOrderService {
 	private final ExchangeServiceFactory exchangeServiceFactory;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
-		if (orderValidator.isValidToSave(orderDtos)) {
+		if (orderValidator.isNotValidToSave(orderDtos)) {
 			return Mono.just(ResponseEntity.badRequest().build());
 		}
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)

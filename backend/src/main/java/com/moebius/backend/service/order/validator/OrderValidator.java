@@ -1,28 +1,43 @@
 package com.moebius.backend.service.order.validator;
 
+import com.moebius.backend.domain.orders.OrderPosition;
 import com.moebius.backend.dto.OrderDto;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Component
 public class OrderValidator {
-	public boolean isValidToSave(List<OrderDto> orderDtos) {
-		return isValidPurchase(orderDtos)
-			&& isValidSale(orderDtos)
-			&& isValidStoploss(orderDtos);
+	public boolean isNotValidToSave(List<OrderDto> orderDtos) {
+		return isNotValidPurchase(filterByOrderPosition(orderDtos, OrderPosition.PURCHASE))
+			|| isNotValidSale(filterByOrderPosition(orderDtos, OrderPosition.SALE))
+			|| isNotValidStoploss(filterByOrderPosition(orderDtos, OrderPosition.STOPLOSS));
 	}
 
-	private boolean isValidPurchase(List<OrderDto> orderDtos) {
-//		orderDtos.stream().reduce((prevOrderDto, nextOrderDto) -> );
-		return true;
+	private List<OrderDto> filterByOrderPosition(List<OrderDto> orderDtos, OrderPosition orderPosition) {
+		return orderDtos.stream()
+			.filter(orderDto -> orderDto.getOrderPosition() == orderPosition)
+			.collect(Collectors.toList());
 	}
 
-	private boolean isValidSale(List<OrderDto> orderDtos) {
-		return true;
+	private boolean isNotValidPurchase(List<OrderDto> orderDtos) {
+		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
+		return IntStream.range(0, orderDtos.size() - 1)
+			.allMatch(index -> orderDtos.get(index).getPrice() > orderDtos.get(index + 1).getPrice());
 	}
 
-	private boolean isValidStoploss(List<OrderDto> orderDtos) {
-		return true;
+	private boolean isNotValidSale(List<OrderDto> orderDtos) {
+		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
+		return IntStream.range(0, orderDtos.size() - 1)
+			.allMatch(index -> orderDtos.get(index).getPrice() < orderDtos.get(index + 1).getPrice());
+	}
+
+	private boolean isNotValidStoploss(List<OrderDto> orderDtos) {
+		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
+		return IntStream.range(0, orderDtos.size() - 1)
+			.allMatch(index -> orderDtos.get(index).getPrice() > orderDtos.get(index + 1).getPrice());
 	}
 }
