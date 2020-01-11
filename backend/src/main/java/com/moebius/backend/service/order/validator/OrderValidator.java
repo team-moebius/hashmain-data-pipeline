@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 @Component
 public class OrderValidator {
 	public boolean isNotValidToSave(List<OrderDto> orderDtos) {
+		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
 		return isNotValidPurchase(filterByOrderPosition(orderDtos, OrderPosition.PURCHASE))
 			|| isNotValidSale(filterByOrderPosition(orderDtos, OrderPosition.SALE))
 			|| isNotValidStoploss(filterByOrderPosition(orderDtos, OrderPosition.STOPLOSS));
@@ -24,19 +25,16 @@ public class OrderValidator {
 	}
 
 	private boolean isNotValidPurchase(List<OrderDto> orderDtos) {
-		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
 		return IntStream.range(0, orderDtos.size() - 1)
 			.allMatch(index -> orderDtos.get(index).getPrice() > orderDtos.get(index + 1).getPrice());
 	}
 
 	private boolean isNotValidSale(List<OrderDto> orderDtos) {
-		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
 		return IntStream.range(0, orderDtos.size() - 1)
 			.allMatch(index -> orderDtos.get(index).getPrice() < orderDtos.get(index + 1).getPrice());
 	}
 
 	private boolean isNotValidStoploss(List<OrderDto> orderDtos) {
-		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
 		return IntStream.range(0, orderDtos.size() - 1)
 			.allMatch(index -> orderDtos.get(index).getPrice() > orderDtos.get(index + 1).getPrice());
 	}
