@@ -8,7 +8,6 @@ import RouteHistory from 'infra/RouteHistory';
 
 const store = createStore(
   createRootReducer(RouteHistory.instance),
-  // preload state,
   composeWithDevTools(applyMiddleware(routerMiddleware(RouteHistory.instance)))
 );
 const persistor = persistStore(store);

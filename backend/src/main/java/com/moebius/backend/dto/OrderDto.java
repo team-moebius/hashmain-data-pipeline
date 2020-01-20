@@ -12,6 +12,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 @Getter
@@ -28,12 +29,15 @@ public class OrderDto {
 	@NotNull
 	private String symbol;
 	@NotNull
-	private OrderType orderType;
+	private OrderPosition orderPosition;
+	@NotNull
 	private OrderStatus orderStatus;
 	@NotNull
-	private OrderPosition orderPosition;
+	private OrderType orderType;
 	@PositiveOrZero
 	private double price;
 	@PositiveOrZero
 	private double volume;
+	@Positive
+	private int level;
 }

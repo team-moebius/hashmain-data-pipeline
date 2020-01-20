@@ -3,7 +3,7 @@ import React from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-const MOBEIUS_THEME = createMuiTheme({
+const MOEBIUS_THEME = createMuiTheme({
   palette: {
     background: {
       paper: '#101037',
@@ -49,7 +49,7 @@ interface ThemeProviderProps {
 }
 
 const ThemeProvider: React.FC<ThemeProviderProps> = props => (
-  <MuiThemeProvider theme={MOBEIUS_THEME}>
+  <MuiThemeProvider theme={MOEBIUS_THEME}>
     <CssBaseline>{props.children}</CssBaseline>
   </MuiThemeProvider>
 );

@@ -9,15 +9,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class OrdersFactoryManager {
-	private final Map<OrderPosition, OrdersFactory> ordersFactoryMap;
+public class OrderFactoryManager {
+	private final Map<OrderPosition, OrderFactory> ordersFactoryMap;
 
-	public OrdersFactoryManager(List<OrdersFactory> ordersFactories) {
+	public OrderFactoryManager(List<OrderFactory> ordersFactories) {
 		this.ordersFactoryMap = ordersFactories.stream()
-			.collect(Collectors.toMap(OrdersFactory::getPosition, Function.identity()));
+			.collect(Collectors.toMap(OrderFactory::getPosition, Function.identity()));
 	}
 
-	public OrdersFactory getOrdersFactory(OrderPosition orderPosition) {
+	public OrderFactory getOrdersFactory(OrderPosition orderPosition) {
 		return ordersFactoryMap.get(orderPosition);
 	}
 }
