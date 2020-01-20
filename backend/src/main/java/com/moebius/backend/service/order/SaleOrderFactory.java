@@ -14,17 +14,17 @@ import static com.moebius.backend.utils.ThreadScheduler.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StoplossOrdersFactory implements OrdersFactory {
+public class SaleOrderFactory implements OrderFactory {
 	private final OrderRepository orderRepository;
 
 	@Override
 	public OrderPosition getPosition() {
-		return OrderPosition.STOPLOSS;
+		return OrderPosition.SALE;
 	}
 
 	@Override
 	public Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
-		return orderRepository.findAndUpdateAllByBidCondition(tradeDto.getExchange(), tradeDto.getSymbol(), OrderPosition.STOPLOSS, tradeDto.getPrice())
+		return orderRepository.findAndUpdateAllByAskCondition(tradeDto.getExchange(), tradeDto.getSymbol(), OrderPosition.SALE, tradeDto.getPrice())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}
