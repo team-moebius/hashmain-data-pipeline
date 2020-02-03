@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const commonURL = 'http://api.cryptoboxglobal.com'
+const commonURL = 'http://dev-api.cryptoboxglobal.com'
 const instant = axios.create({
   baseURL:commonURL,
   timeout: 5000
