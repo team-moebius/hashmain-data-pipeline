@@ -1,19 +1,13 @@
 import axios from 'axios'
 
-// let instance = axios.create({
-//   headers: {
-//     post: {        // can be common or any other method
-//       header1: 'value1'
-//     }
-//   }
-// })
+const commonURL = 'http://api.cryptoboxglobal.com'
+const instant = axios.create({
+  baseURL:commonURL,
+  timeout: 5000
+})
 
-export const getTestApi = (date: string = '20200120') => {
-  const result = axios.get(`http://www.samsungwelstory.com/menu/getSuwonMenuList.do?dt=${date}&hallNm=together`, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json'
-    }
-  })
+
+export const getTestApi = (date: string = 'asdf@asdf.com') => {
+  const result = instant.get(`members/duplicate/${date}`)
   return result
 }
