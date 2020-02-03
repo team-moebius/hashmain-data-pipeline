@@ -10,7 +10,7 @@ logging:
 
 moebius:
   protocol: http
-  host: api-dev.cryptoboxglobal.com
+  host: dev-api.cryptoboxglobal.com
   web-security:
     all: /,
       /csrf,
