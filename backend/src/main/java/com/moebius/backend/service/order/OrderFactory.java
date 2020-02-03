@@ -5,7 +5,7 @@ import com.moebius.backend.domain.orders.OrderPosition;
 import com.moebius.backend.dto.TradeDto;
 import reactor.core.publisher.Flux;
 
-public interface OrdersFactory {
+public interface OrderFactory {
 	OrderPosition getPosition();
 
 	Flux<Order> getAndUpdateOrders(TradeDto tradeDto);

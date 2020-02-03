@@ -68,7 +68,7 @@ public class MemberController {
 	)
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = String.class),
-		@ApiResponse(code = 400, message = "Requested email already exists.", response = DuplicatedDataException.class),
+		@ApiResponse(code = 400, message = "Requested email already exists", response = DuplicatedDataException.class),
 		@ApiResponse(code = 400, message = "Requested email already verified", response = VerificationFailedException.class),
 		@ApiResponse(code = 400, message = "Requested email is not found", response = DataNotFoundException.class),
 	})

@@ -12,6 +12,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 @Getter
@@ -37,6 +38,6 @@ public class OrderDto {
 	private double price;
 	@PositiveOrZero
 	private double volume;
-	@PositiveOrZero
+	@Positive
 	private int level;
 }
