@@ -18,14 +18,14 @@ moebius:
     all: /,
       /csrf,
       /static/**,
-      /api/member/**,
-      /api/members/**,
+      /member/**,
+      /members/**,
       /login
     admin: /admin,
-      /api/markets/**
-    member: /api/stoplosses/**,
-      /api/api-keys/**,
-      /api/orders/**
+      /markets/**
+    member: /stoplosses/**,
+      /api-keys/**,
+      /orders/**
 
 reactor:
   netty:

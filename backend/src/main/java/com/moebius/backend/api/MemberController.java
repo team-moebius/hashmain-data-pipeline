@@ -22,7 +22,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping("/members")
 @RequiredArgsConstructor
 public class MemberController {
 	private final MemberService memberService;
@@ -90,11 +90,10 @@ public class MemberController {
 	@ApiOperation(
 		value = "이메일 존재 여부 조회",
 		httpMethod = "GET",
-		notes = "가입 되어있는 이메일인지 확인할 때 사용한다. 가입되어 있으면 OK(200), 그렇지 않을 경우 Bad request(400)을 반환한다."
+		notes = "가입 되어있는 이메일인지 확인할 때 사용한다. 가입되어 있으면 email을 반환하고, 그렇지 않으면 빈 값을 반환한다."
 	)
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "Requested email already exists", response = String.class),
-		@ApiResponse(code = 400, message = "Requested email doesn't exist", response = DataNotFoundException.class),
+		@ApiResponse(code = 200, message = "Requested email already exists or not", response = String.class),
 	})
 	@GetMapping("/duplicate/{email}")
 	public Mono<ResponseEntity<String>> checkDuplicateMember(@PathVariable String email) {
