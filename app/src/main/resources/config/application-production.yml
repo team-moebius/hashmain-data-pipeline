@@ -13,7 +13,7 @@ logging:
 
 moebius:
   protocol: http
-  host: api.cryptoboxglobal.com
+  host: api.hashmainpro.com
   web-security:
     all: /,
       /csrf,
