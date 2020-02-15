@@ -5,7 +5,7 @@ spring:
     web-application-type: reactive
   data:
     mongodb:
-      uri: mongodb+srv://moebius:highbal1!@mongodb-rs.cryptoboxglobal.com/?retryWrites=true&streamType=netty&readPreference=secondary&ssl=false # TODO : Change to use ssl
+      uri: mongodb+srv://moebius:highbal1!@mongodb-rs.hashmainpro.com/?retryWrites=true&streamType=netty&readPreference=secondary&ssl=false # TODO : Change to use ssl
       database: moebius
       auto-index-creation: true
     elasticsearch:
@@ -13,7 +13,7 @@ spring:
         reactive:
           endpoints: http://internal-moebius-es-1636081679.ap-northeast-2.elb.amazonaws.com
   kafka:
-    bootstrap-servers: kafka.cryptoboxglobal.com:9092
+    bootstrap-servers: kafka.hashmainpro.com:9092
     client-id: moebius
     consumer:
       client-id: moebius-consumer

@@ -23,11 +23,11 @@ moebius:
       /swagger-ui.html,
       /swagger-resources/**,
       /webjars/**,
-      /api/member/**,
-      /api/members/**,
+      /member/**,
+      /members/**,
       /login
     admin: /admin,
-      /api/markets/**
-    member: /api/stoplosses/**,
-      /api/api-keys/**,
-      /api/orders/**
+      /markets/**
+    member: /stoplosses/**,
+      /api-keys/**,
+      /orders/**
