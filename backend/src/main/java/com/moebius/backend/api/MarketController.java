@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/markets")
+@RequestMapping("/markets")
 @RequiredArgsConstructor
 public class MarketController {
 	private final MarketService marketService;

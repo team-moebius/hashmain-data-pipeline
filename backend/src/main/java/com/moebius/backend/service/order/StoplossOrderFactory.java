@@ -9,23 +9,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-import static com.moebius.backend.utils.ThreadScheduler.IO;
+import static com.moebius.backend.utils.ThreadScheduler.*;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SaleOrdersFactory implements OrdersFactory {
+public class StoplossOrderFactory implements OrderFactory {
 	private final OrderRepository orderRepository;
 
 	@Override
 	public OrderPosition getPosition() {
-		return OrderPosition.SALE;
+		return OrderPosition.STOPLOSS;
 	}
 
 	@Override
-	public Flux<Order> getOrders(TradeDto tradeDto) {
-		return orderRepository.findAndUpdateAllByAskCondition(tradeDto.getExchange(), tradeDto.getSymbol(), OrderPosition.SALE, tradeDto.getPrice())
+	public Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
+		return orderRepository.findAndUpdateAllByBidCondition(tradeDto.getExchange(), tradeDto.getSymbol(), OrderPosition.STOPLOSS, tradeDto.getPrice())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}

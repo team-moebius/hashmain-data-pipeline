@@ -10,7 +10,7 @@ logging:
 
 moebius:
   protocol: http
-  host: api-dev.cryptoboxglobal.com
+  host: dev-api.hashmainpro.com
   web-security:
     all: /,
       /csrf,
@@ -20,14 +20,14 @@ moebius:
       /swagger-ui.html,
       /swagger-resources/**,
       /webjars/**,
-      /api/member/**,
-      /api/members/**,
+      /member/**,
+      /members/**,
       /login
     admin: /admin,
-      /api/markets/**
-    member: /api/stoplosses/**,
-      /api/api-keys/**,
-      /api/orders/**
+      /markets/**
+    member: /stoplosses/**,
+      /api-keys/**,
+      /orders/**
 
 reactor:
   netty:

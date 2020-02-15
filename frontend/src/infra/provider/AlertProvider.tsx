@@ -11,18 +11,18 @@ const ALERT_OPTIONS = {
   POSITION: positions.TOP_CENTER,
 };
 
-// react-alert 에 의존성이 존재하는 코드 Layer 라 별도로 view 파일 처리하지 마십시오
+// This component depends on react-alert. Do not process view file here independently.
 const AlertTemplate = ({ style, options, message, close }: AlertComponentPropsWithStyle) => (
   <div style={{ width: ALERT_OPTIONS.WIDTH, ...style, zIndex: 1 }}>
     <Notice noticeType={options.type || 'info'} message={message} onClose={close} />
   </div>
 );
 
-interface AlertProivderProps {
+interface AlertProviderProps {
   children: React.ReactNode;
 }
 
-const AlertProvider: React.FC<AlertProivderProps> = props => (
+const AlertProvider: React.FC<AlertProviderProps> = props => (
   <Provider
     template={AlertTemplate}
     timeout={ALERT_OPTIONS.TIMEOUT}

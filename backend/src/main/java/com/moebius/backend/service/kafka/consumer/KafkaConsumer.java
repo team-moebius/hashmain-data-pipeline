@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
-import static com.moebius.backend.utils.ThreadScheduler.KAFKA;
 
 @Slf4j
 public abstract class KafkaConsumer<K, V> {
@@ -23,7 +22,6 @@ public abstract class KafkaConsumer<K, V> {
 		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, getValueDeserializerClass());
 
 		ReceiverOptions<K, V> receiverOptions = ReceiverOptions.create(properties);
-		receiverOptions.schedulerSupplier(KAFKA::scheduler);
 		receiverOptions.subscription(Collections.singleton(getTopic()))
 			.addAssignListener(partitions -> log.debug("[Kafka] onPartitionsAssigned {}", partitions))
 			.addRevokeListener(partitions -> log.debug("[Kafka] onPartitionsRevoked {}", partitions));

@@ -3,6 +3,7 @@ package com.moebius.backend.dto;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.OrderPosition;
+import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.domain.orders.OrderType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 @Getter
@@ -27,11 +29,15 @@ public class OrderDto {
 	@NotNull
 	private String symbol;
 	@NotNull
-	private OrderType orderType;
-	@NotNull
 	private OrderPosition orderPosition;
+	@NotNull
+	private OrderStatus orderStatus;
+	@NotNull
+	private OrderType orderType;
 	@PositiveOrZero
 	private double price;
 	@PositiveOrZero
 	private double volume;
+	@Positive
+	private int level;
 }

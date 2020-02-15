@@ -20,7 +20,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/api-keys")
+@RequestMapping("/api-keys")
 @RequiredArgsConstructor
 public class ApiKeyController {
 	private final ApiKeyService apiKeyService;

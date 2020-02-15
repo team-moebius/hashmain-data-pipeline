@@ -10,7 +10,7 @@ const CONNECTION_INFO = {
 
 const ajax = axios.create({
   baseURL: CONNECTION_INFO.production,
-  // baseURL: 'http://api-dev.cryptoboxglobal.com/',
+  // baseURL: 'http://api-dev.hashmainpro.com/',
   responseType: 'json',
 });
 

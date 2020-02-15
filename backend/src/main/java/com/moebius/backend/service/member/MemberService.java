@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,8 +38,8 @@ public class MemberService {
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
 			.map(duplicated -> duplicated ?
-				ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()) :
-				ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)));
+				ResponseEntity.ok(email) :
+				ResponseEntity.ok().build());
 	}
 
 	public Mono<ResponseEntity<?>> createMember(SignupDto signupDto) {

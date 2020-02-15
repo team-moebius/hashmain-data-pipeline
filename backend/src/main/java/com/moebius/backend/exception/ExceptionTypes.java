@@ -9,7 +9,7 @@ public enum ExceptionTypes {
 	WRONG_DATA("The data is wrong.") {
 		@Override
 		public String getMessage(String data) {
-			return data + " is wrong";
+			return data + " is wrong.";
 		}
 	},
 	UNVERIFIED_DATA("The data is unverified.") {

@@ -12,7 +12,7 @@ import Dialog from 'components/atoms/Dialog';
 import Paper from 'components/atoms/Paper';
 import AppBar from 'components/molecules/AppBar';
 import Tab from 'components/molecules/Tab';
-import ApiKeyRegistBox from 'components/organisms/ApiKeyRegistBox';
+import ApiKeyBox from 'components/organisms/ApiKeyBox';
 import HtsConfig from 'pages/menu/HtsConfig';
 import Assets from 'pages/menu/Assets';
 import Idea from 'pages/menu/Idea';
@@ -167,7 +167,7 @@ class MainPage extends React.Component<MainPageProps, MainPageState> {
         </Tab>
         <Paper className="layout-footer">Footer</Paper>
         <Dialog open={this.state.apiKeyRegistDialogOpen} onClose={this.onCloseApiKeyRegist}>
-          <ApiKeyRegistBox
+          <ApiKeyBox
             className="layout-dialog__api-regist"
             onSubmit={this.onSubmitApiRegist}
             onClickViewMyApiKeyButton={this.onClickViewMyApiKeyButton}

@@ -34,7 +34,7 @@ interface SignPageState {
   pending: boolean;
 }
 
-class SignPage extends React.Component<SignPageProps, SignPageState> {
+class UserIntroPage extends React.Component<SignPageProps, SignPageState> {
   static readonly MENU_ITEMS: JSX.Element[] = [<>로그인</>, <>회원가입</>];
 
   constructor(props: SignPageProps) {
@@ -103,7 +103,7 @@ class SignPage extends React.Component<SignPageProps, SignPageState> {
         <Paper className="sign-page__wrapper" square>
           <Tab
             centered
-            items={SignPage.MENU_ITEMS}
+            items={UserIntroPage.MENU_ITEMS}
             value={this.state.index}
             orientation="horizontal"
             onChange={this.onChangeTabs}
@@ -172,4 +172,4 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withAlert<SignPageProps>()(SignPage));
+)(withAlert<SignPageProps>()(UserIntroPage));

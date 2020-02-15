@@ -13,19 +13,19 @@ logging:
 
 moebius:
   protocol: http
-  host: api.cryptoboxglobal.com
+  host: api.hashmainpro.com
   web-security:
     all: /,
       /csrf,
       /static/**,
-      /api/member/**,
-      /api/members/**,
+      /member/**,
+      /members/**,
       /login
     admin: /admin,
-      /api/markets/**
-    member: /api/stoplosses/**,
-      /api/api-keys/**,
-      /api/orders/**
+      /markets/**
+    member: /stoplosses/**,
+      /api-keys/**,
+      /orders/**
 
 reactor:
   netty:

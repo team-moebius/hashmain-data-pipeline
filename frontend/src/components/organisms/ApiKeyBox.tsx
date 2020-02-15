@@ -1,4 +1,4 @@
-// 해당 파일은 비즈니스 컴포넌트로, organsisms에 위치합니다.
+// This file is a kind of business component, so this is classified as organisms.
 import * as React from 'react';
 
 import Input from 'components/atoms/Input';
@@ -22,7 +22,7 @@ interface ApiKeyRegistBoxState {
   errors: ApiKeyRegistErrorState;
 }
 
-class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegistBoxState> {
+class ApiKeyBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegistBoxState> {
   private accessKeyRef = React.createRef<any>();
   private secretKeyRef = React.createRef<any>();
   private botNameRef = React.createRef<any>();
@@ -83,7 +83,7 @@ class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegist
         </Text>
         <Input
           autoComplete="off"
-          error={this.state.errors.name ? true : false}
+          error={!!this.state.errors.name}
           helperText={this.state.errors.name}
           inputRef={this.botNameRef}
           name="Bot name"
@@ -92,7 +92,7 @@ class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegist
         />
         <Input
           autoComplete="off"
-          error={this.state.errors.accessKey ? true : false}
+          error={!!this.state.errors.accessKey}
           helperText={this.state.errors.accessKey}
           inputRef={this.accessKeyRef}
           name="Access Key"
@@ -101,7 +101,7 @@ class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegist
         />
         <Input
           autoComplete="off"
-          error={this.state.errors.secretKey ? true : false}
+          error={!!this.state.errors.secretKey}
           helperText={this.state.errors.secretKey}
           inputRef={this.secretKeyRef}
           name="Secret Key"
@@ -142,4 +142,4 @@ class ApiKeyRegistBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegist
   }
 }
 
-export default ApiKeyRegistBox;
+export default ApiKeyBox;
