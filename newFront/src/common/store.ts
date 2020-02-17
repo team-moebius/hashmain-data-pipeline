@@ -11,11 +11,11 @@ const configureStore = () => {
   const store = createStore(
     rootReducer,
     initialState,
-    applyMiddleware(sagaMiddleware, logger)
+    process.env.NODE_ENV === 'development'
+      ? applyMiddleware(sagaMiddleware, logger) : applyMiddleware(sagaMiddleware)
   )
   sagaMiddleware.run(rootSaga)
   return store
 }
-
 
 export default configureStore

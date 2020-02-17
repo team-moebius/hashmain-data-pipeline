@@ -1,10 +1,20 @@
 import axios from 'axios'
+import { notification } from 'antd'
 
-const baseURL = 'http://api.cryptoboxglobal.com'
+const commonURL = 'http://dev-api.hashmainpro.com'
 
 export function getInstance() {
   return axios.create({
-    baseURL: baseURL,
+    baseURL: commonURL,
     timeout: 5000
+  })
+}
+
+export function openNotification(type: string, msg: string, des?: string) {
+  notification[type]({
+    message: msg,
+    description: des,
+    className: `customNoti${type}`,
+    duration: 0
   })
 }

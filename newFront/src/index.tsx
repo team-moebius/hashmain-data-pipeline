@@ -8,7 +8,7 @@ import configureStore from './common/store'
 // import 'antd/dist/antd.css'
 
 import './index.css'
-import { Routers } from './common/router/routers'
+import Routers from './common/router/routers'
 
 const store = configureStore()
 

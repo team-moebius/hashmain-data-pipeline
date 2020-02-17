@@ -1,13 +1,19 @@
-import axios from 'axios'
+import { getInstance } from '../common/common'
 
-const commonURL = 'http://api.cryptoboxglobal.com'
-const instant = axios.create({
-  baseURL:commonURL,
-  timeout: 5000
-})
+const instant = getInstance()
 
+export const getDuplicateApi = (email: string) => {
+  const result = instant.get(`members/duplicate/${email}`)
+  return result
+}
 
-export const getTestApi = (date: string = 'asdf@asdf.com') => {
-  const result = instant.get(`members/duplicate/${date}`)
+export const getSignUpApi = (mail: string, usrName: string, pwd: string) => {
+  const result = instant.post('members/signup', {
+    signupDto: {
+      email: mail,
+      name: usrName,
+      password: pwd
+    }
+  })
   return result
 }
