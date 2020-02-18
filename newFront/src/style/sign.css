@@ -19,7 +19,7 @@
 }
 
 .errorText {
-  color: #1e8cde;
+  color: #f44336;
   margin: 0px;
   margin-left: 5px;
   text-align: left;
@@ -50,4 +50,8 @@
 .customNotierror .ant-notification-notice-message {
   color: black;
   font-size: 14px;
+}
+
+.reusltView .ant-result-title {
+  color: #B7C8F5;
 }

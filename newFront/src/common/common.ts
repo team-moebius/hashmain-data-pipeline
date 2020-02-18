@@ -15,6 +15,6 @@ export function openNotification(type: string, msg: string, des?: string) {
     message: msg,
     description: des,
     className: `customNoti${type}`,
-    duration: 0
+    duration: 2
   })
 }

@@ -28,6 +28,8 @@ module.exports = {
     "object-curly-newline": 0,
     "react/jsx-max-props-per-line": 0,
     "react/jsx-first-prop-new-line": 0,
-    "no-unused-expressions": ["error", { "allowTernary": true }]
+    "no-unused-expressions": ["error", { "allowTernary": true }],
+    "no-use-before-define": 0,
+    "dot-notation": ["error", { "allowPattern": "^[A-Z]+(_[A-Z]+)+$" }]
   }
 }

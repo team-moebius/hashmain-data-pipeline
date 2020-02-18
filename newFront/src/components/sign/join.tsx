@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Button, Checkbox, Badge, Input } from 'antd'
 import { ReducerState } from '../../reducers/rootReducer'
-import { ruleCheck, signUpClick } from './formCheck'
+import { ruleCheck, signUpClick, signupFailed } from './signFuntions'
 import { openNotification } from '../../common/common'
 
 enum boxType {
@@ -14,9 +14,7 @@ enum boxType {
 
 function RenderInputBox(type: number): React.ReactElement {
   const dispatch = useDispatch()
-  const { mail, name, pwdChk, pwd } = useSelector((state: ReducerState) => (
-    { mail: state.sign.mail, pwd: state.sign.pwd, name: state.sign.name, pwdChk: state.sign.pwdChk }
-  ))
+  const { mail, name, pwdChk, pwd, idExist } = useSelector((state: ReducerState) => getState(state))
   const [isLegal, setIsLegal] = useState(true)
   const placeholders = ['E-Mail (User ID)', 'User Name', 'Password (영문 숫자 포함 8자 이상)', 'Password Confirm']
   const errorMsg = ['ID를 E-mail 형태로 입력해주세요.', '이름을 입력 해주세요', '패스워드는 영문, 숫자 포함 8자 이상 30자 이하여야 합니다.', '패스워드가 일치하지 않습니다.']
@@ -33,6 +31,7 @@ function RenderInputBox(type: number): React.ReactElement {
           onChange={(e) => { inputValue = (e.target.value) }}
           onBlur={() => setIsLegal(ruleCheck(dispatch, type, inputValue))} />
         {!isLegal && <p className='errorText'>{errorMsg[type]}</p>}
+        {(type === boxType.Mail && idExist) && <p className='errorText'>이미 존재하는 ID입니다.</p>}
       </div>
     )
   }
@@ -71,10 +70,15 @@ function RenderTextArea(): React.ReactElement {
 
 function Join() {
   const dispatch = useDispatch()
-  const { mail, name, pwdChk, pwd } = useSelector((state: ReducerState) => (
-    { mail: state.sign.mail, pwd: state.sign.pwd, name: state.sign.name, pwdChk: state.sign.pwdChk }
-  ))
+  const {
+    mail, name, pwdChk, pwd, idExist, signUpFailed
+  } = useSelector((state: ReducerState) => getState(state))
   const [isChecked, setIsChecked] = useState(false)
+
+  useEffect(() => {
+    if (signUpFailed) { signupFailed(dispatch) }
+  }, [dispatch, signUpFailed])
+
   return (
     <>
       {RenderInputBox(boxType.Mail)}
@@ -93,10 +97,23 @@ function Join() {
         </>
       </Checkbox>
       <Button className='customBtn' style={{ marginTop: '15px', width: '100%' }} type='primary' onClick={() => {
-        isChecked ? signUpClick(dispatch, mail, name, pwd, pwdChk) : openNotification('error', '개인정보 약관에 동의해주세요.')
+        isChecked ? signUpClick(dispatch, mail, name, pwd, pwdChk, idExist)
+          : openNotification('error', '개인정보 약관에 동의해주세요.')
       }}>회원가입</Button>
     </>
   )
 }
 
 export default Join
+
+function getState(state: ReducerState) {
+  const { sign, common } = state
+  return ({
+    mail: sign.mail,
+    pwd: state.sign.pwd,
+    name: sign.name,
+    pwdChk: sign.pwdChk,
+    idExist: sign.idExist,
+    signUpFailed: common.failed['SIGN_UP']
+  })
+}

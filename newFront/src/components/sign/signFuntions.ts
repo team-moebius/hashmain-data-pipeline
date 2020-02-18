@@ -4,8 +4,10 @@ import {
   NAME_VALUE_CHANGE_REQUESTED,
   PWD_VALUE_CHANGE_REQUESTED,
   PWD_CHECK_VALUE_CHANGE_REQUESTED,
-  SIGN_UP_REQUESTED
+  SIGN_UP_REQUESTED,
+  SIGN_UP_RESET
 } from '../../actionCmds/signActionCmd'
+import { openNotification } from '../../common/common'
 
 function mailCheck(id: string): boolean {
   // eslint-disable-next-line no-useless-escape
@@ -50,21 +52,19 @@ export function ruleCheck(dispatch: any, type: number, value: string, pwdCnf = '
   return isLegal
 }
 
-export function signUpClick(dispatch: any, email: string, userName: string, password: string, pwdCheck: string)
-: { type: string, msg: string } {
-  if (!email || !userName || !password || !pwdCheck
+export function signUpClick(
+  dispatch: any, email: string, userName: string, password: string, pwdCheck: string, idExist: boolean
+): void {
+  if (!email || !userName || !password || !pwdCheck || idExist
     || !mailCheck(email) || !nameCheck(userName)
     || !passwordCheck(password) || !passwordConfirmCheck(password, pwdCheck)) {
-    return {
-      type: 'error',
-      msg: '입력을 확인해주세요.'
-    }
+    openNotification('error', '입력을 확인해주세요.')
+    return
   }
-  dispatch(signUpAction({
-    type: SIGN_UP_REQUESTED, mail: email, name: userName, pwd: password, pwdChk: pwdCheck
-  }))
-  return {
-    type: 'success',
-    msg: '이메일 인증을 해주세요.'
-  }
+  dispatch(signUpAction({ type: SIGN_UP_REQUESTED, mail: email, name: userName, pwd: password }))
+}
+
+export function signupFailed(dispatch: any) {
+  openNotification('error', '잠시 후 다시 시도해주세요.')
+  dispatch({ type: SIGN_UP_RESET })
 }
