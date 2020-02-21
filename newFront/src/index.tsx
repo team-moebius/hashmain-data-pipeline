@@ -5,16 +5,16 @@ import { Provider } from 'react-redux'
 import 'react-app-polyfill/ie9'
 import configureStore from './common/store'
 
-// import 'antd/dist/antd.css'
-
 import './index.css'
 import Routers from './common/router/routers'
+import Particle from './common/particle'
 
 const store = configureStore()
 
 const Root = (
   <Provider store={store}>
     <BrowserRouter>
+      <Particle />
       <Routers />
     </BrowserRouter>
   </Provider>

@@ -1,19 +1,21 @@
 import produce from 'immer'
+import { commonActionTypes } from '../actions/commonAction'
+import { SIGN_IN_SUCCESS } from '../actionCmds/signActionCmd'
 
 const initMap = {
   loading: {},
   success: {},
   failed: {},
-  age: 10
+  token: ''
 }
 
-const commonReducer = (state = initMap, action: any) => {
+const commonReducer = (state = initMap, action: commonActionTypes) => {
   let nextState = state
   nextState = checkLoading(nextState, action)
   switch (action.type) {
-    case 'TEST_REQUESTED':
+    case SIGN_IN_SUCCESS:
       nextState = produce(state, (draft) => {
-        draft.age = action.age
+        draft.token = action.token
       })
       break
     default:

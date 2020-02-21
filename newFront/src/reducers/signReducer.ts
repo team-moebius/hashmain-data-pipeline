@@ -5,7 +5,9 @@ import {
   PWD_VALUE_CHANGE_REQUESTED,
   PWD_CHECK_VALUE_CHANGE_REQUESTED,
   MAIL_DUPLICATION_CHECK_SUCCESS,
-  SIGN_UP_SUCCESS
+  SIGN_UP_SUCCESS,
+  SIGN_IN_FAILED,
+  SIGN_REDUCER_RESET
 } from '../actionCmds/signActionCmd'
 import { singActionTypes } from '../actions/signAction'
 
@@ -15,7 +17,8 @@ const initMap = {
   pwd: '',
   pwdChk: '',
   idExist: false,
-  signDone: false
+  signDone: false,
+  loginFailed: ''
 }
 
 const signReducer = (state = initMap, action: singActionTypes) => {
@@ -52,6 +55,14 @@ const signReducer = (state = initMap, action: singActionTypes) => {
         draft.signDone = action.signDone
       })
       break
+    case SIGN_IN_FAILED:
+      nextState = produce(state, (draft) => {
+        draft.loginFailed = action.msg
+      })
+      break
+    case SIGN_REDUCER_RESET:
+      nextState = reset(state)
+      break
     default:
       break
   }
@@ -59,3 +70,15 @@ const signReducer = (state = initMap, action: singActionTypes) => {
 }
 
 export default signReducer
+
+function reset(state: typeof initMap): typeof initMap {
+  return produce(state, (draft) => {
+    draft.idExist = initMap.idExist
+    draft.loginFailed = initMap.loginFailed
+    draft.mail = initMap.mail
+    draft.name = initMap.name
+    draft.pwd = initMap.pwd
+    draft.pwdChk = initMap.pwdChk
+    draft.signDone = initMap.signDone
+  })
+}

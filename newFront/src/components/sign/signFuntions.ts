@@ -5,7 +5,8 @@ import {
   PWD_VALUE_CHANGE_REQUESTED,
   PWD_CHECK_VALUE_CHANGE_REQUESTED,
   SIGN_UP_REQUESTED,
-  SIGN_UP_RESET
+  SIGN_UP_RESET,
+  SIGN_IN_FAILED
 } from '../../actionCmds/signActionCmd'
 import { openNotification } from '../../common/common'
 
@@ -67,4 +68,9 @@ export function signUpClick(
 export function signupFailed(dispatch: any) {
   openNotification('error', '잠시 후 다시 시도해주세요.')
   dispatch({ type: SIGN_UP_RESET })
+}
+
+export function signInFailedFunc(dispatch: any) {
+  openNotification('error', 'ID/PW를 확인해주세요.')
+  dispatch({ type: SIGN_IN_FAILED, msg: '' })
 }

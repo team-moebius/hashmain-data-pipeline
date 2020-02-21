@@ -1,0 +1,43 @@
+.headerBar {
+  margin: 0 7% 20px 7%;
+  opacity: 0.8;
+  background-color: #13253F;
+  height: 60px;
+  top: 20px;
+  position: relative;
+}
+
+.contentsBody {
+  display: inline-block;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.leftMenu {
+  margin-left: 7%;
+  background-color: #13253F;
+  opacity: 0.8;
+  width: 100px;
+  height: 700px;
+  float: left;
+}
+
+.contents {
+  display: inline-block;
+  margin-left: 20px;
+  background-color: #13253F;
+  opacity: 0.8;
+  width: calc(86% - 120px);
+  height: 700px;
+}
+
+.footerBar {
+  margin: 20px 7% 0px 7%;
+  opacity: 0.8;
+  background-color: #13253F;
+  height: 80px;
+}
+
+.leftTabs .ant-tabs-nav-container {
+  border: 2px solid #13253F;
+}

@@ -1,16 +1,20 @@
 import { call, put } from 'redux-saga/effects'
-import { getDuplicateApi, getSignUpApi } from '../apis/signApi'
+import { getDuplicateApi, postSignUpApi /* postSignInApi */ } from '../apis/signApi'
 import {
   SIGN_UP_SUCCESS,
   SIGN_UP_FAILED,
   MAIL_DUPLICATION_CHECK_SUCCESS,
-  MAIL_DUPLICATION_CHECK_FAILED
+  MAIL_DUPLICATION_CHECK_FAILED,
+  SIGN_IN_SUCCESS,
+  SIGN_IN_FAILED
 } from '../actionCmds/signActionCmd'
 import {
   signUpFailedAction,
   signUpSuccessAction,
   mailDupFailedAction,
-  mailDupSuccessAction
+  mailDupSuccessAction,
+  signInSuccessAction,
+  signInFailedAction
 } from '../actions/signAction'
 
 export function* fetchDuplicationCheck(action: any) {
@@ -25,10 +29,18 @@ export function* fetchDuplicationCheck(action: any) {
 
 export function* fetchSignUp(action: any) {
   try {
-    const result = yield call(getSignUpApi, action.mail, action.name, action.pwd)
-    console.log(result)
-    yield put(signUpSuccessAction({ type: SIGN_UP_SUCCESS, signDone: true }))
+    const result = yield call(postSignUpApi, action.mail, action.name, action.pwd)
+    yield put(signUpSuccessAction({ type: SIGN_UP_SUCCESS, signDone: result.data === 'OK' }))
   } catch (err) {
     yield put(signUpFailedAction({ type: SIGN_UP_FAILED, msg: err }))
+  }
+}
+
+export function* fetchSignIn(action: any) {
+  try {
+    // const result = yield call(postSignInApi, action.mail, action.pwd)
+    yield put(signInSuccessAction({ type: SIGN_IN_SUCCESS, token: 'test' }))
+  } catch (err) {
+    yield put(signInFailedAction({ type: SIGN_IN_FAILED, msg: err }))
   }
 }

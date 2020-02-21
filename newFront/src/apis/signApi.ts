@@ -7,13 +7,19 @@ export const getDuplicateApi = (email: string) => {
   return result
 }
 
-export const getSignUpApi = (mail: string, usrName: string, pwd: string) => {
+export const postSignUpApi = (mail: string, usrName: string, pwd: string) => {
   const result = instant.post('members/signup', {
-    signupDto: {
-      email: mail,
-      name: usrName,
-      password: pwd
-    }
+    email: mail,
+    name: usrName,
+    password: pwd
+  })
+  return result
+}
+
+export const postSignInApi = (mail: string, pwd: string) => {
+  const result = instant.post('members', {
+    email: mail,
+    password: pwd
   })
   return result
 }

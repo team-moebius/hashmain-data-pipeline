@@ -37,7 +37,7 @@ function RenderInputBox(type: number): React.ReactElement {
   }
 
   return (
-    <div>
+    <div style={{ textAlign: 'left' }}>
       <Input.Password
         style={{ marginTop: '10px' }}
         placeholder={placeholders[type]}

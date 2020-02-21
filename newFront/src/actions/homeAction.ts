@@ -1,8 +1,10 @@
 import {
-  LOGIN_STATE_CHANGE_REQUESTED
+  MENU_MODE_CHANGE_REQUESTED
 } from '../actionCmds/homeActionCmd'
 
-interface ILoginStateActionType { type: typeof LOGIN_STATE_CHANGE_REQUESTED, isLogin: string }
-export const MailAction = (param: ILoginStateActionType): ILoginStateActionType => (
-  { type: param.type, isLogin: param.isLogin }
+interface IMenuModeActionType { type: typeof MENU_MODE_CHANGE_REQUESTED, menuMode: string }
+export const menuModeActionType = (param: IMenuModeActionType): IMenuModeActionType => (
+  { type: param.type, menuMode: param.menuMode }
 )
+
+export type homeTypes = IMenuModeActionType

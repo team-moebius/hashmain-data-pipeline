@@ -1,5 +1,11 @@
-import * as React from 'react'
+import React, { useEffect } from 'react'
 import { Input, Button, Icon, Badge } from 'antd'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInAction, signResetAction } from '../../actions/signAction'
+import { ReducerState } from '../../reducers/rootReducer'
+import { SIGN_IN_REQUESTED, SIGN_REDUCER_RESET } from '../../actionCmds/signActionCmd'
+import { signInFailedFunc } from '../sign/signFuntions'
+import { useCustomRouter } from '../../common/router/routerPush'
 
 function renderTextArea(): React.ReactElement {
   return (
@@ -23,23 +29,40 @@ function renderTextArea(): React.ReactElement {
 }
 
 function Login() {
+  const inputValue = { mail: '', pwd: '' }
+  const dispatch = useDispatch()
+  const { signInFailed, token } = useSelector((state: ReducerState) => (
+    { signInFailed: state.sign.loginFailed, token: state.common.token }
+  ))
+  const router = useCustomRouter()
+
+  useEffect(() => {
+    if (signInFailed) { signInFailedFunc(dispatch) }
+    if (token) { router.push('/') }
+  }, [dispatch, signInFailed, token, router])
+
   return (
     <>
       <Input
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: '10px', textAlign: 'left' }}
         placeholder='E-Mail'
+        onChange={(e) => { inputValue.mail = e.target.value }}
         prefix={<Icon type='mail' style={{ marginRight: '5px' }} />}
       />
       <Input.Password
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: '10px', textAlign: 'left' }}
         placeholder='Password'
+        onChange={(e) => { inputValue.pwd = e.target.value }}
         prefix={<Icon type='lock' style={{ marginRight: '10px' }} />}
       />
       <Button
         className='customBtn'
         type='primary'
         style={{ marginTop: '15px', width: '100%' }}
-        onClick={() => console.log('click login')}>로그인</Button>
+        onClick={() => {
+          dispatch(signInAction({ type: SIGN_IN_REQUESTED, mail: inputValue.mail, pwd: inputValue.pwd }))
+          dispatch(signResetAction({ type: SIGN_REDUCER_RESET }))
+        }}>로그인</Button>
       {renderTextArea()}
     </>
   )

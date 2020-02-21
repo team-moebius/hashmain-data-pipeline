@@ -1,19 +1,19 @@
 import produce from 'immer'
 import {
-  LOGIN_STATE_CHANGE_REQUESTED
+  MENU_MODE_CHANGE_REQUESTED
 } from '../actionCmds/homeActionCmd'
 
 const initMap = {
-  isLogin: false
+  menuMode: 'android'
 }
 
 const homeReducer = (state = initMap, action: any) => {
   let nextState = state
 
   switch (action.type) {
-    case LOGIN_STATE_CHANGE_REQUESTED:
+    case MENU_MODE_CHANGE_REQUESTED:
       nextState = produce(state, (draft) => {
-        draft.isLogin = action.isLogin
+        draft.menuMode = action.menuMode
       })
       break
     default:

@@ -7,7 +7,11 @@ import {
   SIGN_UP_SUCCESS,
   SIGN_UP_FAILED,
   MAIL_DUPLICATION_CHECK_SUCCESS,
-  MAIL_DUPLICATION_CHECK_FAILED
+  MAIL_DUPLICATION_CHECK_FAILED,
+  SIGN_IN_REQUESTED,
+  SIGN_IN_SUCCESS,
+  SIGN_IN_FAILED,
+  SIGN_REDUCER_RESET
 } from '../actionCmds/signActionCmd'
 
 interface IMailActionType { type: typeof MAIL_VALUE_CHANGE_REQUESTED, mail: string }
@@ -55,6 +59,27 @@ export const mailDupFailedAction = (param: IMailDupFailedActionType): IMailDupFa
   { type: param.type, msg: param.msg }
 )
 
+interface ISignInActionType { type: typeof SIGN_IN_REQUESTED, mail: string, pwd: string }
+export const signInAction = (param: ISignInActionType): ISignInActionType => (
+  { type: param.type, mail: param.mail, pwd: param.pwd }
+)
+
+interface ISignInSuccessActionType { type: typeof SIGN_IN_SUCCESS, token: string }
+export const signInSuccessAction = (param: ISignInSuccessActionType): ISignInSuccessActionType => (
+  { type: param.type, token: param.token }
+)
+
+interface ISignInFailedActionType { type: typeof SIGN_IN_FAILED, msg: string }
+export const signInFailedAction = (param: ISignInFailedActionType): ISignInFailedActionType => (
+  { type: param.type, msg: param.msg }
+)
+
+interface ISignResetActionType { type: typeof SIGN_REDUCER_RESET }
+export const signResetAction = (param: ISignResetActionType): ISignResetActionType => (
+  { type: param.type }
+)
+
 export type singActionTypes = IMailActionType | INameActionType | IPwdActionType | IPwdChkActionType |
   ISignUpActionType | ISignUpFailedActionType | ISignUpSuccessActionType |
-  IMailDupSuccessActionType | IMailDupFailedActionType
+  IMailDupSuccessActionType | IMailDupFailedActionType | ISignInActionType |
+  ISignInSuccessActionType | ISignInFailedActionType | ISignResetActionType
