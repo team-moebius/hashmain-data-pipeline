@@ -75,7 +75,7 @@ public class EmailService {
 				MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
 				messageHelper.setFrom("cryptobox.master@gmail.com");
 				messageHelper.setTo(member.getEmail());
-				messageHelper.setSubject("크립토박스 인증 메일입니다.");
+				messageHelper.setSubject("Hashmain.pro 인증 메일입니다.");
 
 				Context context = new Context();
 				context.setVariable("protocol", protocol);

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
-    <title>Cryptobox verification email</title>
+    <title>Hashmain.pro verification email</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
 
   <body>
-    <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#0d1e34"
+    <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#10122C"
            style="max-width:673px; font-family: Malgun Gothic,맑은 고딕,sans-serif">
       <tbody>
         <tr>
@@ -15,9 +15,9 @@
             <!-- header -->
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
               <tr>
-                <td width="673" height="69" style="margin:0;padding:0;text-align:center;">
-                  <img th:src="${protocol} + '://' + ${host} + '/static/images/mail-header.jpg'" border="0" style="margin:0;padding:0;width:673px;height:69px;"
-                       alt="Crypto box global">
+                <td width="400" height="89" style="margin:0;padding:0;text-align:center;">
+                  <img th:src="${protocol} + '://' + ${host} + '/static/images/mail-header.png'" border="0" style="margin:0;padding:0;width:400px;height:89px;"
+                       alt="Hashmain.pro">
                 </td>
               </tr>
             </table>
@@ -37,7 +37,7 @@
                           <tr>
                             <td style="vertical-align:top;">
                               <span
-                                style="font-size:30px; font-weight: bold; color:#1b74b9; margin:0; line-height:1;padding-bottom: 10px;border-bottom: 2px solid #1b74b9">회원가입
+                                style="font-size:30px; font-weight: bold; color:#FB3D7C; margin:0; line-height:1;padding-bottom: 10px;border-bottom: 2px solid #FB3D7C">회원가입
                                 이메일 주소 인증</span>
                             </td>
                           </tr>
@@ -90,12 +90,12 @@
                           </tr>
                           <tr>
                             <td>
-                              <a th:href="${protocol} + '://' + ${host} + '/api/members/verification?email=' + ${email} + '&code=' + ${code}"
-                                 style="text-decoration: none; font-size:18px;font-weight: bold;color:#1b74b9;border-radius: 3px;">
-                                <table cellpadding="0" cellspacing="0" style="border: 1px solid #3390b7;" width="100%">
+                              <a th:href="${protocol} + '://' + ${host} + '/members/verification?email=' + ${email} + '&code=' + ${code}"
+                                 style="text-decoration: none; font-size:18px;font-weight: bold;color:#FB3D7C;border-radius: 3px;">
+                                <table cellpadding="0" cellspacing="0" style="border: 1px solid #FB3D7C;" width="100%">
                                   <tr>
                                     <td height="50" align="center" style="text-align: center;">
-                                      <p style="border:none;text-decoration: none;font-size:18px;font-weight: bold;color:#1b74b9;line-height:1;">회원가입
+                                      <p style="border:none;text-decoration: none;font-size:18px;font-weight: bold;color:#FB3D7C;line-height:1;">회원가입
                                         이메일 인증하기</p>
                                     </td>
                                   </tr>
@@ -118,7 +118,7 @@
             <!-- footer -->
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
               <tr>
-                <td bgcolor="#091a2e">
+                <td bgcolor="#10122C">
                   <table cellpadding="0" cellspacing="0" border="0" width="100%">
                     <tr>
                       <td height="30"></td>
@@ -126,7 +126,7 @@
                     <tr>
                       <td style="vertical-align:top;text-align:center">
                         <p style="font-size:11px; color:#cad0e9; margin:0; line-height:21px;text-align:center">
-                          ⓒ 2018 - 2019 ICORE Inc. All rights reserved.<br />
+                          ⓒ 2018 - 2020 ICORE Inc. All rights reserved.<br />
                         </p>
                       </td>
                     </tr>
