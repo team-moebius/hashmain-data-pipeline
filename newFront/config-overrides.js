@@ -17,7 +17,13 @@ module.exports = override(
       '@input-placeholder-color': '#8494a6',
       '@border-color-base': '#13253F',
       '@checkbox-check-color': '#13253F',
-      '@black': '#B7C8F5'
+      '@black': '#B7C8F5',
+
+      '@table-row-hover-bg': '#264B80',
+      '@table-selected-row-hover-bg': '#264B80',
+
+      '@table-header-bg-sm': '#173456',
+      '@table-header-color': '#B7C8F5'
     }
   })
 )

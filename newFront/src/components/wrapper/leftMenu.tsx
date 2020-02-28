@@ -11,20 +11,23 @@ function LeftMenu() {
 
   return (
     <div className='leftMenu'>
-      <Tabs
-        style={{ marginTop: '25px' }}
-        defaultActiveKey='1'
-        tabPosition='right'
-        className='leftTabs'
-        tabBarGutter={30}
-        onChange={(key) => { dispatch(menuModeActionType({ type: MENU_MODE_CHANGE_REQUESTED, menuMode: key })) }}
-      >
-        {menus.map((key) => (
-          <Tabs.TabPane tab={<Icon style={{ fontSize: '40px' }} type={key} />} key={key}>
-            <></>
-          </Tabs.TabPane>
-        ))}
-      </Tabs>
+      <div className='backgroundColor leftHedaer'>Menu</div>
+      <div className='backgroundColor' style={{ height: '100%' }}>
+        <Tabs
+          style={{ marginTop: '25px' }}
+          defaultActiveKey='1'
+          tabPosition='right'
+          className='leftTabs'
+          tabBarGutter={30}
+          onChange={(key) => { dispatch(menuModeActionType({ type: MENU_MODE_CHANGE_REQUESTED, menuMode: key })) }}
+        >
+          {menus.map((key) => (
+            <Tabs.TabPane tab={<Icon style={{ fontSize: '40px' }} type={key} />} key={key}>
+              <></>
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
+      </div>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { call, put } from 'redux-saga/effects'
-import { getDuplicateApi, postSignUpApi /* postSignInApi */ } from '../apis/signApi'
+import { getDuplicateApi, postSignUpApi, postSignInApi } from '../apis/signApi'
 import {
   SIGN_UP_SUCCESS,
   SIGN_UP_FAILED,
@@ -38,8 +38,11 @@ export function* fetchSignUp(action: any) {
 
 export function* fetchSignIn(action: any) {
   try {
+    const result = yield call(postSignInApi, 'burette@hanyang.ac.kr', 'highbal1')
     // const result = yield call(postSignInApi, action.mail, action.pwd)
-    yield put(signInSuccessAction({ type: SIGN_IN_SUCCESS, token: 'test' }))
+    window.localStorage.setItem('token', result.data.token)
+    // window.location.reload()
+    yield put(signInSuccessAction({ type: SIGN_IN_SUCCESS }))
   } catch (err) {
     yield put(signInFailedAction({ type: SIGN_IN_FAILED, msg: err }))
   }

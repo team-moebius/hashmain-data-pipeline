@@ -10,11 +10,11 @@ import '../style/sign.css'
 
 function Sign() {
   const [viewMode, setViewMode] = useState('login')
-  const { signDone, token } = useSelector((state: ReducerState) => (
-    { signDone: state.sign.signDone, token: state.common.token }
-  ))
+  const { signDone } = useSelector((state: ReducerState) => ({ signDone: state.sign.signDone }))
+  const token = window.localStorage.getItem('token')
 
   if (token) { return <Redirect to='/' /> }
+
   return (
     <>
       <Row type='flex' justify='space-around' align='middle' style={{ height: '100vh' }}>

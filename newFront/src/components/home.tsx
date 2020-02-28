@@ -1,8 +1,8 @@
-import * as React from 'react'
+import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { ReducerState } from '../reducers/rootReducer'
-import Main from './home/main'
+import HTSSetting from './home/htsSetting'
 import Second from './home/second'
 import HeaderBar from './wrapper/headerBar'
 import LeftMenu from './wrapper/leftMenu'
@@ -12,16 +12,15 @@ import '../style/home.css'
 function getContents(menuMode: string) {
   switch (menuMode) {
     case 'android':
-      return <Main />
+      return <HTSSetting />
     default:
       return <Second />
   }
 }
 
 function Home() {
-  const { token, menuMode } = useSelector((state: ReducerState) => (
-    { token: state.common.token, menuMode: state.home.menuMode }
-  ))
+  const { menuMode } = useSelector((state: ReducerState) => ({ menuMode: state.home.menuMode }))
+  const token = window.localStorage.getItem('token')
 
   return (
     <>

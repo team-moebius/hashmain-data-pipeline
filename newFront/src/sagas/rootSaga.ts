@@ -1,14 +1,15 @@
 import { takeEvery, all } from 'redux-saga/effects'
-import { fetchTestApi } from '../sagas/testSaga'
 import { SIGN_UP_REQUESTED, SIGN_IN_REQUESTED, MAIL_VALUE_CHANGE_REQUESTED } from '../actionCmds/signActionCmd'
 import { fetchSignUp, fetchDuplicationCheck, fetchSignIn } from '../sagas/signSaga'
+import { HTS_TRADE_INFO_REQUESTED } from '../actionCmds/homeActionCmd'
+import { fetchHtsInfo } from './home/htsSaga'
 
 function* rootSaga() {
   yield all([
-    takeEvery('TEST_API_REQUESTED', fetchTestApi),
     takeEvery(MAIL_VALUE_CHANGE_REQUESTED, fetchDuplicationCheck),
     takeEvery(SIGN_UP_REQUESTED, fetchSignUp),
-    takeEvery(SIGN_IN_REQUESTED, fetchSignIn)
+    takeEvery(SIGN_IN_REQUESTED, fetchSignIn),
+    takeEvery(HTS_TRADE_INFO_REQUESTED, fetchHtsInfo)
   ])
 }
 

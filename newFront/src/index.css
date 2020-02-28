@@ -1,9 +1,20 @@
 *{
   font-family: europa;
 }
+
+p {
+  margin-bottom: 0;
+}
+
 #root {
+  height: 100%;
   color: #B7C8F5;
 }
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .customBtn span {
   color: #ffffff;
 }

@@ -3,7 +3,7 @@ module.exports = {
   plugins: ["@typescript-eslint"],
   extends: [
     "react-app",
-    "airbnb", 
+    "airbnb",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:react/recommended"
 
@@ -30,6 +30,7 @@ module.exports = {
     "react/jsx-first-prop-new-line": 0,
     "no-unused-expressions": ["error", { "allowTernary": true }],
     "no-use-before-define": 0,
-    "dot-notation": ["error", { "allowPattern": "^[A-Z]+(_[A-Z]+)+$" }]
+    "dot-notation": ["error", { "allowPattern": "^[A-Z]+(_[A-Z]+)+$" }],
+    "react/display-name": [0]
   }
 }

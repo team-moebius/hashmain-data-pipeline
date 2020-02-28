@@ -6,6 +6,7 @@ import { ReducerState } from '../../reducers/rootReducer'
 import { SIGN_IN_REQUESTED, SIGN_REDUCER_RESET } from '../../actionCmds/signActionCmd'
 import { signInFailedFunc } from '../sign/signFuntions'
 import { useCustomRouter } from '../../common/router/routerPush'
+// import { openNotification } from '../../common/common'
 
 function renderTextArea(): React.ReactElement {
   return (
@@ -29,12 +30,12 @@ function renderTextArea(): React.ReactElement {
 }
 
 function Login() {
-  const inputValue = { mail: '', pwd: '' }
-  const dispatch = useDispatch()
-  const { signInFailed, token } = useSelector((state: ReducerState) => (
-    { signInFailed: state.sign.loginFailed, token: state.common.token }
-  ))
   const router = useCustomRouter()
+  const dispatch = useDispatch()
+  const { signInFailed } = useSelector((state: ReducerState) => ({ signInFailed: state.sign.loginFailed }))
+  const token = window.localStorage.getItem('token')
+  const inputValue = { mail: '', pwd: '' }
+
 
   useEffect(() => {
     if (signInFailed) { signInFailedFunc(dispatch) }
@@ -60,6 +61,10 @@ function Login() {
         type='primary'
         style={{ marginTop: '15px', width: '100%' }}
         onClick={() => {
+          // if (!inputValue.mail || !inputValue.pwd) {
+          //   openNotification('error', '입력을 확인해주세요.')
+          //   return
+          // }
           dispatch(signInAction({ type: SIGN_IN_REQUESTED, mail: inputValue.mail, pwd: inputValue.pwd }))
           dispatch(signResetAction({ type: SIGN_REDUCER_RESET }))
         }}>로그인</Button>

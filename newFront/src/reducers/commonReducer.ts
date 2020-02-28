@@ -5,8 +5,7 @@ import { SIGN_IN_SUCCESS } from '../actionCmds/signActionCmd'
 const initMap = {
   loading: {},
   success: {},
-  failed: {},
-  token: ''
+  failed: {}
 }
 
 const commonReducer = (state = initMap, action: commonActionTypes) => {
@@ -14,9 +13,6 @@ const commonReducer = (state = initMap, action: commonActionTypes) => {
   nextState = checkLoading(nextState, action)
   switch (action.type) {
     case SIGN_IN_SUCCESS:
-      nextState = produce(state, (draft) => {
-        draft.token = action.token
-      })
       break
     default:
       break

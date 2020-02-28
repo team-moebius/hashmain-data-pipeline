@@ -64,9 +64,9 @@ export const signInAction = (param: ISignInActionType): ISignInActionType => (
   { type: param.type, mail: param.mail, pwd: param.pwd }
 )
 
-interface ISignInSuccessActionType { type: typeof SIGN_IN_SUCCESS, token: string }
+interface ISignInSuccessActionType { type: typeof SIGN_IN_SUCCESS }
 export const signInSuccessAction = (param: ISignInSuccessActionType): ISignInSuccessActionType => (
-  { type: param.type, token: param.token }
+  { type: param.type }
 )
 
 interface ISignInFailedActionType { type: typeof SIGN_IN_FAILED, msg: string }
