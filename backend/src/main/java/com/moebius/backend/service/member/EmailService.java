@@ -5,7 +5,7 @@ import com.moebius.backend.domain.members.MemberRepository;
 import com.moebius.backend.dto.frontend.VerificationDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.exception.VerificationFailedException;
+import com.moebius.backend.exception.WrongDataException;
 import com.moebius.backend.utils.Verifier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class EmailService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(email)))))
 			.filter(member -> !member.isActive() && StringUtils.isNoneBlank(member.getVerificationCode()))
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(email)))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(email)))))
 			.doOnSuccess(member -> sendVerificationEmail(member).subscribe())
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}
@@ -60,9 +60,9 @@ public class EmailService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(ExceptionTypes.NONEXISTENT_DATA.getMessage(verificationDto.getEmail())))))
 			.filter(member -> !member.isActive() && member.getVerificationCode() != null)
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(verificationDto.getEmail())))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.ALREADY_VERIFIED_DATA.getMessage(verificationDto.getEmail())))))
 			.filter(member -> member.getVerificationCode() != null && member.getVerificationCode().equals(verificationDto.getCode()))
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.WRONG_DATA.getMessage("Entered code")))))
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.WRONG_DATA.getMessage("Entered code")))))
 			.flatMap(this::updateMember)
 			.map(member -> ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()));
 	}

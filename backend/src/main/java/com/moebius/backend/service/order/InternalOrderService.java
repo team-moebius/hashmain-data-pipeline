@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.moebius.backend.domain.commons.EventType.*;
+import static com.moebius.backend.domain.commons.EventType.DELETE;
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
 
@@ -49,9 +49,8 @@ public class InternalOrderService {
 	private final ExchangeServiceFactory exchangeServiceFactory;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
-		if (orderValidator.isNotValidToSave(orderDtos)) {
-			return Mono.just(ResponseEntity.badRequest().build());
-		}
+		orderValidator.validate(orderDtos);
+
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
 			.flatMapIterable(apiKey -> orderDtos.stream()
@@ -83,8 +82,8 @@ public class InternalOrderService {
 
 	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
 	public Mono<Long> findOrderCountByTradeDto(TradeDto tradeDto) {
-		log.info("[Order] [{}/{}/{}] Start to get count of orders from repository because not found in cache.", tradeDto.getExchange(),
-			tradeDto.getSymbol(), OrderStatus.READY);
+		log.info("[Order] [{}/{}] Start to get count of orders from repository because not found in cache.", tradeDto.getExchange(),
+			tradeDto.getSymbol());
 		return orderRepository.countBySymbolAndExchangeAndOrderStatus(tradeDto.getSymbol(), tradeDto.getExchange(), OrderStatus.READY)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
