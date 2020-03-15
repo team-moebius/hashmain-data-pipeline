@@ -1,5 +1,5 @@
 *{
-  font-family: europa;
+  font-family: "Malgun Gothic","맑은 고딕",sans-serif;
 }
 
 p {
@@ -20,6 +20,87 @@ body::-webkit-scrollbar {
 }
 
 .customCheckBox .ant-checkbox {
-  border: 2px solid #1E8CDE;
+  border: 2px solid rgb(255, 58, 125);
   border-radius: 20%;
+}
+
+.customTable .ant-table-small {
+  border: 0px solid #101037;
+}
+
+.customTable .ant-table table{
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.customTable .ant-table-row {
+  background-color: #1a1c4b;
+  border-top: 2px solid #101037;
+}
+
+.customTable .ant-table-small > .ant-table-content > .ant-table-body > table > .ant-table-tbody > tr > td,
+.customTable .ant-table-small > .ant-table-content > .ant-table-body > table > .ant-table-thead > tr > th {
+  padding: 3.5px 8px;
+}
+
+.customTable .ant-input-number{
+  height: 25px;
+}
+
+.customTable .ant-input-number-input {
+  height: 20px;
+  font-size: 13px;
+}
+
+.tableInputNumber .ant-input-number-handler-wrap {
+  display: none;
+}
+
+.tableInputNumber .ant-input-number-input {
+  text-align: right;
+}
+
+.ant-notification {
+  right: 0px;
+  left: -200px;
+  width: 400px;
+  margin: 20px 50%;
+}
+
+.customNotierror {
+  border: 2px solid #f5222d;
+  padding: 5px;
+  color: #B7C8F5;
+  font-size: 14px;
+}
+
+.customNotierror .ant-notification-notice-icon-error {
+  color: #f5222d;
+}
+
+.customNotierror .ant-notification-notice-close {
+  display: none;
+}
+
+.customNotisuccess {
+  border: 2px solid #52c41a;
+  padding: 5px;
+  color: #B7C8F5;
+  font-size: 14px;
+}
+
+.customNotisuccess .ant-notification-notice-icon-error {
+  color: #52c41a;
+}
+
+.customNotisuccess .ant-notification-notice-close {
+  display: none;
+}
+
+.profitColor {
+  color: #ff3a7d;
+}
+
+.lossColor {
+  color: #218cde;
 }

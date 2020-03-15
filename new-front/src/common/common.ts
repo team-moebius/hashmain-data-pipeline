@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { notification } from 'antd'
+import React from 'react'
 
 const commonURL = 'http://dev-api.hashmainpro.com'
 
@@ -10,11 +11,11 @@ export function getInstance() {
   })
 }
 
-export function openNotification(type: string, msg: string, des?: string) {
+export function openNotification(type: string, msg: string | React.ReactNode, des?: string | React.ReactNode) {
   notification[type]({
     message: msg,
     description: des,
     className: `customNoti${type}`,
-    duration: 2
+    duration: 4
   })
 }

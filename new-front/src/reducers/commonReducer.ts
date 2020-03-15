@@ -1,18 +1,23 @@
 import produce from 'immer'
 import { commonActionTypes } from '../actions/commonAction'
-import { SIGN_IN_SUCCESS } from '../actions/commands/signActionCommand'
+import { SIGN_IN_SUCCESS } from '../actionCmds/signActionCmd'
 
 const initMap = {
   loading: {},
   success: {},
-  failed: {}
+  failed: {},
+  tokenValid: true
 }
 
 const commonReducer = (state = initMap, action: commonActionTypes) => {
   let nextState = state
   nextState = checkLoading(nextState, action)
+  nextState = checkTokenVaild(nextState, action)
   switch (action.type) {
     case SIGN_IN_SUCCESS:
+      nextState = produce(nextState, (draft: any) => {
+        draft.tokenValid = true
+      })
       break
     default:
       break
@@ -51,6 +56,17 @@ function checkLoading(nextState: any, action: any) {
       draft.success[key] = false
       draft.failed[key] = false
     })
+  }
+  return nextState
+}
+
+function checkTokenVaild(nextState: any, action: any) {
+  if (action.type.indexOf('_FAILED') > -1) {
+    if (action.msg.indexOf('Network Error') > -1) {
+      nextState = produce(nextState, (draft: any) => {
+        draft.tokenValid = false
+      })
+    }
   }
   return nextState
 }

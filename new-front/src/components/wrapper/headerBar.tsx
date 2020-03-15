@@ -2,8 +2,10 @@ import React from 'react'
 import { Button } from 'antd'
 import { useCustomRouter } from '../../common/router/routerPush'
 
+
 function HeaderBar() {
   const rounter = useCustomRouter()
+
   return (
     <div className='headerBar backgroundColor'>
       <Button onClick={() => {

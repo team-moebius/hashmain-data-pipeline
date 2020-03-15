@@ -1,0 +1,63 @@
+.rightSecion {
+  width: 360px;
+  float: right;
+}
+
+.customLink {
+  color: #B7C8F5;
+}
+
+.customLink:hover {
+  color: rgb(255, 58, 125);
+}
+
+.apiKeyCheck {
+  width: 100%;
+  margin-bottom: 5px;
+  background-color: #3399CC;
+  border: 2px solid #E95A4E;
+  color: #FFF;
+}
+
+.apiKeyCheck:hover {
+  background-color: #1E82AA;
+}
+
+.apiKeyCheck:focus {
+  background-color: #3399CC;
+}
+
+.manageTableInHts {
+  height: 270px;
+  display: inline-block;
+  width: 1290px;
+  margin-left: 10px;
+  margin-top: 10px;
+  border: 0px solid;
+}
+
+.firstCol {
+  width: 5px;
+}
+
+.coinsSearch {
+  width: 100%;
+  padding: 10px;
+}
+
+.coinsSearch .ant-select-selection {
+  background-color: #1a1c4b;
+}
+
+.customMenuIcon {
+  width: 40px;
+  height: 40px;
+}
+
+.customMenuIcon:hover {
+  filter: invert(77%) sepia(26%) saturate(391%) hue-rotate(188deg) brightness(99%) contrast(94%);
+ }
+
+.ant-tabs-tab-active .customMenuIcon {
+  filter: invert(50%) sepia(59%) saturate(6432%) hue-rotate(320deg) brightness(106%) contrast(108%);
+}

@@ -8,7 +8,7 @@ import {
   SIGN_UP_SUCCESS,
   SIGN_IN_FAILED,
   SIGN_REDUCER_RESET
-} from '../actions/commands/signActionCommand'
+} from '../actionCmds/signActionCmd'
 import { singActionTypes } from '../actions/signAction'
 
 const initMap = {

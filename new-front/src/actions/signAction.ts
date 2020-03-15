@@ -12,7 +12,7 @@ import {
   SIGN_IN_SUCCESS,
   SIGN_IN_FAILED,
   SIGN_REDUCER_RESET
-} from './commands/signActionCommand'
+} from '../actionCmds/signActionCmd'
 
 interface IMailActionType { type: typeof MAIL_VALUE_CHANGE_REQUESTED, mail: string }
 export const mailAction = (param: IMailActionType): IMailActionType => (

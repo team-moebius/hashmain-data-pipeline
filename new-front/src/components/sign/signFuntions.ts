@@ -7,7 +7,7 @@ import {
   SIGN_UP_REQUESTED,
   SIGN_UP_RESET,
   SIGN_IN_FAILED
-} from '../../actions/commands/signActionCommand'
+} from '../../actionCmds/signActionCmd'
 import { openNotification } from '../../common/common'
 
 function mailCheck(id: string): boolean {

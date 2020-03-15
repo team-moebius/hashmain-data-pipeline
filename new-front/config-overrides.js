@@ -9,21 +9,19 @@ module.exports = override(
   addLessLoader({
     javascriptEnabled: true,
     modifyVars: {
-      '@primary-color': '#1E8CDE',
-      '@body-background': '#172E4F',
-      '@component-background': '#13253F',
-      '@input-bg': '#173456',
-      '@input-color': '#FFFFFF',
-      '@input-placeholder-color': '#8494a6',
-      '@border-color-base': '#13253F',
-      '@checkbox-check-color': '#13253F',
-      '@black': '#B7C8F5',
-
-      '@table-row-hover-bg': '#264B80',
-      '@table-selected-row-hover-bg': '#264B80',
-
-      '@table-header-bg-sm': '#173456',
-      '@table-header-color': '#B7C8F5'
+      '@primary-color': '#FF3A7D',
+      '@body-background': '#151544',
+      '@component-background': '#101037',
+      '@input-bg': '#1A1C4B',
+      '@input-color': '#B7C8F5',
+      '@input-placeholder-color': 'hsv(0, 0, 75%)',
+      '@border-color-base': '#101037',
+      '@checkbox-check-color': '#101037',
+      '@text-color': '#B7C8F5',
+      '@heading-color': '#B7C8F5',
+      '@table-row-hover-bg': '#2B2F7B',
+      '@table-header-bg-sm': '#0D0D2B',
+      '@btn-link-ghost-color': '#B7C8F5'
     }
   })
 )

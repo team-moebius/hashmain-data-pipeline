@@ -3,7 +3,7 @@
   margin: auto;
   width: 500px;
   text-align: center;
-  background-color: #13253F;
+  background-color: #101037;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12)!important;
 }
 
@@ -12,7 +12,7 @@
 }
 
 .emphasisText {
-  color: #1e8cde;
+  color: rgb(255, 58, 125);
   margin: 0px;
   display: inline-block;
   margin-left: 3px;
@@ -24,32 +24,6 @@
   margin-left: 5px;
   text-align: left;
   font-size: 12px;
-}
-
-.ant-notification {
-  right: 0px;
-  left: -200px;
-  width: 400px;
-  margin: 20px 50%;
-}
-
-.customNotierror {
-  background-color: #ffa39e;
-  border: 2px solid #f5222d;
-  padding: 5px;
-}
-
-.customNotierror .ant-notification-notice-icon-error {
-  color: #f5222d;
-}
-
-.customNotierror .ant-notification-notice-close {
-  display: none;
-}
-
-.customNotierror .ant-notification-notice-message {
-  color: black;
-  font-size: 14px;
 }
 
 .reusltView .ant-result-title {

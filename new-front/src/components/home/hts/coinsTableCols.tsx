@@ -1,0 +1,3 @@
+export function coinsTableCols() {
+  return []
+}

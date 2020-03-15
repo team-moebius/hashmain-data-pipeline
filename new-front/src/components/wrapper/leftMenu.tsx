@@ -1,28 +1,28 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { Icon, Tabs } from 'antd'
-import { MENU_MODE_CHANGE_REQUESTED } from '../../actions/commands/homeActionCommand'
-import { menuModeActionType } from '../../actions/homeAction'
+import { Tabs } from 'antd'
+import { HOME_MENU_CHANGE_REQUESTED } from '../../actionCmds/homeActionCmd'
+import { homeMenuActionType } from '../../actions/homeAction'
+import { getSvg } from './loadIcon'
 
 function LeftMenu() {
-  const menus = ['android', 'apple', 'windows', 'github',
-    'gitlab', 'dropbox', 'facebook', 'amazon']
+  const menus = ['hts', 'cts', 'tds', 'asset', 'idea', 'forum', 'info', 'profile']
   const dispatch = useDispatch()
 
   return (
     <div className='leftMenu'>
       <div className='backgroundColor leftHedaer'>Menu</div>
-      <div className='backgroundColor' style={{ height: '100%' }}>
+      <div className='backgroundColor' style={{ height: '1150px', marginTop: '-20px' }}>
         <Tabs
           style={{ marginTop: '25px' }}
           defaultActiveKey='1'
           tabPosition='right'
           className='leftTabs'
           tabBarGutter={30}
-          onChange={(key) => { dispatch(menuModeActionType({ type: MENU_MODE_CHANGE_REQUESTED, menuMode: key })) }}
+          onChange={(key) => { dispatch(homeMenuActionType({ type: HOME_MENU_CHANGE_REQUESTED, menuMode: key })) }}
         >
           {menus.map((key) => (
-            <Tabs.TabPane tab={<Icon style={{ fontSize: '40px' }} type={key} />} key={key}>
+            <Tabs.TabPane tab={getSvg(key)} key={key}>
               <></>
             </Tabs.TabPane>
           ))}

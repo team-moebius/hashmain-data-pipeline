@@ -1,39 +1,42 @@
 .backgroundColor {
-  background-color: #13253F;
+  background-color: #101037;
   opacity: 0.8;
 }
 
 .headerBar {
-  margin: 0 7% 20px 7%;
-  height: 60px;
-  top: 20px;
+  width: 1400px;
+  height: 66px;
+  margin: 20px auto;
   position: relative;
 }
 
 .contentsBody {
-  display: inline-block;
-  width: 100%;
-  margin-top: 20px;
-  height: 100%;
+  width: 1400px;
+  margin: 20px auto;
+  height: 1190px;
 }
 
 .leftHedaer {
   padding: 10px;
   text-align: center;
   font-weight: 600;
-  margin-bottom: -20px;
+  width: 100px;
 }
 
 .leftMenu {
-  margin-left: 7%;
   width: 100px;
-  height: 100%;
+  height: 1200px;
   float: left;
+  text-align: center;
+}
+
+.leftMenu .ant-tabs-nav-wrap{
+  font-size: 12px;
 }
 
 .contentsHeader {
   padding: 2.5px;
-  width: 100%;
+  width: 920px;
 }
 
 .contents {
@@ -44,16 +47,17 @@
 }
 
 .footerBar {
-  margin: 20px 7% 0px 7%;
-  height: 80px;
+  width: 1400px;
+  height: 170px;
+  margin: auto;
 }
 
 .leftTabs .ant-tabs-nav-container {
-  border: 2px solid #13253F;
+  border: 2px solid #101037;
 }
 
 .contentsHeader .ant-tabs-nav-container {
-  border: 2px solid #13253F;
+  border: 2px solid #101037;
 }
 
 .contentsHeader .ant-tabs-tab {
@@ -64,21 +68,3 @@
   margin-bottom: 0;
 }
 
-.rightSecion {
-  margin-right: 7%;
-  min-width: 300px;
-  height: 100%;
-  float: right;
-}
-
-.customTable .ant-table-small {
-  border: 0px solid white;
-}
-
-.tableInputNumber .ant-input-number-handler-wrap {
-  display: none;
-}
-
-.tableInputNumber .ant-input-number-input {
-  text-align: right;
-}
