@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { withAlert, AlertManager } from 'react-alert';
-import classNames from 'classnames';
+import * as React from "react";
+import { withAlert, AlertManager } from "react-alert";
+import classNames from "classnames";
 
-import Paper from 'components/atoms/Paper';
-import Text from 'components/atoms/Text';
-import PageTemplate from 'components/templates/PageTemplate';
-import HtsConfigGrid from 'pages/sub/HtsConfigGrid';
-import CoinKinds from 'pages/sub/CoinKinds';
+import Paper from "components/atoms/Paper";
+import Text from "components/atoms/Text";
+import PageTemplate from "components/templates/PageTemplate";
+import HtsConfigGrid from "pages/sub/HtsConfigGrid";
+import CoinClass from "pages/sub/CoinClass";
 
-import 'assets/scss/HtsConfig.scss';
+import "assets/scss/HtsConfig.scss";
 
 interface ContentsProps {
   className: string;
@@ -20,31 +20,34 @@ interface ContentsState {
 }
 
 class HtsConfig extends React.Component<ContentsProps, ContentsState> {
+  // eslint-disable-next-line react/jsx-key
   private static TAB_HEADERS = [<Text variant="subtitle2">멀티거래 모드</Text>];
-  private static TAB_ITEMS = [<HtsConfigGrid />];
-  constructor(props: ContentsProps) {
+  // eslint-disable-next-line react/jsx-key
+  private static TAB_ITEMS = [<HtsConfigGrid/>];
+
+  public constructor(props: ContentsProps) {
     super(props);
     this.state = {
       index: 0,
     };
   }
 
-  onChangeTabIndex = (e: React.ChangeEvent<{}>, value: any) => {
+  private onChangeTabIndex = (e: React.ChangeEvent<{}>, value: any) => {
     this.setState({ index: value });
   };
 
-  render() {
+  public render() {
     return (
       <>
         <PageTemplate
-          className={classNames('hts-config__tab', this.props.className)}
+          className={classNames("hts-config__tab", this.props.className)}
           index={this.state.index}
           onChangeTab={this.onChangeTabIndex}
           tabHeaders={HtsConfig.TAB_HEADERS}
           tabContents={HtsConfig.TAB_ITEMS}
         />
         <Paper className="hts-config__sub">
-          <CoinKinds />
+          <CoinClass/>
         </Paper>
       </>
     );

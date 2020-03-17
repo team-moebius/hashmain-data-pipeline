@@ -1,9 +1,10 @@
 import * as React from 'react';
 
+import { CheckboxProps } from "@material-ui/core/Checkbox";
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/LibraryAddOutlined';
 
-import Checkbox, { CheckboxProps } from 'components/atoms/Checkbox';
+import Checkbox from 'components/atoms/Checkbox';
 import TableHead from 'components/atoms/TableHead';
 import TableHeadRow from 'components/atoms/TableHeadRow';
 import TableHeadCell from 'components/atoms/TableHeadCell';
@@ -25,7 +26,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export interface NewRowParams {
-  colum: TableColum;
+  column: TableColumn;
   rowId: string;
 }
 
@@ -34,7 +35,7 @@ export interface NewRowProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>, rowParams: NewRowParams) => void;
 }
 
-export interface TableColum {
+export interface TableColumn {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   checkbox?: CheckboxProps;
   disablePadding?: boolean;
@@ -43,20 +44,20 @@ export interface TableColum {
   label?: string;
   newRowProps?: NewRowProps;
   numeric?: boolean;
-  onClickCell?: (col: TableColum, rowId: string) => void;
+  onClickCell?: (col: TableColumn, rowId: string) => void;
   style?: React.CSSProperties;
   sortable?: boolean;
 }
 
 interface TableHeadLayerProps {
-  columns: TableColum[];
+  columns: TableColumn[];
   order?: 'asc' | 'desc';
   orderBy?: any;
   onRequestSort?: (e: React.MouseEvent<unknown>, colId: any) => void;
   onClickAddIcon?: (e: React.MouseEvent<unknown>) => void;
 }
 
-const CheckboxCell: React.FC<TableColum> = props => (
+const CheckboxCell: React.FC<TableColumn> = props => (
   <TableHeadCell key={props.id} style={props.style} padding="checkbox">
     <Checkbox {...props.checkbox} />
     {props.label}

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import Checkbox, { CheckboxProps } from 'components/atoms/Checkbox';
+import Checkbox from 'components/atoms/Checkbox';
+import { CheckboxProps } from "@material-ui/core/Checkbox";
 import MuiFormControlLabel, {
   FormControlLabelProps as MuiFormControlLabelProps,
 } from '@material-ui/core/FormControlLabel';

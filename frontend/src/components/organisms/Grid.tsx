@@ -5,7 +5,7 @@ import DeleteIcon from '@material-ui/icons/DeleteOutlined';
 import Paper from 'components/atoms/Paper';
 import Table from 'components/atoms/Table';
 import TableToolbar, { TableToolbarProps } from 'components/molecules/TableToolbar';
-import TableHeadLayer, { TableColum } from 'components/molecules/TableHeadLayer';
+import TableHeadLayer, { TableColumn } from 'components/molecules/TableHeadLayer';
 import TableBody from 'components/atoms/TableBody';
 import TableBodyRow from 'components/atoms/TableBodyRow';
 import TableBodyCell from 'components/atoms/TableBodyCell';
@@ -42,7 +42,7 @@ function getSorting<T extends GridData>(order: 'asc' | 'desc', orderBy: keyof T)
 }
 
 interface GridProps<T extends GridData> {
-  columns: TableColum[];
+  columns: TableColumn[];
   className?: string;
   rowClassNameFunc?: (rowId: string) => string;
   rows?: T[];
@@ -62,7 +62,7 @@ interface GridState<T extends GridData> {
 }
 
 class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T>> {
-  constructor(props: GridProps<T>) {
+  public constructor(props: GridProps<T>) {
     super(props);
     this.state = {
       order: this.props.order ? this.props.order : 'asc',
@@ -70,19 +70,19 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
     };
   }
 
-  handleRequestSort = (e: React.MouseEvent<unknown>, property: keyof T) => {
+  private handleRequestSort = (e: React.MouseEvent<unknown>, property: keyof T) => {
     const isDesc = this.state.orderBy === property && this.state.order === 'desc';
 
     this.setState({ order: isDesc ? 'asc' : 'desc', orderBy: property });
   };
 
-  onClickRow = (rowId: string) => (e: React.MouseEvent<unknown>) => {
+  private onClickRow = (rowId: string) => (e: React.MouseEvent<unknown>) => {
     if (this.props.onClickRow) {
       this.props.onClickRow(e, rowId);
     }
   };
 
-  onClickCell = (col: TableColum, rowId: string) => (e: React.MouseEvent<unknown>) => {
+  private onClickCell = (col: TableColumn, rowId: string) => (e: React.MouseEvent<unknown>) => {
     e.preventDefault();
 
     if (col.onClickCell) {
@@ -90,23 +90,23 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
     }
   };
 
-  onChangeNewRowCell = (col: TableColum, rowId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  private onChangeNewRowCell = (col: TableColumn, rowId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     if (col.newRowProps && col.newRowProps.onChange) {
-      col.newRowProps.onChange(e, { colum: col, rowId });
+      col.newRowProps.onChange(e, { column: col, rowId });
     }
   };
 
-  onClickRowDeleteIcon = (rowId: string) => (e: React.MouseEvent<unknown>) => {
+  private onClickRowDeleteIcon = (rowId: string) => (e: React.MouseEvent<unknown>) => {
     if (this.props.onClickRowDeleteIcon) {
       this.props.onClickRowDeleteIcon(e, rowId);
     }
   };
 
-  getRowClassName = (rowId: string) => {
+  private getRowClassName = (rowId: string) => {
     return this.props.rowClassNameFunc ? this.props.rowClassNameFunc(rowId) : '';
   };
 
-  render() {
+  public render() {
     const rows = this.props.rows ? this.props.rows : [];
     return (
       <Paper className={this.props.className} style={{ width: '100%', ...this.props.style }}>
@@ -133,7 +133,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                         />
                       </TableBodyCell>
                     )}
-                    {this.props.columns.map((col: TableColum) => {
+                    {this.props.columns.map((col: TableColumn) => {
                       // @ts-ignore
                       const label = row[col.id];
                       const formattedLabel = col.format ? col.format(label) : label;
@@ -188,7 +188,7 @@ class Grid<T extends GridData> extends React.Component<GridProps<T>, GridState<T
                       />
                     </TableBodyCell>
                   )}
-                  {this.props.columns.map((col: TableColum) => {
+                  {this.props.columns.map((col: TableColumn) => {
                     // @ts-ignore
                     const label = row[col.id];
 

@@ -1,7 +1,5 @@
-import MuiCheckbox, { CheckboxProps as MuiCheckboxProps } from '@material-ui/core/Checkbox';
+import MuiCheckbox from '@material-ui/core/Checkbox';
 import { withStyles } from '@material-ui/styles';
-
-export interface CheckboxProps extends MuiCheckboxProps {}
 
 const Checkbox = withStyles(theme => ({}))(MuiCheckbox);
 
