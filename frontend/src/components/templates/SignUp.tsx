@@ -1,14 +1,14 @@
-import * as React from 'react';
-import _ from 'lodash';
+import * as React from "react";
+import _ from "lodash";
 
-import Input from 'components/atoms/Input';
-import CheckboxForm from 'components/atoms/CheckboxForm';
-import Text from 'components/atoms/Text';
-import Button from 'components/atoms/Button';
-import InputValidator from 'utils/InputValidator';
+import Input from "components/atoms/Input";
+import CheckboxForm from "components/atoms/CheckboxForm";
+import Text from "components/atoms/Text";
+import Button from "components/atoms/Button";
+import InputValidator from "utils/InputValidator";
 
-type SignUpPayloadType = 'email' | 'name' | 'password';
-type SignUpValidationType = SignUpPayloadType | 'permitTerms' | 'passwordConfirm';
+type SignUpPayloadType = "email" | "name" | "password";
+type SignUpValidationType = SignUpPayloadType | "permitTerms" | "passwordConfirm";
 type SignUpPayload = { [key in SignUpPayloadType]?: string };
 type SignUpErrorState = { [key in SignUpValidationType]?: string };
 
@@ -35,18 +35,18 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
   private passwordRef = React.createRef<any>();
   private passwordConfirmRef = React.createRef<any>();
 
-  constructor(props: SignUpProps) {
+  public constructor(props: SignUpProps) {
     super(props);
     this.state = { errors: {}, isCheckPermitTerms: false };
   }
 
-  onChangePermitTerms = () => {
+  private onChangePermitTerms = () => {
     this.setState({ isCheckPermitTerms: !this.state.isCheckPermitTerms }, () => {
       this.isValidPermitTerms();
     });
   };
 
-  updateErrorTextState = async (key: SignUpValidationType, text: string) => {
+  private updateErrorTextState = async (key: SignUpValidationType, text: string) => {
     const valid = InputValidator.isBlank(text);
 
     if (valid) {
@@ -58,61 +58,61 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return valid;
   };
 
-  isValidId = async () => {
+  private isValidId = async () => {
     const id = this.emailRef.current.value;
-    let errorText = '';
+    let errorText = "";
 
-    if (InputValidator.nonValid('email', id)) {
-      errorText = 'ID를 E-mail 형태로 입력해주세요.';
+    if (InputValidator.nonValid("email", id)) {
+      errorText = "ID를 E-mail 형태로 입력해주세요.";
     } else if (await this.props.isDuplicatedId(id)) {
-      errorText = '중복된 ID 입니다.';
+      errorText = "중복된 ID 입니다.";
     }
 
-    return await this.updateErrorTextState('email', errorText);
+    return await this.updateErrorTextState("email", errorText);
   };
 
-  isValidName = async () => {
+  private isValidName = async () => {
     const name = this.nameRef.current.value;
-    let errorText = '';
+    let errorText = "";
 
     if (InputValidator.isBlank(name)) {
-      errorText = '이름을 입력 해주세요.';
+      errorText = "이름을 입력 해주세요.";
     }
 
-    return await this.updateErrorTextState('name', errorText);
+    return await this.updateErrorTextState("name", errorText);
   };
 
-  isValidPassword = async () => {
+  private isValidPassword = async () => {
     const password = this.passwordRef.current.value;
-    let errorText = '';
+    let errorText = "";
 
-    if (InputValidator.nonValid('password', password)) {
-      errorText = '패스워드를 올바르게 입력해 주세요.(영문,숫자 포함 8자 이상, 30자 이하)';
+    if (InputValidator.nonValid("password", password)) {
+      errorText = "패스워드를 올바르게 입력해 주세요.(영문,숫자 포함 8자 이상, 30자 이하)";
     }
 
-    return await this.updateErrorTextState('password', errorText);
+    return await this.updateErrorTextState("password", errorText);
   };
 
-  isValidPasswordConfirm = async () => {
+  private isValidPasswordConfirm = async () => {
     const passwordConfirm = this.passwordConfirmRef.current.value;
-    let errorText = '';
+    let errorText = "";
 
     if (InputValidator.isBlank(passwordConfirm)) {
-      errorText = '패스워드 확인란을 입력해 주세요.';
+      errorText = "패스워드 확인란을 입력해 주세요.";
     } else if (passwordConfirm !== this.passwordRef.current.value) {
-      errorText = '패스워드 확인란이 패스워드란과 동일하지 않습니다';
+      errorText = "패스워드 확인란이 패스워드란과 동일하지 않습니다";
     }
 
-    return await this.updateErrorTextState('passwordConfirm', errorText);
+    return await this.updateErrorTextState("passwordConfirm", errorText);
   };
 
-  isValidPermitTerms = async () => {
-    const errorText = this.state.isCheckPermitTerms ? '' : '이용약관에 동의해주세요';
+  private isValidPermitTerms = async () => {
+    const errorText = this.state.isCheckPermitTerms ? "" : "이용약관에 동의해주세요";
 
-    return await this.updateErrorTextState('permitTerms', errorText);
+    return await this.updateErrorTextState("permitTerms", errorText);
   };
 
-  isAllValid = async () => {
+  private isAllValid = async () => {
     await this.isValidId();
     await this.isValidName();
     await this.isValidPassword();
@@ -122,7 +122,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return Object.keys(this.state.errors).length === 0;
   };
 
-  onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  private onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     this.isAllValid().then(valid => {
@@ -136,7 +136,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     });
   };
 
-  render() {
+  public render() {
     return (
       <form onSubmit={this.onSubmit}>
         <Input
@@ -154,7 +154,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           inputRef={this.nameRef}
           onBlur={this.isValidName}
           placeholder="User Name"
-          style={{ marginBottom: '8px' }}
+          style={{ marginBottom: "8px" }}
         />
         <Input
           error={!!this.state.errors.password}
@@ -163,7 +163,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           onBlur={this.isValidPassword}
           type="password"
           placeholder="Password(영문 숫자포함 8자 이상)"
-          style={{ marginBottom: '8px' }}
+          style={{ marginBottom: "8px" }}
         />
         <Input
           error={!!this.state.errors.passwordConfirm}
@@ -176,10 +176,14 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         <CheckboxForm
           name="permitTerms"
           onChange={this.onChangePermitTerms}
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
           label={
             <Text variant="caption" gutterBottom>
-              <em>이용약관</em> 및 <em>개인 정보 정책</em>에 동의합니다.
+              <em>이용약관</em>
+              {" "}
+              및
+              <em>개인 정보 정책</em>
+              에 동의합니다.
             </Text>
           }
         />
