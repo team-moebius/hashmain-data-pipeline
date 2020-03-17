@@ -4,6 +4,7 @@ import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.dto.MarketDto;
 import com.moebius.backend.dto.exchange.MarketsDto;
+import com.moebius.backend.dto.frontend.response.MarketResponseDto;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
@@ -34,5 +35,15 @@ public class MarketAssembler {
 		return marketsDto.stream()
 			.map(marketDto -> toMarket(exchange, marketDto.getMarket()))
 			.collect(Collectors.toList());
+	}
+
+	public MarketResponseDto toResponseDto(Market market) {
+		return MarketResponseDto.builder()
+			.exchange(market.getExchange())
+			.symbol(market.getSymbol())
+			.currentPrice(market.getCurrentPrice())
+			.changeRate(market.getChangeRate())
+			.accumulatedTradePrice(market.getAccumulatedTradePrice())
+			.build();
 	}
 }

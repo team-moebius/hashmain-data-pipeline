@@ -18,4 +18,8 @@ public class Market extends Base {
 	private ObjectId id;
 	private Exchange exchange;
 	private String symbol;
+	private double currentPrice;
+	private double changeRate;
+	private double accumulatedTradePrice;
+	private double accumulatedTradeVolume;
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/markets")
@@ -32,13 +33,13 @@ public class MarketController {
 
 	@PutMapping("/{exchange}")
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public Mono<ResponseEntity<?>> updateMarketsByExchange(@PathVariable Exchange exchange) {
-		return marketService.updateMarketsByExchange(Exchange.getBy(exchange.toString()));
+	public Mono<ResponseEntity<?>> updateMarketsByExchange(@PathVariable String exchange) {
+		return marketService.updateMarketsByExchange(Exchange.getBy(exchange));
 	}
 
 	@GetMapping("/{exchange}")
 	@PreAuthorize("hasAuthority('MEMBER')")
-	public Mono<ResponseEntity<MarketResponseDto>> getMarketsByExchange(@PathVariable String exchange) {
-		return null;
+	public Mono<ResponseEntity<List<MarketResponseDto>>> getMarketsByExchange(@PathVariable String exchange) {
+		return marketService.getMarketsByExchange(Exchange.getBy(exchange));
 	}
 }

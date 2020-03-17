@@ -6,6 +6,7 @@ import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.domain.markets.MarketRepository;
 import com.moebius.backend.dto.MarketDto;
 import com.moebius.backend.dto.exchange.MarketsDto;
+import com.moebius.backend.dto.frontend.response.MarketResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
@@ -36,6 +39,15 @@ public class MarketService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.map(market -> ResponseEntity.ok(market.getId().toString()));
+	}
+
+	public Mono<ResponseEntity<List<MarketResponseDto>>> getMarketsByExchange(Exchange exchange) {
+		return marketRepository.findAllByExchange(exchange)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.map(marketAssembler::toResponseDto)
+			.collectList()
+			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<String>> deleteMarket(String id) {
