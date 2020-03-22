@@ -43,7 +43,7 @@ function CoinsTable(props: ICoinsTableProps) {
   return (
     <div
       className='backgroundColor'
-      style={{ marginTop: '10px', height: isRegister ? '266px' : '716px', transition: 'height .15s linear' }}
+      style={{ marginTop: '10px', height: isRegister ? '319px' : '769px', transition: 'height .15s linear' }}
     >
       {unitButtons(unit, setUnit)}
       <AutoComplete

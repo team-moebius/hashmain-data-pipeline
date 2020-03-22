@@ -12,7 +12,7 @@ export function getSvg(key: string): any {
   let iconImage
   switch (key) {
     case 'cts':
-      iconImage = <><img className='customMenuIcon' src={ctsSvg} alt='' /><p className='customMenuIcon'>CTS 설정</p></>
+      iconImage = <><img className='customMenuIcon' src={ctsSvg} alt='' /><p>CTS 설정</p></>
       break
     case 'asset':
       iconImage = <><img className='customMenuIcon' src={assetSvg} alt='' /><p>자산관리</p></>

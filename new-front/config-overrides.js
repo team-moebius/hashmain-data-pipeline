@@ -21,7 +21,12 @@ module.exports = override(
       '@heading-color': '#B7C8F5',
       '@table-row-hover-bg': '#2B2F7B',
       '@table-header-bg-sm': '#0D0D2B',
-      '@btn-link-ghost-color': '#B7C8F5'
+      '@btn-link-ghost-color': '#B7C8F5',
+      '@select-dropdown-bg': '#212163',
+      '@select-background': '#1A1C4B',
+      '@select-item-selected-bg': '#1A1C4B',
+      '@select-item-active-bg': '#1A1C4B'
     }
   })
+  // addWebpackModuleRule({})
 )

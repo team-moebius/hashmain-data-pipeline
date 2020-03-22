@@ -4,6 +4,7 @@ import { Tabs } from 'antd'
 import { HOME_MENU_CHANGE_REQUESTED } from '../../actionCmds/homeActionCmd'
 import { homeMenuActionType } from '../../actions/homeAction'
 import { getSvg } from './loadIcon'
+import '../../style/menuIcon.css'
 
 function LeftMenu() {
   const menus = ['hts', 'cts', 'tds', 'asset', 'idea', 'forum', 'info', 'profile']
@@ -12,7 +13,7 @@ function LeftMenu() {
   return (
     <div className='leftMenu'>
       <div className='backgroundColor leftHedaer'>Menu</div>
-      <div className='backgroundColor' style={{ height: '1150px', marginTop: '-20px' }}>
+      <div className='backgroundColor' style={{ height: '1202px', marginTop: '-20px' }}>
         <Tabs
           style={{ marginTop: '25px' }}
           defaultActiveKey='1'

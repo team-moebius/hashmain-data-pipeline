@@ -49,15 +49,42 @@
   background-color: #1a1c4b;
 }
 
-.customMenuIcon {
-  width: 40px;
-  height: 40px;
+.htsStdButtons {
+  margin-top: 6px;
+  text-align: right;
+  padding: 10px 30px 0px 30px;
 }
 
-.customMenuIcon:hover {
-  filter: invert(77%) sepia(26%) saturate(391%) hue-rotate(188deg) brightness(99%) contrast(94%);
- }
+.htsStdBtn {
+  background-color: #1a1c4b !important;
+  color: #B7C8F5;
+  margin: 5px;
+  font-size: 11px;
+  height: 28px;
+}
 
-.ant-tabs-tab-active .customMenuIcon {
-  filter: invert(50%) sepia(59%) saturate(6432%) hue-rotate(320deg) brightness(106%) contrast(108%);
+.marketSelect {
+  width: 120px;
+  font-size: 11px;
+}
+
+.marketSelect .ant-select-arrow {
+  color: #B7C8F5;
+}
+
+.ant-select-dropdown-menu-item {
+  font-size: 11px;
+}
+
+.ant-select-dropdown-menu-item:hover {
+  background-color: #1A1C4B !important;
+}
+
+.showAsset {
+  display: inline-block;
+  width: 275px;
+  height: 41px;
+  text-align: right;
+  padding: 10px 20px;
+  font-size: 13px;
 }

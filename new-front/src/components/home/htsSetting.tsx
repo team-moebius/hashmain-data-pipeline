@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Tabs, Card, Spin, Button } from 'antd'
+import numeral from 'numeral'
 
 import HtsTable from './hts/htsTable'
 import RightSection from './hts/rightSection'
@@ -9,8 +10,10 @@ import { ReducerState } from '../../reducers/rootReducer'
 import { HTS_TRADE_INFO_REQUESTED, HTS_TRADE_ORDER_REQUESTED } from '../../actionCmds/htsActionCmd'
 import { htsInfoActionType, htsOrderActionType } from '../../actions/htsAction'
 import { orderRegisterCheck } from './hts/rules'
+import { HTSBtns } from './hts/htsStdButtons'
 import { openNotification } from '../../common/common'
 import '../../style/hts.css'
+
 
 function buildDtos(htsData: any): Array<Object> {
   return [].concat(htsData.sale).concat(htsData.purchase).concat(htsData.stopLoss)
@@ -37,10 +40,9 @@ function renderErrorMsg(erros : {
   && !erros.stopLossErr && !erros.saleErr && !erros.purchaseErr
 }
 
-function HTSBody(dataLoading: boolean, monetaryUnit: string, dispatch: any, htsData: any) {
-  const stdUnit = '.KRW'
+function HTSBody(dataLoading: boolean, monetaryUnit: string, dispatch: any, htsData: any, stdUnit: string) {
   return (
-    <div className='backgroundColor' style={{ marginTop: '6px', opacity: 100 }}>
+    <div className='backgroundColor' style={{ opacity: 1 }}>
       <Spin spinning={dataLoading}>
         <Card style={{ display: 'inline-block', border: '0px solid white', width: '100%' }} loading={dataLoading}>
           <HtsTable type='sale' stdUnit={stdUnit} monetaryUnit={monetaryUnit} />
@@ -66,8 +68,29 @@ function HTSBody(dataLoading: boolean, monetaryUnit: string, dispatch: any, htsD
   )
 }
 
+function showAsset(htsData: any, stdUnit: string, monetaryUnit: string) {
+  let stdUnitAst = ''
+  let monetaryUnitAst = ''
+
+  if (htsData.assets) {
+    htsData.assets.forEach((elm: any) => {
+      if (elm.currency === stdUnit.slice(1)) { stdUnitAst = numeral(elm.balance).format(',') }
+      if (elm.currency === monetaryUnit.slice(1)) { monetaryUnitAst = numeral(elm.balance).format(',') }
+    })
+  }
+  return (
+    <div
+      className='backgroundColor showAsset'
+      style={{ position: 'absolute' }}>
+      {stdUnitAst && `${stdUnitAst} ${stdUnit}보유`}
+      {monetaryUnitAst && `${monetaryUnitAst} ${monetaryUnit}보유`}
+    </div>
+  )
+}
+
 function HTSSetting() {
   const [selectedTab, setSelectedTab] = useState('trade')
+  const [stdUnit, setStdUnit] = useState('.KRW')
   const dispatch = useDispatch()
   const { dataLoading, htsData } = useSelector((state: ReducerState) => ({
     dataLoading: state.common.loading['HTS_TRADE_INFO'],
@@ -84,9 +107,12 @@ function HTSSetting() {
         <Tabs
           className='leftTabs backgroundColor contentsHeader'
           defaultActiveKey={selectedTab}
+          style={{ width: '645px', display: 'inline-block' }}
           onChange={(key) => { setSelectedTab(key) }}
         ><Tabs.TabPane tab={<p style={{ margin: 0, fontWeight: 600 }}>Tab 1</p>} key='trade' /></Tabs>
-        {HTSBody(dataLoading, monetaryUnit, dispatch, htsData)}
+        {showAsset(htsData, stdUnit, monetaryUnit)}
+        {HTSBtns(stdUnit, setStdUnit)}
+        {HTSBody(dataLoading, monetaryUnit, dispatch, htsData, stdUnit)}
       </div>
       <RightSection />
       <ManageTable />
