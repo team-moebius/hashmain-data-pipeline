@@ -71,7 +71,7 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, String exchangeName, String symbol) {
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsWithSymbol(String memberId, String exchangeName, String symbol) {
 		return Mono.zip(
 			getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol)),
 			getAssets(memberId, Exchange.getBy(exchangeName)).map(assetDtos -> filterAssetsBySymbol(assetDtos, symbol))

@@ -72,6 +72,6 @@ public class OrderController {
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsByExchangeAndSymbol(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange,
 		@PathVariable @NotBlank @ApiParam(value = "종목", required = true) String symbol) {
-		return internalOrderService.getOrdersAndAssets(principal.getName(), exchange, symbol);
+		return internalOrderService.getOrdersAndAssetsWithSymbol(principal.getName(), exchange, symbol);
 	}
 }
