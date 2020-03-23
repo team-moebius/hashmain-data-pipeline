@@ -19,7 +19,7 @@ public class JwtUtil implements Serializable {
 	private static final String ISSUER = "moebius";
 	private static final String VERIFICATION_KEY = "isActive";
 	private static final Key SECRET = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-	private static final long EXPIRATION_TIME = 60000L * 60L * 8L; // 8 hours
+	private static final long EXPIRATION_TIME = 60000L * 1L * 1L; // 1 minute
 
 	public static String generateToken(MoebiusPrincipal principal) {
 		Map<String, Object> claims = new HashMap<>();

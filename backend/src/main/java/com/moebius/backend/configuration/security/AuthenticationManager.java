@@ -1,8 +1,9 @@
 package com.moebius.backend.configuration.security;
 
 import com.moebius.backend.domain.members.Role;
+import com.moebius.backend.exception.DataNotVerifiedException;
+import com.moebius.backend.exception.ExceptionTypes;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -21,8 +22,9 @@ import java.util.stream.Collectors;
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 	@Override
 	public Mono<Authentication> authenticate(Authentication authentication) {
+		String authToken = authentication.getCredentials().toString();
+
 		try {
-			String authToken = authentication.getCredentials().toString();
 			Claims claims = JwtUtil.getAllClaimsFromToken(authToken);
 
 			if (claims != null && !JwtUtil.isTokenExpired(claims) && JwtUtil.isActiveMember(claims)) {
@@ -34,6 +36,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 		} catch (Exception e) {
 			log.warn("There is an exception on getAllClaimsFromToken.", e);
 		}
-		return Mono.empty();
+		return Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(authToken))));
 	}
 }
