@@ -22,9 +22,8 @@ import java.util.stream.Collectors;
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 	@Override
 	public Mono<Authentication> authenticate(Authentication authentication) {
-		String authToken = authentication.getCredentials().toString();
-
 		try {
+			String authToken = authentication.getCredentials().toString();
 			Claims claims = JwtUtil.getAllClaimsFromToken(authToken);
 
 			if (claims != null && !JwtUtil.isTokenExpired(claims) && JwtUtil.isActiveMember(claims)) {
