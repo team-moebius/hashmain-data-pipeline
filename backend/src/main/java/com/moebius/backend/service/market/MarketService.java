@@ -4,7 +4,7 @@ import com.moebius.backend.assembler.MarketAssembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.domain.markets.MarketRepository;
-import com.moebius.backend.dto.MarketDto;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.MarketsDto;
 import com.moebius.backend.dto.frontend.response.MarketResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +34,11 @@ public class MarketService {
 	private final MarketRepository marketRepository;
 	private final MarketAssembler marketAssembler;
 
-	public Mono<ResponseEntity<String>> createMarket(MarketDto marketDto) {
-		return marketRepository.save(marketAssembler.toMarket(marketDto))
+	public void updateMarketPrice(TradeDto tradeDto) {
+		marketRepository.findAndUpdateOneByTrade(tradeDto)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(market -> ResponseEntity.ok(market.getId().toString()));
+			.subscribe();
 	}
 
 	public Mono<ResponseEntity<List<MarketResponseDto>>> getMarketsByExchange(Exchange exchange) {

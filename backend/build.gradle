@@ -12,6 +12,7 @@ dependencies {
     implementation('org.mongodb:mongodb-driver-reactivestreams')
     implementation('org.modelmapper:modelmapper:2.3.2')
     implementation('org.apache.commons:commons-lang3:3.9')
+    implementation('org.apache.commons:commons-math3:3.6.1')
     implementation('io.jsonwebtoken:jjwt-api:0.10.5')
     implementation('io.projectreactor.kafka:reactor-kafka:1.1.1.RELEASE')
     implementation('io.springfox:springfox-swagger2:3.0.0-SNAPSHOT')
