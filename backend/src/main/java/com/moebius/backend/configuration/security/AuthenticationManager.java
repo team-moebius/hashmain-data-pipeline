@@ -36,6 +36,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 		} catch (Exception e) {
 			log.warn("There is an exception on getAllClaimsFromToken.", e);
 		}
-		return Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage(authToken))));
+		return Mono.defer(() -> Mono.error(new DataNotVerifiedException(ExceptionTypes.UNVERIFIED_DATA.getMessage("[Auth] Session(request id : " + authentication.getName() + ")"))));
 	}
 }
