@@ -8,7 +8,7 @@ import com.moebius.backend.dto.frontend.response.LoginResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;
 import com.moebius.backend.exception.DuplicatedDataException;
-import com.moebius.backend.exception.VerificationFailedException;
+import com.moebius.backend.exception.WrongDataException;
 import com.moebius.backend.service.member.EmailService;
 import com.moebius.backend.service.member.MemberService;
 import io.swagger.annotations.*;
@@ -36,7 +36,7 @@ public class MemberController {
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = LoginResponseDto.class),
 		@ApiResponse(code = 400, message = "Email is not found", response = DataNotFoundException.class),
-		@ApiResponse(code = 400, message = "Password is wrong", response = VerificationFailedException.class),
+		@ApiResponse(code = 400, message = "Password is wrong", response = WrongDataException.class),
 		@ApiResponse(code = 401, message = "Email is not verified", response = DataNotVerifiedException.class),
 	})
 	@PostMapping("")
@@ -69,7 +69,7 @@ public class MemberController {
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", response = String.class),
 		@ApiResponse(code = 400, message = "Requested email already exists", response = DuplicatedDataException.class),
-		@ApiResponse(code = 400, message = "Requested email already verified", response = VerificationFailedException.class),
+		@ApiResponse(code = 400, message = "Requested email already verified", response = WrongDataException.class),
 		@ApiResponse(code = 400, message = "Requested email is not found", response = DataNotFoundException.class),
 	})
 	@PostMapping("/signup")

@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-import PageTemplate from 'components/templates/PageTemplate';
+import PageTemplate from "components/templates/PageTemplate";
 
 interface ContentsProps {
   className: string;
@@ -13,18 +13,19 @@ interface ContentsState {
 class CoinInfo extends React.Component<ContentsProps, ContentsState> {
   private static TAB_HEADERS = [];
   private static TAB_ITEMS = [];
-  constructor(props: ContentsProps) {
+
+  public constructor(props: ContentsProps) {
     super(props);
     this.state = {
       index: 0,
     };
   }
 
-  onChangeTabIndex = (e: React.ChangeEvent<{}>, value: any) => {
+  private onChangeTabIndex = (e: React.ChangeEvent<{}>, value: any) => {
     this.setState({ index: value });
   };
 
-  render() {
+  public render() {
     return (
       <PageTemplate
         className={this.props.className}

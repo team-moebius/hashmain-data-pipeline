@@ -21,12 +21,12 @@ class SignIn extends React.Component<SignInProps, SignInState> {
   private emailRef = React.createRef<any>();
   private passwordRef = React.createRef<any>();
 
-  constructor(props: SignInProps) {
+  public constructor(props: SignInProps) {
     super(props);
     this.state = { errors: {} };
   }
 
-  onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  private onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (this.isValid()) {
@@ -34,7 +34,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     }
   };
 
-  isValid = () => {
+  private isValid = () => {
     let idErrorText = '';
     let passwordErrorText = '';
 
@@ -50,7 +50,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     return InputValidator.isBlank(idErrorText) && InputValidator.isBlank(passwordErrorText);
   };
 
-  render() {
+  public render() {
     return (
       <form onSubmit={this.onSubmit}>
         <Input

@@ -1,4 +1,3 @@
-// This file is a kind of business component, so this is classified as organisms.
 import * as React from 'react';
 
 import Input from 'components/atoms/Input';
@@ -6,33 +5,33 @@ import Text from 'components/atoms/Text';
 import Button from 'components/atoms/Button';
 import InputValidator from 'utils/InputValidator';
 
-type ApiKeyRegistPayloadType = 'accessKey' | 'secretKey' | 'name' | 'exchange';
-type ApiKeyRegistValidationType = 'accessKey' | 'secretKey' | 'name';
-type ApiKeyRegistPayload = { [key in ApiKeyRegistPayloadType]?: string };
-type ApiKeyRegistErrorState = { [key in ApiKeyRegistValidationType]?: string };
+type ApiKeyRegisterPayloadType = 'accessKey' | 'secretKey' | 'name' | 'exchange';
+type ApiKeyRegisterValidationType = 'accessKey' | 'secretKey' | 'name';
+type ApiKeyRegisterPayload = { [key in ApiKeyRegisterPayloadType]?: string };
+type ApiKeyRegisterErrorState = { [key in ApiKeyRegisterValidationType]?: string };
 
-interface ApiKeyRegistBoxProps {
+interface ApiKeyRegisterBoxProps {
   className?: string;
   pending?: boolean;
-  onSubmit: (data: ApiKeyRegistPayload) => void;
+  onSubmit: (data: ApiKeyRegisterPayload) => void;
   onClickViewMyApiKeyButton: () => void;
 }
 
-interface ApiKeyRegistBoxState {
-  errors: ApiKeyRegistErrorState;
+interface ApiKeyRegisterBoxState {
+  errors: ApiKeyRegisterErrorState;
 }
 
-class ApiKeyBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegistBoxState> {
+class ApiKeyRegisterBox extends React.Component<ApiKeyRegisterBoxProps, ApiKeyRegisterBoxState> {
   private accessKeyRef = React.createRef<any>();
   private secretKeyRef = React.createRef<any>();
   private botNameRef = React.createRef<any>();
 
-  constructor(props: ApiKeyRegistBoxProps) {
+  public constructor(props: ApiKeyRegisterBoxProps) {
     super(props);
     this.state = { errors: {} };
   }
 
-  onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  private onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (this.isValid()) {
@@ -45,7 +44,7 @@ class ApiKeyBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegistBoxSta
     }
   };
 
-  isValid = () => {
+  private isValid = () => {
     let accessKeyErrorText = '';
     let secretKeyErrorText = '';
     let botNameErrorText = '';
@@ -75,7 +74,7 @@ class ApiKeyBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegistBoxSta
     );
   };
 
-  render() {
+  public render() {
     return (
       <form className={this.props.className} onSubmit={this.onSubmit}>
         <Text align="center" gutterBottom style={{ fontWeight: 'bold', paddingBottom: '6px' }} variant="subtitle2">
@@ -142,4 +141,4 @@ class ApiKeyBox extends React.Component<ApiKeyRegistBoxProps, ApiKeyRegistBoxSta
   }
 }
 
-export default ApiKeyBox;
+export default ApiKeyRegisterBox;

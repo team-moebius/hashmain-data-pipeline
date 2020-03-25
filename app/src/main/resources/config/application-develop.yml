@@ -22,9 +22,9 @@ moebius:
       /webjars/**,
       /member/**,
       /members/**,
+      /markets/**,
       /login
-    admin: /admin,
-      /markets/**
+    admin: /admin
     member: /stoplosses/**,
       /api-keys/**,
       /orders/**
