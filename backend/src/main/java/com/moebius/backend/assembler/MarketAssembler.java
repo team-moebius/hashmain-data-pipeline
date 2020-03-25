@@ -2,8 +2,11 @@ package com.moebius.backend.assembler;
 
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.markets.Market;
+import com.moebius.backend.dto.TradeDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto;
 import com.moebius.backend.dto.exchange.MarketsDto;
 import com.moebius.backend.dto.frontend.response.MarketResponseDto;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
@@ -38,5 +41,15 @@ public class MarketAssembler {
 			.changeRate(market.getChangeRate())
 			.accumulatedTradePrice(market.getAccumulatedTradePrice())
 			.build();
+	}
+
+	public Market assemble(Market market, TradeDto tradeDto, UpbitTradeMetaDto tradeMetaDto) {
+		market.setCurrentPrice(tradeDto.getPrice());
+		market.setChangeRate(Precision.round(tradeDto.getPrice() / tradeDto.getPrevClosingPrice() - 1, 4));
+		market.setAccumulatedTradePrice(tradeMetaDto.getAccumulatedTradePrice());
+		market.setAccumulatedTradeVolume(tradeMetaDto.getAccumulatedTradeVolume());
+		market.setUpdatedAt(LocalDateTime.now());
+
+		return market;
 	}
 }

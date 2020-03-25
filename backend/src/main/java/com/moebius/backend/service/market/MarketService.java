@@ -6,15 +6,18 @@ import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.domain.markets.MarketRepository;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.MarketsDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto;
 import com.moebius.backend.dto.frontend.response.MarketResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.util.List;
 
@@ -27,17 +30,22 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 public class MarketService {
 	@Value("${exchange.upbit.rest.public-uri}")
 	private String publicUri;
+	@Value("${exchange.upbit.rest.secret-uri}")
+	private String secretUri;
 	@Value("${exchange.upbit.rest.market}")
 	private String marketUri;
+	@Value("${exchange.upbit.rest.recent}")
+	private String recentUri;
 
 	private final WebClient webClient;
 	private final MarketRepository marketRepository;
 	private final MarketAssembler marketAssembler;
 
 	public void updateMarketPrice(TradeDto tradeDto) {
-		marketRepository.findAndUpdateOneByTrade(tradeDto)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
+		getMarketAndTradeMeta(tradeDto)
+			.onErrorResume(UncategorizedMongoDbException.class, exception -> getMarketAndTradeMeta(tradeDto))
+			.map(tuple -> marketAssembler.assemble(tuple.getT1(), tradeDto, tuple.getT2()))
+			.flatMap(marketRepository::save)
 			.subscribe();
 	}
 
@@ -60,6 +68,7 @@ public class MarketService {
 			});
 	}
 
+	// TODO : External api call should be moved to specific exchange service
 	public Mono<ResponseEntity<?>> updateMarketsByExchange(Exchange exchange) {
 		return webClient.get()
 			.uri(publicUri + marketUri)
@@ -74,6 +83,23 @@ public class MarketService {
 					.forEach(market -> createMarketIfNotExist(market.getExchange(), market.getSymbol()).subscribe());
 				return ResponseEntity.ok().build();
 			});
+	}
+
+	private Mono<Tuple2<Market, UpbitTradeMetaDto>> getMarketAndTradeMeta(TradeDto tradeDto) {
+		return Mono.zip(
+			marketRepository.findByExchangeAndSymbol(tradeDto.getExchange(), tradeDto.getSymbol()),
+			getTradeMeta(tradeDto.getSymbol())
+		).subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
+	// TODO : External api call should be moved to specific exchange service
+	private Mono<UpbitTradeMetaDto> getTradeMeta(String symbol) {
+		return webClient.get()
+			.uri(secretUri + recentUri + symbol)
+			.retrieve()
+			.bodyToFlux(UpbitTradeMetaDto.class)
+			.next();
 	}
 
 	private Mono<Boolean> createMarketIfNotExist(Exchange exchange, String symbol) {
