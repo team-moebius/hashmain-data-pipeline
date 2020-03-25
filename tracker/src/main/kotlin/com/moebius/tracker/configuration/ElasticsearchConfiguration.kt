@@ -24,11 +24,17 @@ class ElasticsearchConfiguration(private val elasticsearchProperties: Elasticsea
     @Autowired
     private lateinit var marketService: MarketService
 
+    private fun clusterNodesHost(): List<HttpHost> {
+        return elasticsearchProperties.clusterNodes.split(',').map { HttpHost.create(it) }
+    }
+
     @Bean
     fun restClientBuilder(): RestClientBuilder {
         val userName = elasticsearchProperties.properties["username"]
         val password = elasticsearchProperties.properties["password"]
-        val builder = RestClient.builder(HttpHost.create(elasticsearchProperties.clusterNodes))
+        val builder = RestClient.builder(
+                *clusterNodesHost().toTypedArray()
+                )
         log.info("elasticsearch configuration - username:$userName / cluster-nodes:${elasticsearchProperties.clusterNodes}")
 
         if (userName != null && password != null) {
