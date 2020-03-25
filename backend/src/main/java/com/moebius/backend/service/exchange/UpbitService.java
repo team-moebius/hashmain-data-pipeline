@@ -8,7 +8,7 @@ import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.exception.VerificationFailedException;
+import com.moebius.backend.exception.WrongDataException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +72,7 @@ public class UpbitService implements ExchangeService {
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.exchange()
 			.filter(clientResponse -> clientResponse.statusCode() == HttpStatus.OK)
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new VerificationFailedException(ExceptionTypes.UNVERIFIED_DATA.getMessage("AuthToken")))));
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token")))));
 	}
 
 	@Override

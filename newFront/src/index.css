@@ -1,0 +1,14 @@
+*{
+  font-family: europa;
+}
+#root {
+  color: #B7C8F5;
+}
+.customBtn span {
+  color: #ffffff;
+}
+
+.customCheckBox .ant-checkbox {
+  border: 2px solid #1E8CDE;
+  border-radius: 20%;
+}

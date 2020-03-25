@@ -1,10 +1,11 @@
 import * as React from 'react';
 import classNames from 'classnames';
 
+import { AppBarProps as MuiAppBarProps } from "@material-ui/core/AppBar";
 import { makeStyles } from '@material-ui/core/styles';
 
 import Text from 'components/atoms/Text';
-import Header, { HeaderProps } from 'components/atoms/Header';
+import Header from 'components/atoms/Header';
 import Toolbar from 'components/atoms/Toolbar';
 
 interface AppBarChildSlots {
@@ -12,7 +13,7 @@ interface AppBarChildSlots {
   right: React.ReactChild;
 }
 
-export interface AppBarProps extends HeaderProps {
+export interface AppBarProps extends MuiAppBarProps {
   children?: AppBarChildSlots;
   subTitle?: JSX.Element;
 }

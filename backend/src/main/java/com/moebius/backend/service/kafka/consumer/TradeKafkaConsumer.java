@@ -1,6 +1,7 @@
 package com.moebius.backend.service.kafka.consumer;
 
 import com.moebius.backend.dto.TradeDto;
+import com.moebius.backend.service.market.MarketService;
 import com.moebius.backend.service.order.ExchangeOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -16,10 +17,13 @@ import java.util.Map;
 public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 	private static final String TRADE_KAFKA_TOPIC = "moebius.trade.upbit";
 	private final ExchangeOrderService exchangeOrderService;
+	private final MarketService marketService;
 
-	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService) {
+	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService,
+		MarketService marketService) {
 		super(receiverDefaultProperties);
 		this.exchangeOrderService = exchangeOrderService;
+		this.marketService = marketService;
 	}
 
 	@Override
@@ -33,6 +37,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 		TradeDto tradeDto = record.value();
 
 		exchangeOrderService.order(tradeDto);
+		marketService.updateMarketPrice(tradeDto);
 
 		offset.acknowledge();
 	}

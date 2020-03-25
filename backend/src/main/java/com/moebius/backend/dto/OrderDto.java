@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -21,6 +22,7 @@ import javax.validation.constraints.PositiveOrZero;
 public class OrderDto {
 	@Id
 	@ApiModelProperty(notes = "Order Id, 이미 생성된 order일 경우 삭제 또는 수정 시 반드시 넣어서 보내줘야 한다.")
+	@Nullable
 	private String id;
 	@NotNull
 	private EventType eventType;
