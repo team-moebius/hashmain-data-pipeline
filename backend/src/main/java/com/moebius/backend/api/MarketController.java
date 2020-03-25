@@ -2,7 +2,6 @@ package com.moebius.backend.api;
 
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.frontend.response.MarketResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotVerifiedException;
 import com.moebius.backend.exception.WrongDataException;
 import com.moebius.backend.service.market.MarketService;
@@ -43,7 +42,7 @@ public class MarketController {
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success", response = OrderResponseDto.class),
+		@ApiResponse(code = 200, message = "Success", responseContainer = "List", response = MarketResponseDto.class),
 		@ApiResponse(code = 400, message = "Wrong exchange has been entered.", response = WrongDataException.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class)
 	})
