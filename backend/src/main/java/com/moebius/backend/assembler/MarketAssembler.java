@@ -45,7 +45,7 @@ public class MarketAssembler {
 
 	public Market assemble(Market market, TradeDto tradeDto, UpbitTradeMetaDto tradeMetaDto) {
 		market.setCurrentPrice(tradeDto.getPrice());
-		market.setChangeRate(Precision.round(tradeDto.getPrice() / tradeDto.getPrevClosingPrice() - 1, 4));
+		market.setChangeRate(Precision.round(tradeDto.getPrice() / tradeDto.getPrevClosingPrice() - 1, 4) * 100);
 		market.setAccumulatedTradePrice(tradeMetaDto.getAccumulatedTradePrice());
 		market.setAccumulatedTradeVolume(tradeMetaDto.getAccumulatedTradeVolume());
 		market.setUpdatedAt(LocalDateTime.now());
