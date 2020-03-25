@@ -14,10 +14,10 @@ import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
+import com.moebius.backend.exception.WrongDataException;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
 import com.moebius.backend.service.order.validator.OrderValidator;
-import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.moebius.backend.domain.commons.EventType.DELETE;
+import static com.moebius.backend.domain.commons.EventType.*;
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
 
@@ -71,7 +71,7 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, String exchangeName, String symbol) {
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsWithSymbol(String memberId, String exchangeName, String symbol) {
 		return Mono.zip(
 			getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol)),
 			getAssets(memberId, Exchange.getBy(exchangeName)).map(assetDtos -> filterAssetsBySymbol(assetDtos, symbol))
@@ -92,25 +92,38 @@ public class InternalOrderService {
 
 	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
 		EventType eventType = orderDto.getEventType();
-		if (eventType == DELETE) {
+
+		if (eventType == CREATE) {
+			createOrder(apiKey, orderDto).subscribe();
+		} else if (eventType == UPDATE) {
+			updateOrder(orderDto).subscribe();
+		} else if (eventType == DELETE) {
 			deleteOrder(orderDto.getId()).subscribe();
-		} else {
-			Order order = orderAssembler.toOrder(apiKey, orderDto);
-			saveOrder(order).subscribe();
 		}
+
 		return orderDto;
 	}
 
-	private Mono<Void> deleteOrder(String id) {
-		Verifier.checkBlankString(id);
-
-		return orderRepository.deleteById(new ObjectId(id))
+	private Mono<Order> createOrder(ApiKey apiKey, OrderDto orderDto) {
+		return orderRepository.save(orderAssembler.toOrderWhenCreate(apiKey, orderDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}
 
-	private Mono<Order> saveOrder(Order order) {
-		return orderRepository.save(order)
+	private Mono<Order> updateOrder(OrderDto orderDto) {
+		if (orderDto.getId() == null) {
+			throw new WrongDataException("[Order] There isn't id in UPDATE or DELETE event dto. [" + orderDto + "]");
+		}
+
+		return orderRepository.findById(new ObjectId(orderDto.getId()))
+			.map(order -> orderAssembler.toOrderWhenUpdate(order, orderDto))
+			.flatMap(orderRepository::save)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
+	private Mono<Void> deleteOrder(String id) {
+		return orderRepository.deleteById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}

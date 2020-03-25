@@ -49,6 +49,7 @@ public class ExchangeOrderService {
 			.as(transactionalOperator::transactional)
 			.onErrorReturn(UncategorizedMongoDbException.class, 0L);
 	}
+
 	private Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
 		return Flux.concat(
 			Flux.fromStream(Arrays.stream(OrderPosition.values())

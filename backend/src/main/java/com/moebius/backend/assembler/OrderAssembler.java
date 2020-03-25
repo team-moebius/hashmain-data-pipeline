@@ -8,21 +8,15 @@ import com.moebius.backend.dto.AssetDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 public class OrderAssembler {
-	public Order toOrder(@NotNull ApiKey apiKey, @NotNull OrderDto dto) {
-		Order order = new Order(); // TODO : Test create & update
-		if (StringUtils.isNotBlank(dto.getId()) && dto.getEventType() == EventType.UPDATE) {
-			order.setId(new ObjectId(dto.getId()));
-		}
+	public Order toOrderWhenCreate(ApiKey apiKey, OrderDto dto) {
+		Order order = new Order();
 		order.setApiKeyId(apiKey.getId());
 		order.setExchange(dto.getExchange());
 		order.setSymbol(dto.getSymbol());
@@ -32,15 +26,23 @@ public class OrderAssembler {
 		order.setPrice(dto.getPrice());
 		order.setVolume(dto.getVolume());
 		order.setLevel(dto.getLevel());
-		if (StringUtils.isBlank(dto.getId()) && dto.getEventType() == EventType.CREATE) {
-			order.setCreatedAt(LocalDateTime.now());
-		}
+		order.setCreatedAt(LocalDateTime.now());
 		order.setUpdatedAt(LocalDateTime.now());
 
 		return order;
 	}
 
-	public OrderDto toDto(@NotNull Order order, EventType eventType) {
+	public Order toOrderWhenUpdate(Order order, OrderDto dto) {
+		order.setOrderType(dto.getOrderType());
+		order.setPrice(dto.getPrice());
+		order.setVolume(dto.getVolume());
+		order.setLevel(dto.getLevel());
+		order.setUpdatedAt(LocalDateTime.now());
+
+		return order;
+	}
+
+	public OrderDto toDto(Order order, EventType eventType) {
 		OrderDto orderDto = new OrderDto();
 		if (ObjectUtils.allNotNull(order.getId())) {
 			orderDto.setId(order.getId().toHexString());

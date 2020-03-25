@@ -50,6 +50,7 @@ exchange:
       asset: v1/accounts
       market: v1/market/all
       order: v1/orders
+      recent: recent?codes=CRIX.UPBIT.
 
 server:
   port: 80
