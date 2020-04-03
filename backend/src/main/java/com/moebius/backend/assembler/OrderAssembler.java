@@ -4,7 +4,6 @@ import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderStatus;
-import com.moebius.backend.dto.AssetDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import org.apache.commons.lang3.ObjectUtils;
@@ -60,10 +59,9 @@ public class OrderAssembler {
 		return orderDto;
 	}
 
-	public OrderResponseDto toResponseDto(List<OrderDto> orders, List<AssetDto> assets) {
+	public OrderResponseDto toResponseDto(List<OrderDto> orders) {
 		OrderResponseDto orderResponseDto = new OrderResponseDto();
 		orderResponseDto.setOrders(orders);
-		orderResponseDto.setAssets(assets);
 
 		return orderResponseDto;
 	}

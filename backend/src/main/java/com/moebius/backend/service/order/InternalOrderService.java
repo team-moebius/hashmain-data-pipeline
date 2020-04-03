@@ -58,25 +58,21 @@ public class InternalOrderService {
 				.collect(Collectors.toList()))
 			.collectList()
 			.doOnSuccess(this::evictOrderCaches)
-			.map(dtos -> orderAssembler.toResponseDto(dtos, null))
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, String exchangeName) {
-		return Mono.zip(
-			getOrders(memberId, Exchange.getBy(exchangeName)),
-			getAssets(memberId, Exchange.getBy(exchangeName))
-		).subscribeOn(COMPUTE.scheduler())
-			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
+	public Mono<ResponseEntity<OrderResponseDto>> getOrders(String memberId, String exchangeName) {
+		return getOrders(memberId, Exchange.getBy(exchangeName))
+			.subscribeOn(COMPUTE.scheduler())
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsWithSymbol(String memberId, String exchangeName, String symbol) {
-		return Mono.zip(
-			getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol)),
-			getAssets(memberId, Exchange.getBy(exchangeName)).map(assetDtos -> filterAssetsBySymbol(assetDtos, symbol))
-		).subscribeOn(COMPUTE.scheduler())
-			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersWithSymbol(String memberId, String exchangeName, String symbol) {
+		return getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol))
+			.subscribeOn(COMPUTE.scheduler())
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 

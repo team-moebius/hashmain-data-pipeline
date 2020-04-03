@@ -43,7 +43,7 @@ public class OrderController {
 	@ApiOperation(
 		value = "거래소에 따른 전체 주문(매수, 매도, 역지정) 및 자산 정보 제공",
 		httpMethod = "GET",
-		notes = "트레이더가 저장한 주문 정보 및 자산 정보를 제공한다. 트레이더의 거래소 api key를 기반으로 특정 거래소에 등록되어 있는 모든 주문 정보가 제공되며 현재 트레이더의 자산 정보도 같이 제공된다."
+		notes = "트레이더가 저장한 주문 정보를 제공한다. 트레이더의 거래소 api key를 기반으로 특정 거래소에 등록되어 있는 모든 주문 정보가 제공된다."
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
@@ -54,13 +54,13 @@ public class OrderController {
 	@GetMapping("/{exchange}")
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
-		return internalOrderService.getOrdersAndAssets(principal.getName(), exchange);
+		return internalOrderService.getOrders(principal.getName(), exchange);
 	}
 
 	@ApiOperation(
-		value = "거래소 및 종목에 따른 주문(매수, 매도, 역지정) 및 자산 정보 제공",
+		value = "거래소 및 종목에 따른 주문(매수, 매도, 역지정) 정보 제공",
 		httpMethod = "GET",
-		notes = "트레이더가 저장한 주문 정보 및 자산 정보를 제공한다. 트레이더의 거래소 api key를 기반으로, 거래소 및 종목을 조건으로 주문 정보가 제공되며 현재 트레이더의 자산 정보도 같이 제공된다."
+		notes = "트레이더가 저장한 주문 정보를 제공한다. 트레이더의 거래소 api key를 기반으로, 거래소 및 종목을 조건으로 주문 정보가 제공된다."
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
@@ -72,6 +72,6 @@ public class OrderController {
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsByExchangeAndSymbol(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange,
 		@PathVariable @NotBlank @ApiParam(value = "종목", required = true) String symbol) {
-		return internalOrderService.getOrdersAndAssetsWithSymbol(principal.getName(), exchange, symbol);
+		return internalOrderService.getOrdersWithSymbol(principal.getName(), exchange, symbol);
 	}
 }
