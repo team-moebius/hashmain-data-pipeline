@@ -12,9 +12,11 @@ import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderStatusDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
+import com.moebius.backend.service.asset.AssetService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
 import com.moebius.backend.service.order.validator.OrderValidator;
@@ -37,16 +39,12 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Service
 @RequiredArgsConstructor
 public class InternalOrderService {
-	private static final String DELIMITER = "-";
-	private static final int CURRENCY_INDEX = 1;
-	private static final int VALID_SYMBOL_INDEX = 2;
-
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
 	private final OrderValidator orderValidator;
 	private final ApiKeyService apiKeyService;
 	private final OrderCacheService orderCacheService;
-	private final ExchangeServiceFactory exchangeServiceFactory;
+	private final AssetService assetService;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
 		orderValidator.validate(orderDtos);
@@ -142,33 +140,9 @@ public class InternalOrderService {
 				.collectList());
 	}
 
-	private Mono<AssetsDto> getAssets(String memberId, Exchange exchange) {
-		return apiKeyService.getExchangeAuthToken(memberId, exchange)
-			.flatMap(authToken -> exchangeServiceFactory.getService(exchange)
-				.getAssets(authToken))
-			.subscribeOn(COMPUTE.scheduler());
-	}
-
 	private List<OrderDto> filterOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
 		return orderDtos.stream()
 			.filter(orderDto -> orderDto.getSymbol().equals(symbol.toUpperCase()))
 			.collect(Collectors.toList());
-	}
-
-	private List<AssetDto> filterAssetsBySymbol(List<AssetDto> assetDtos, String symbol) {
-		return assetDtos.stream()
-			.filter(assetDto -> assetDto.getCurrency().equals(getCurrencyFromSymbol(symbol)))
-			.collect(Collectors.toList());
-	}
-
-	private String getCurrencyFromSymbol(String symbol) {
-		String[] splitedSymbol = symbol.split(DELIMITER);
-
-		if (splitedSymbol.length != VALID_SYMBOL_INDEX) {
-			log.error("[Order] Failed to get currency from {}.", symbol);
-			throw new DataNotFoundException(ExceptionTypes.WRONG_DATA.getMessage("[Order] Symbol(" + symbol + ")"));
-		}
-
-		return splitedSymbol[CURRENCY_INDEX].toUpperCase();
 	}
 }

@@ -3,6 +3,7 @@ package com.moebius.backend.api;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderStatusDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;
 import com.moebius.backend.service.order.InternalOrderService;
@@ -73,5 +74,16 @@ public class OrderController {
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange,
 		@PathVariable @NotBlank @ApiParam(value = "종목", required = true) String symbol) {
 		return internalOrderService.getOrdersWithSymbol(principal.getName(), exchange, symbol);
+	}
+
+	@GetMapping("/status/exchanges/{exchange}")
+	public Mono<ResponseEntity<OrderStatusDto>> getOrderStatuses(Principal principal,
+		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
+		/**
+		 * TODO
+		 * 1. Implement logic to get asset by AssetService in InternalOrderService
+		 * 2. Implement asset & order aggregation in assembler
+		 */
+		return null;
 	}
 }
