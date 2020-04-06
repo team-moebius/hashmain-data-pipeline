@@ -53,9 +53,9 @@ public class OrderController {
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 	})
 	@GetMapping("/{exchange}")
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(Principal principal,
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchange(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
-		return internalOrderService.getOrders(principal.getName(), exchange);
+		return internalOrderService.getOrdersByExchange(principal.getName(), Exchange.getBy(exchange));
 	}
 
 	@ApiOperation(
@@ -70,10 +70,10 @@ public class OrderController {
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 	})
 	@GetMapping("/{exchange}/{symbol}")
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsByExchangeAndSymbol(Principal principal,
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchangeAndSymbol(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange,
 		@PathVariable @NotBlank @ApiParam(value = "종목", required = true) String symbol) {
-		return internalOrderService.getOrdersWithSymbol(principal.getName(), exchange, symbol);
+		return internalOrderService.getOrdersByExchangeAndSymbol(principal.getName(), Exchange.getBy(exchange), symbol);
 	}
 
 	@GetMapping("/status/exchanges/{exchange}")
@@ -84,6 +84,6 @@ public class OrderController {
 		 * 1. Implement logic to get asset by AssetService in InternalOrderService
 		 * 2. Implement asset & order aggregation in assembler
 		 */
-		return null;
+		return internalOrderService.getOrderStatuses(principal.getName(), Exchange.getBy(exchange));
 	}
 }

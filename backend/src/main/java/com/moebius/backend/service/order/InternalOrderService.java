@@ -1,14 +1,12 @@
 package com.moebius.backend.service.order;
 
-import com.moebius.backend.assembler.OrderAssembler;
+import com.moebius.backend.assembler.order.OrderAssembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
-import com.moebius.backend.dto.AssetDto;
-import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
@@ -17,7 +15,6 @@ import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
 import com.moebius.backend.service.asset.AssetService;
-import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
 import com.moebius.backend.service.order.validator.OrderValidator;
 import lombok.RequiredArgsConstructor;
@@ -60,18 +57,24 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrders(String memberId, String exchangeName) {
-		return getOrders(memberId, Exchange.getBy(exchangeName))
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchange(String memberId, Exchange exchange) {
+		return getOrders(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
 			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersWithSymbol(String memberId, String exchangeName, String symbol) {
-		return getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol))
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchangeAndSymbol(String memberId, Exchange exchange, String symbol) {
+		return getOrders(memberId, exchange).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol))
 			.subscribeOn(COMPUTE.scheduler())
 			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
+	}
+
+	public Mono<ResponseEntity<OrderStatusDto>> getOrderStatuses(String memberId, Exchange exchange) {
+		return getOrders(memberId, exchange)
+			.subscribeOn(COMPUTE.scheduler())
+			.map(orderDtos -> orderAssembler.toStatusDto())
 	}
 
 	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")

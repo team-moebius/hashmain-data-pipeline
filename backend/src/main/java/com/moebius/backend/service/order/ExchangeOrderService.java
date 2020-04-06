@@ -6,6 +6,7 @@ import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
+import com.moebius.backend.service.order.factory.OrderFactoryManager;
 import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

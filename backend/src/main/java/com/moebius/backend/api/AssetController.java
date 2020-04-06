@@ -38,7 +38,7 @@ public class AssetController {
 	@GetMapping("/{exchange}")
 	public Mono<ResponseEntity<AssetResponseDto>> getAssets(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
-		return assetService.getAssets(principal.getName(), Exchange.getBy(exchange));
+		return assetService.getAssetResponses(principal.getName(), Exchange.getBy(exchange));
 	}
 
 }
