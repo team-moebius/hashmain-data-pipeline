@@ -71,10 +71,13 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderStatusDto>> getOrderStatuses(String memberId, Exchange exchange) {
+	public Mono<ResponseEntity<List<OrderStatusDto>>> getOrderStatuses(String memberId, Exchange exchange) {
 		return getOrders(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
-			.map(orderDtos -> orderAssembler.toStatusDto())
+			.flatMapIterable(orderDtos -> orderDtos.stream()
+				.map(orderAssembler::toStatusDto)
+				.collect(Collectors.toList())
+			)
 	}
 
 	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")

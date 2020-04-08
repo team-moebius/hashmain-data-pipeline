@@ -12,4 +12,5 @@ import java.util.List;
 @ToString
 public class OrderResponseDto {
 	private List<OrderDto> orders;
+	private List<OrderStatusDto> orderStatuses;
 }

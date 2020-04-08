@@ -74,7 +74,12 @@ public class OrderAssembler {
 	public OrderStatusDto toStatusDto(OrderDto orderDto) {
 		return OrderStatusDto.builder()
 			.currency(orderUtil.getCurrencyBySymbol(orderDto.getSymbol()))
-			...
+			.averagePurchasePrice()
+			.purchaseAmount()
+			.tradePrice()
+			.evaluatedPrice()
+			.profitLossRatio()
+			.orderStatus()
 			.build();
 	}
 }

@@ -77,7 +77,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/status/exchanges/{exchange}")
-	public Mono<ResponseEntity<OrderStatusDto>> getOrderStatuses(Principal principal,
+	public Mono<ResponseEntity<List<OrderStatusDto>>> getOrderStatuses(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
 		/**
 		 * TODO
