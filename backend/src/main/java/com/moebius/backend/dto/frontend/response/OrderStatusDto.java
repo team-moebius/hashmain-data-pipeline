@@ -15,7 +15,7 @@ import lombok.ToString;
 public class OrderStatusDto {
 	private String currency;
 	private double averagePurchasePrice;
-	private double purchaseAmount;
+	private double balance;
 	private double tradePrice;
 	private double evaluatedPrice;
 	private double profitLossRatio;

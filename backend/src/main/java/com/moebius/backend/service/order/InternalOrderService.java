@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,31 +54,39 @@ public class InternalOrderService {
 				.collect(Collectors.toList()))
 			.collectList()
 			.doOnSuccess(this::evictOrderCaches)
-			.map(orderAssembler::toResponseDto)
+			.map(orders -> orderAssembler.toResponseDto(orders, Collections.emptyList()))
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchange(String memberId, Exchange exchange) {
 		return getOrders(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
-			.map(orderAssembler::toResponseDto)
+			.map(orders -> orderAssembler.toResponseDto(orders, Collections.emptyList()))
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchangeAndSymbol(String memberId, Exchange exchange, String symbol) {
-		return getOrders(memberId, exchange).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol))
+		return Mono.zip(
+			getOrders(memberId, exchange),
+			assetService.getAssetResponses()
+		)
+
+			getOrders(memberId, exchange).map(orders -> filterOrdersBySymbol(orders, symbol))
 			.subscribeOn(COMPUTE.scheduler())
-			.map(orderAssembler::toResponseDto)
+			.map(orders -> orderAssembler.toResponseDto(orders, Collections.emptyList()))
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<List<OrderStatusDto>>> getOrderStatuses(String memberId, Exchange exchange) {
-		return getOrders(memberId, exchange)
+	public Mono<ResponseEntity<OrderResponseDto>> getOrderStatuses(String memberId, Exchange exchange) {
+		return getOrders(memberId, exchange).map(orders -> )
 			.subscribeOn(COMPUTE.scheduler())
-			.flatMapIterable(orderDtos -> orderDtos.stream()
+
+			.flatMapIterable(orders -> orders.stream()
 				.map(orderAssembler::toStatusDto)
 				.collect(Collectors.toList())
-			)
+			).collectList()
+			.map(orderStatuses -> orderAssembler.toResponseDto(Collections.emptyList(), orderStatuses))
+			.map(ResponseEntity::ok);
 	}
 
 	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")

@@ -2,8 +2,7 @@ package com.moebius.backend.service.asset;
 
 import com.moebius.backend.assembler.AssetAssembler;
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.dto.AssetDto;
-import com.moebius.backend.dto.AssetsDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
 import com.moebius.backend.dto.frontend.response.AssetResponseDto;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
@@ -26,12 +25,13 @@ public class AssetService {
 	private final AssetAssembler assetAssembler;
 
 	public Mono<ResponseEntity<AssetResponseDto>> getAssetResponses(String memberId, Exchange exchange) {
-		return getAssets(memberId, exchange)
+		return getUpbitAssetDto(memberId, exchange)
 			.map(assetAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<List<AssetDto>> getAssets(String memberId, Exchange exchange) {
+	// TODO : Change abstract response dto
+	private Mono<List<UpbitAssetDto>> getUpbitAssetDto(String memberId, Exchange exchange) {
 		return apiKeyService.getExchangeAuthToken(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
 			.flatMap(authToken -> exchangeServiceFactory.getService(exchange)

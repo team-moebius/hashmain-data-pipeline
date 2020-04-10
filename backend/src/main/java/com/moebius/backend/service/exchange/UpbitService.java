@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
-import com.moebius.backend.dto.AssetsDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitAssetsDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
@@ -55,12 +55,12 @@ public class UpbitService implements ExchangeService {
 	}
 
 	@Override
-	public Mono<AssetsDto> getAssets(String authToken) {
+	public Mono<UpbitAssetsDto> getAssets(String authToken) {
 		return webClient.get()
 			.uri(publicUri + assetUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.retrieve()
-			.bodyToMono(AssetsDto.class);
+			.bodyToMono(UpbitAssetsDto.class);
 	}
 
 	@Override

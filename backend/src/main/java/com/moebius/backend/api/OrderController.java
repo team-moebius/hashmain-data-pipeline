@@ -77,13 +77,8 @@ public class OrderController {
 	}
 
 	@GetMapping("/status/exchanges/{exchange}")
-	public Mono<ResponseEntity<List<OrderStatusDto>>> getOrderStatuses(Principal principal,
+	public Mono<ResponseEntity<OrderResponseDto>> getOrderStatuses(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
-		/**
-		 * TODO
-		 * 1. Implement logic to get asset by AssetService in InternalOrderService
-		 * 2. Implement asset & order aggregation in assembler
-		 */
 		return internalOrderService.getOrderStatuses(principal.getName(), Exchange.getBy(exchange));
 	}
 }

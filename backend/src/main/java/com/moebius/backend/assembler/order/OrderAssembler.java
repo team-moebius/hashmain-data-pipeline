@@ -64,13 +64,6 @@ public class OrderAssembler {
 		return orderDto;
 	}
 
-	public OrderResponseDto toResponseDto(List<OrderDto> orders) {
-		OrderResponseDto orderResponseDto = new OrderResponseDto();
-		orderResponseDto.setOrders(orders);
-
-		return orderResponseDto;
-	}
-
 	public OrderStatusDto toStatusDto(OrderDto orderDto) {
 		return OrderStatusDto.builder()
 			.currency(orderUtil.getCurrencyBySymbol(orderDto.getSymbol()))
@@ -80,6 +73,13 @@ public class OrderAssembler {
 			.evaluatedPrice()
 			.profitLossRatio()
 			.orderStatus()
+			.build();
+	}
+
+	public OrderResponseDto toResponseDto(List<OrderDto> orders, List<OrderStatusDto> orderStatuses) {
+		return OrderResponseDto.builder()
+			.orders(orders)
+			.orderStatuses(orderStatuses)
 			.build();
 	}
 }
