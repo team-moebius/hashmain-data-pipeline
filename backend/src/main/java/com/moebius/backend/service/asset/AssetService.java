@@ -2,8 +2,9 @@ package com.moebius.backend.service.asset;
 
 import com.moebius.backend.assembler.AssetAssembler;
 import com.moebius.backend.domain.commons.Exchange;
-import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
+import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.AssetResponseDto;
+import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.member.ApiKeyService;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,18 @@ public class AssetService {
 	private final ExchangeServiceFactory exchangeServiceFactory;
 	private final AssetAssembler assetAssembler;
 
-	public Mono<ResponseEntity<AssetResponseDto>> getAssetResponses(String memberId, Exchange exchange) {
-		return getUpbitAssetDto(memberId, exchange)
+	public Mono<ResponseEntity<AssetResponseDto>> getAssets(String memberId, Exchange exchange) {
+		return getAssetDtos(memberId, exchange)
 			.map(assetAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	// TODO : Change abstract response dto
-	private Mono<List<UpbitAssetDto>> getUpbitAssetDto(String memberId, Exchange exchange) {
+	private Mono<List<? extends AssetDto>> getAssetDtos(String memberId, Exchange exchange) {
+		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
+
 		return apiKeyService.getExchangeAuthToken(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
-			.flatMap(authToken -> exchangeServiceFactory.getService(exchange)
-				.getAssets(authToken));
+			.flatMap(authToken -> exchangeService.getAssets(authToken)
+				.collectList());
 	}
 }

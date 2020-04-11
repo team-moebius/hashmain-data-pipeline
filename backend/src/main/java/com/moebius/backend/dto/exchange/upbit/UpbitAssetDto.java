@@ -3,14 +3,13 @@ package com.moebius.backend.dto.exchange.upbit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.moebius.backend.dto.exchange.AssetDto;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import org.apache.commons.lang3.math.NumberUtils;
 
-@Getter
-@Builder
+@Builder(builderClassName = "UpbitAssetDtoBuilder", toBuilder = true)
 @ToString
 @JsonDeserialize(builder = UpbitAssetDto.UpbitAssetDtoBuilder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -29,7 +28,30 @@ public class UpbitAssetDto implements AssetDto {
 	private boolean averagePurchasePriceModified;
 
 	@Override
+	public String getCurrency() {
+		return currency;
+	}
+
+	@Override
+	public double getBalance() {
+		return NumberUtils.toDouble(balance);
+	}
+
+	@Override
+	public double getLocked() {
+		return NumberUtils.toDouble(locked);
+	}
+
+	@Override
+	public double getAveragePurchasePrice() {
+		return NumberUtils.toDouble(averagePurchasePrice);
+	}
+
+	@Override
 	public boolean getAveragePurchasePriceModified() {
 		return averagePurchasePriceModified;
 	}
+
+	@JsonPOJOBuilder(withPrefix = "")
+	public static class UpbitAssetDtoBuilder { }
 }

@@ -5,6 +5,8 @@ public interface AssetDto {
 
 	double getBalance();
 
+	double getLocked();
+
 	double getAveragePurchasePrice();
 
 	default boolean getAveragePurchasePriceModified() {
