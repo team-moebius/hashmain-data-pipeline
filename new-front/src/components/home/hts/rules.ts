@@ -1,4 +1,4 @@
-export function orderRegisterCheck(htsData: any, stdUnit: string): {
+export function orderRegisterCheck(htsData: any, stdUnit: string, assetsData: any): {
   descPurchase: boolean, descSale: boolean, descStopLoss: boolean,
   stopLossErr: boolean, saleErr: boolean, purchaseErr: boolean
 } {
@@ -8,7 +8,7 @@ export function orderRegisterCheck(htsData: any, stdUnit: string): {
     descStopLoss: descendingCheck(htsData, 'stopLoss'),
     stopLossErr: stopLossRule(htsData),
     saleErr: saleRule(htsData),
-    purchaseErr: purchaseRule(htsData, stdUnit)
+    purchaseErr: purchaseRule(htsData, stdUnit, assetsData)
   }
 }
 
@@ -17,7 +17,8 @@ function descendingCheck(htsData: any, key: string): boolean {
   if (htsData[key]) {
     htsData[key].forEach((elm: any, idx: number) => {
       if (idx === 0 || !htsData[key]) { return }
-      if (htsData[key][idx - 1].price > elm.price) { saleError = true }
+      if (key !== 'purchase' && htsData[key][idx - 1].price > elm.price) { saleError = true }
+      if (key === 'purchase' && htsData[key][idx - 1].price < elm.price) { saleError = true }
     })
   }
   return saleError
@@ -49,9 +50,9 @@ function saleRule(htsData: any): boolean {
   return saleError
 }
 
-function purchaseRule(htsData: any, stdUnit: string): boolean {
+function purchaseRule(htsData: any, stdUnit: string, assetsData: any): boolean {
   const totalOrderPrice = htsData.purchase ? htsData.purchase.reduce((a: any, b: any) => (a + b.price), 0) : 0
-  const nowAsset = htsData.assets ? htsData.assets.filter((elm: any) => elm.currency === stdUnit.toUpperCase()) : []
+  const nowAsset = assetsData ? assetsData.filter((elm: any) => elm.currency === stdUnit.toUpperCase()) : []
   let purchaseError = false
   if (nowAsset[0] && totalOrderPrice > nowAsset[0].balance) {
     purchaseError = true

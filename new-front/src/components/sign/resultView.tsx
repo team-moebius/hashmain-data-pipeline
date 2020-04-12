@@ -1,9 +1,11 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { Result, Button } from 'antd'
+import { Button, Result } from 'antd'
+
 import { useCustomRouter } from '../../common/router/routerPush'
 import { signResetAction } from '../../actions/signAction'
 import { SIGN_REDUCER_RESET } from '../../actionCmds/signActionCmd'
+
 
 function ResultView() {
   const router = useCustomRouter()

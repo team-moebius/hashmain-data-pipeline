@@ -1,34 +1,45 @@
-import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Table } from 'antd'
-import PerfectScrollbar from 'react-perfect-scrollbar'
 
 import { ReducerState } from '../../../reducers/rootReducer'
 import { htsTableCols } from './htsTableCols'
+import { purchaseRes } from './purchaseRes'
 
 interface ITableProps {
   type: string,
   stdUnit: string,
-  monetaryUnit: string
+  monetaryUnit: string,
+  tableData: any,
+  setTableData: any
+}
+
+function renderFooter(type: string, tableData: any) {
+  if (type === 'purchase') {
+    return purchaseRes(type, tableData)
+  }
+  return <div style={{ height: '0' }} />
 }
 
 function HtsTable(props: ITableProps) {
-  const { type, stdUnit, monetaryUnit } = props
-  const { htsData } = useSelector((state: ReducerState) => ({ htsData: state.home.htsData }))
+  const { type, stdUnit, monetaryUnit, tableData, setTableData } = props
   const dispatch = useDispatch()
-  const [data, setData] = useState(htsData)
+  const { assetsData, exchange } = useSelector((state: ReducerState) => ({
+    assetsData: state.hts.assetsData,
+    exchange: state.hts.exchange
+  }))
 
   return (
-    <div style={{ height: '215px' }}>
-      <PerfectScrollbar options={{ wheelPropagation: false }}>
-        <Table
-          className='customTable'
-          columns={htsTableCols(type, stdUnit, monetaryUnit, data, setData, dispatch, htsData)}
-          dataSource={data[type]}
-          size='small'
-          pagination={false}
-        />
-      </PerfectScrollbar>
+    <div style={{ height: type === 'purchase' ? '255px' : '215px' }}>
+      <Table
+        className='customTable'
+        columns={htsTableCols(type, stdUnit, monetaryUnit, tableData, setTableData, dispatch, assetsData, exchange)}
+        dataSource={tableData[type]}
+        size='small'
+        pagination={false}
+        scroll={{ y: 200 }}
+        footer={() => renderFooter(type, tableData)}
+      />
     </div>
   )
 }

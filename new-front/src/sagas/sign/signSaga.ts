@@ -23,7 +23,8 @@ export function* fetchDuplicationCheck(action: any) {
     const isExist = !!result.data
     yield put(mailDupSuccessAction({ type: MAIL_DUPLICATION_CHECK_SUCCESS, idExist: isExist }))
   } catch (err) {
-    yield put(mailDupFailedAction({ type: MAIL_DUPLICATION_CHECK_FAILED, msg: err.message }))
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(mailDupFailedAction({ type: MAIL_DUPLICATION_CHECK_FAILED, msg: errMsg }))
   }
 }
 
@@ -32,7 +33,8 @@ export function* fetchSignUp(action: any) {
     const result = yield call(postSignUpApi, action.mail, action.name, action.pwd)
     yield put(signUpSuccessAction({ type: SIGN_UP_SUCCESS, signDone: result.data === 'OK' }))
   } catch (err) {
-    yield put(signUpFailedAction({ type: SIGN_UP_FAILED, msg: err.message }))
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(signUpFailedAction({ type: SIGN_UP_FAILED, msg: errMsg }))
   }
 }
 
@@ -44,6 +46,7 @@ export function* fetchSignIn(action: any) {
     // window.location.reload()
     yield put(signInSuccessAction({ type: SIGN_IN_SUCCESS }))
   } catch (err) {
-    yield put(signInFailedAction({ type: SIGN_IN_FAILED, msg: err.message }))
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(signInFailedAction({ type: SIGN_IN_FAILED, msg: errMsg }))
   }
 }

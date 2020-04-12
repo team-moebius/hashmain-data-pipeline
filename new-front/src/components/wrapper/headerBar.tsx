@@ -8,7 +8,9 @@ function HeaderBar() {
 
   return (
     <div className='headerBar backgroundColor' style={{ padding: '7px 20px' }}>
-      <img src={headerLogo} alt='' style={{ height: '43px', width: '40px', marginRight: '20px' }} />
+      <div style={{ height: '43px', width: '40px', margin: '5px 10px', display: 'inline-block' }}>
+        <img src={headerLogo} alt='' style={{ height: 'auto', maxWidth: '100%' }} />
+      </div>
       <p style={{ fontSize: '22px', fontWeight: 'bold', display: 'inline-block', verticalAlign: 'middle' }}>
         H<span style={{ color: '#ff3a7d' }}>Λ</span>SHM<span style={{ color: '#ff3a7d' }}>Λ</span>IN. Pro
       </p>

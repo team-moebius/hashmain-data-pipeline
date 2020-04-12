@@ -16,6 +16,7 @@ module.exports = override(
       '@input-color': '#B7C8F5',
       '@input-placeholder-color': 'hsv(0, 0, 75%)',
       '@border-color-base': '#101037',
+      '@border-color-split': '#101037',
       '@checkbox-check-color': '#101037',
       '@text-color': '#B7C8F5',
       '@heading-color': '#B7C8F5',

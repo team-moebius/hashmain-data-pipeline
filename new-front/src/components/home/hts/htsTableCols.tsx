@@ -2,32 +2,44 @@ import React, { ReactNode } from 'react'
 import { InputNumber, Button } from 'antd'
 import produce from 'immer'
 import numeral from 'numeral'
-import { HTS_TRADE_INFO_SUCCESS } from '../../../actionCmds/htsActionCmd'
-import { htsInfoSuccessActionType } from '../../../actions/htsAction'
+import { headerNames } from './headerNames'
+// import { HTS_TRADE_INFO_SUCCESS } from '../../../actionCmds/htsActionCmd'
+// import { htsInfoSuccessActionType } from '../../../actions/htsAction'
 
 interface IColsType {
   title: string | ReactNode,
   dataIndex: string,
   key: string,
+  width?: number,
   render: (value?: any, record?: any, index?: number) => any
 }
 
+// stdUnit is diffrent with hts reducer and hts hooks.
+// This is hts hooks, after when we hts top button using, It must be change to hts reudcer(Need a policy).
 export function htsTableCols(
-  type: string, stdUnit: string, monetaryUnit: string, data: any, setData: any, dispatch: any, htsData: any
+  type: string,
+  stdUnit: string,
+  monetaryUnit: string,
+  data: any,
+  setData: any,
+  dispatch: any,
+  assetsData: any,
+  exchange: string
 ): Array<IColsType> {
   return [{
     title: '',
     dataIndex: '',
     key: '',
+    width: 50,
     render: (text, record, index = 0) => (
       <Button
         type='link'
         className='customLink'
-        onClick={() => minusBtnAction(type, data, setData, dispatch, htsData, index)} icon='minus-circle'
+        onClick={() => minusBtnAction(type, data, setData, dispatch, index)} icon='minus-circle'
       />
     )
   }, {
-    title: 'title',
+    title: headerNames[type].title,
     dataIndex: 'title',
     key: 'title',
     render: (text, record, index = 0) => (
@@ -37,10 +49,11 @@ export function htsTableCols(
     title: <Button
       className='customLink'
       type='link'
-      onClick={() => plusBtnAction(type, data, setData, dispatch, htsData)} icon='plus-circle'
+      onClick={() => plusBtnAction(type, data, setData, dispatch, monetaryUnit, stdUnit, exchange)} icon='plus-circle'
     />,
     dataIndex: '',
     key: '',
+    width: 50,
     render: (text, record, index = 0) => (
       <Button
         className='customLink'
@@ -49,9 +62,10 @@ export function htsTableCols(
       />
     )
   }, {
-    title: 'price1',
+    title: headerNames[type].price,
     dataIndex: 'price',
     key: 'price',
+    width: 155,
     render: (price, record, index = 0) => (
       <>
         <InputNumber
@@ -64,13 +78,14 @@ export function htsTableCols(
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           parser={(value = '') => value.replace(/\$\s?|(,*)/g, '')}
         />
-        <p style={{ display: 'inline-block', marginLeft: '5px' }}>{stdUnit}</p>
+        <p style={{ display: 'inline-block', marginLeft: '5px' }}>.{stdUnit}</p>
       </>
     )
   }, {
-    title: 'volume',
+    title: headerNames[type].volume,
     dataIndex: 'volume',
     key: 'volume',
+    width: 155,
     render: (volume, record, index = 0) => (
       <>
         <InputNumber
@@ -82,28 +97,30 @@ export function htsTableCols(
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           parser={(value = '') => value.replace(/\$\s?|(,*)/g, '')}
         />
-        <p style={{ display: 'inline-block', marginLeft: '5px' }}>{monetaryUnit}</p>
+        <p style={{ display: 'inline-block', marginLeft: '5px' }}>.{monetaryUnit}</p>
       </>
     )
   }, {
-    title: 'rate',
+    title: headerNames[type].rate,
     dataIndex: 'rate',
     key: 'rate',
+    width: 80,
     render: (empty, record) => {
       const { volume } = record
       const getBalance = (unit: string) => {
-        const nowBalnce = htsData.assets.filter((elm: any) => elm.currency === unit.slice(1))
+        const nowBalnce = assetsData.filter((elm: any) => elm.currency === unit)
         return nowBalnce[0] ? nowBalnce[0].balance : 0
       }
       const balance = type === 'purchase' ? getBalance(monetaryUnit) : getBalance(stdUnit)
-      return <p>{balance === 0 ? 0 : numeral(volume / balance).format('0.0')}%</p>
+      return <p style={{ textAlign: 'center' }}>{balance === 0 ? 0 : numeral(volume / balance).format('0.0')}%</p>
     }
   },
   {
-    title: 'price2',
+    title: headerNames[type].total,
     dataIndex: 'total',
     key: 'total',
-    render: (empty, record) => <p>{`${numeral(record.price * record.volume).format(',0')} ${stdUnit}`}</p>
+    width: 155,
+    render: (empty, record) => <p>{`${numeral(record.price * record.volume).format(',0.00a')} .${stdUnit}`}</p>
   }]
 }
 
@@ -127,13 +144,15 @@ function dataChage(data: any, type: string, key: string, index: number, value: n
   setData(temp)
 }
 
-function plusBtnAction(type: string, data: any, setData: any, dispatch: any, htsData: any): void {
+function plusBtnAction(
+  type: string, data: any, setData: any, dispatch: any, monetaryUnit: string, stdUnit: string, exchange: string
+): void {
   const title = { SALE: '차 이익실현 지정가 ', PURCHASE: '차 지정가 ', STOPLOSS: '차 감시 지정가 ' }
   const newElm = {
     id: '',
     eventType: 'CREATE',
-    exchange: 'UPBIT',
-    symbol: 'KRW-ETH',
+    exchange: exchange.toUpperCase(),
+    symbol: `${stdUnit}-${monetaryUnit}`,
     orderPosition: type.toUpperCase(),
     orderStatus: 'EXECUTED',
     orderType: 'LIMIT',
@@ -143,7 +162,7 @@ function plusBtnAction(type: string, data: any, setData: any, dispatch: any, hts
     key: data[type].length,
     title: `${title[type.toUpperCase()]}${type === 'purchase' ? '매수' : '매도'}`
   }
-  const newData = produce(htsData, (draft: any) => {
+  const newData = produce(data, (draft: any) => {
     if (type === 'purchase') {
       draft[type].push(newElm)
     } else {
@@ -151,13 +170,13 @@ function plusBtnAction(type: string, data: any, setData: any, dispatch: any, hts
     }
   })
   setData(newData)
-  dispatch(htsInfoSuccessActionType({ type: HTS_TRADE_INFO_SUCCESS, htsData: newData }))
+  // dispatch(htsInfoSuccessActionType({ type: HTS_TRADE_INFO_SUCCESS, htsData: newData }))
 }
 
-function minusBtnAction(type: string, data: any, setData: any, dispatch: any, htsData: any, index: number): void {
-  const newData = produce(htsData, (draft: any) => {
+function minusBtnAction(type: string, data: any, setData: any, dispatch: any, index: number): void {
+  const newData = produce(data, (draft: any) => {
     draft[type].splice(index, 1)
   })
   setData(newData)
-  dispatch(htsInfoSuccessActionType({ type: HTS_TRADE_INFO_SUCCESS, htsData: newData }))
+  // dispatch(htsInfoSuccessActionType({ type: HTS_TRADE_INFO_SUCCESS, htsData: newData }))
 }

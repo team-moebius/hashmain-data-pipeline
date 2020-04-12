@@ -5,7 +5,8 @@ import { openNotification } from '../../../common/common'
 export function apiKeyValidCheck(
   inputValue: { name: string, accessKey: string, secretKey: string},
   dispatch: any,
-  isValid: boolean
+  isValid: boolean,
+  exchange: string
 ): void {
   if (!inputValue.name || !inputValue.accessKey || !inputValue.secretKey) {
     openNotification('error', '모든 칸을 채워주세요.')
@@ -22,7 +23,7 @@ export function apiKeyValidCheck(
       type: 'get',
       data: {
         accessKey: inputValue.accessKey,
-        exchange: 'UPBIT',
+        exchange: exchange.toUpperCase(),
         name: inputValue.name,
         secretKey: inputValue.secretKey
       }
@@ -30,7 +31,9 @@ export function apiKeyValidCheck(
   }))
 }
 
-export function apiKeyRegister(registerValue: any, dispatch: any, isValid: boolean, setIsRegister: any): void {
+export function apiKeyRegister(
+  registerValue: any, dispatch: any, isValid: boolean, setIsRegister: any, exchange: string
+): void {
   if (!isValid) {
     openNotification('error', 'Key 유효성 체크를 해주세요')
     return
@@ -42,7 +45,7 @@ export function apiKeyRegister(registerValue: any, dispatch: any, isValid: boole
       type: 'post',
       data: {
         accessKey: registerValue.accessKey,
-        exchange: 'UPBIT',
+        exchange: exchange.toUpperCase(),
         name: registerValue.name,
         secretKey: registerValue.secretKey
       }

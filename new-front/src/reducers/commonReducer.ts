@@ -62,7 +62,7 @@ function checkLoading(nextState: any, action: any) {
 
 function checkTokenVaild(nextState: any, action: any) {
   if (action.type.indexOf('_FAILED') > -1) {
-    if (action.msg.indexOf('Network Error') > -1) {
+    if (action.msg.indexOf('[Auth]') > -1) {
       nextState = produce(nextState, (draft: any) => {
         draft.tokenValid = false
       })

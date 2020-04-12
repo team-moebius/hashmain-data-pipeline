@@ -14,7 +14,8 @@ function renderRegisterKey(
   setIsRegister: any,
   isValid: boolean,
   dispatch: any,
-  registerValue: any
+  registerValue: any,
+  exchange: string
 ) {
   const inputValue = { name: '', accessKey: '', secretKey: '' }
 
@@ -43,11 +44,11 @@ function renderRegisterKey(
       </ul>
       <Button
         className='apiKeyCheck'
-        onClick={() => apiKeyValidCheck(inputValue, dispatch, isValid)}>API KEY 유효성 검사</Button>
+        onClick={() => apiKeyValidCheck(inputValue, dispatch, isValid, exchange)}>API KEY 유효성 검사</Button>
       <Button
         type='primary'
         style={{ width: '49%' }}
-        onClick={() => apiKeyRegister(registerValue, dispatch, isValid, setIsRegister)}>등록하기</Button>
+        onClick={() => apiKeyRegister(registerValue, dispatch, isValid, setIsRegister, exchange)}>등록하기</Button>
       <Button type='primary' style={{ width: '49%', float: 'right' }} onClick={() => setIsRegister(false)}>돌아가기</Button>
     </div>
   )
@@ -67,9 +68,10 @@ function renderDisplayKey(setIsRegister: any) {
 function ApiKeyRegister(props: IAPIKeyRegistProps) {
   const { isRegister, setIsRegister } = props
   const dispatch = useDispatch()
-  const { registerValue, isValid } = useSelector((state: ReducerState) => ({
-    registerValue: state.home.registerValue,
-    isValid: state.home.isValid
+  const { registerValue, isValid, exchange } = useSelector((state: ReducerState) => ({
+    registerValue: state.hts.registerValue,
+    isValid: state.hts.isValid,
+    exchange: state.hts.exchange
   }))
   return (
     <div
@@ -77,7 +79,7 @@ function ApiKeyRegister(props: IAPIKeyRegistProps) {
       style={{ height: isRegister ? '640px' : '190px', transition: 'height .15s linear' }}
     >
       {isRegister
-        ? renderRegisterKey(setIsRegister, isValid, dispatch, registerValue)
+        ? renderRegisterKey(setIsRegister, isValid, dispatch, registerValue, exchange)
         : renderDisplayKey(setIsRegister)}
     </div>
   )

@@ -12,7 +12,7 @@ function RightSection() {
   const [isRegister, setIsRegister] = useState(false)
   const dispatch = useDispatch()
   const { apiKeyState } = useSelector((state: ReducerState) => ({
-    apiKeyState: state.home.apiKeyState
+    apiKeyState: state.hts.apiKeyState
   }))
 
   useEffect(() => {

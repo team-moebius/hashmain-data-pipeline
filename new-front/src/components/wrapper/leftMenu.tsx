@@ -13,7 +13,7 @@ function LeftMenu() {
   return (
     <div className='leftMenu'>
       <div className='backgroundColor leftHedaer'>Menu</div>
-      <div className='backgroundColor' style={{ height: '1202px', marginTop: '-20px' }}>
+      <div className='backgroundColor' style={{ height: '1252px', marginTop: '-20px' }}>
         <Tabs
           style={{ marginTop: '25px' }}
           defaultActiveKey='1'

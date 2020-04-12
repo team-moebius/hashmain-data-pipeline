@@ -40,15 +40,6 @@
   width: 5px;
 }
 
-.coinsSearch {
-  width: 100%;
-  padding: 10px;
-}
-
-.coinsSearch .ant-select-selection {
-  background-color: #1a1c4b;
-}
-
 .htsStdButtons {
   margin-top: 6px;
   text-align: right;
@@ -87,4 +78,14 @@
   text-align: right;
   padding: 10px 20px;
   font-size: 13px;
+}
+
+.coinsTable {
+  display: inline-block;
+  border: 0px solid white;
+  width: 100%;
+}
+
+.coinsTable .ant-card-body {
+  padding: 10px;
 }

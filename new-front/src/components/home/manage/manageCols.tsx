@@ -10,31 +10,31 @@ export function manageCols() {
     className: 'firstCol',
     render: () => <div className='firstCol' style={{ height: '30px', width: '0' }} />
   }, {
-    title: 'col1',
+    title: '보유 코인',
     dataIndex: 'ownCoin',
     key: 'ownCoin',
     algin: 'center',
     render: (text: string) => <p>{text}</p>
   }, {
-    title: 'col2',
+    title: '평균 매수가',
     dataIndex: 'average',
     key: 'average',
     algin: 'center',
     render: (text: number) => (Number.isNaN(text) || text === 0 ? '-' : numeral(text).format('0,0'))
   }, {
-    title: 'col3',
+    title: '매수량',
     dataIndex: 'totalVol',
     key: 'totalVol',
     algin: 'center',
     render: (text: number) => (Number.isNaN(text) || text === 0 ? '-' : numeral(text).format('0,0'))
   }, {
-    title: 'col4',
+    title: '현재 평가 금액',
     dataIndex: 'assessment',
     key: 'assessment',
     algin: 'center',
     render: (text: number) => (Number.isNaN(text) || text === 0 ? '-' : numeral(text).format('0,0'))
   }, {
-    title: 'col5',
+    title: '현재 평가 손익',
     dataIndex: 'profit',
     key: 'profit',
     algin: 'center',

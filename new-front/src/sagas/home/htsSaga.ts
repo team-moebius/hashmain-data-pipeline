@@ -1,12 +1,19 @@
-import { put, call } from 'redux-saga/effects'
-import { getOrderForStockApi, fetchOrderForStockApi, fetchAPIKeyAPi } from '../../apis/homeApi'
+import { put, call, select } from 'redux-saga/effects'
+import {
+  getOrderForStockApi, fetchOrderForStockApi, fetchAPIKeyAPi, getMarketApi, getAssetsApi
+} from '../../apis/htsApi'
+import { ReducerState } from '../../reducers/rootReducer'
 import {
   HTS_TRADE_INFO_SUCCESS,
   HTS_TRADE_INFO_FAILED,
   HTS_TRADE_ORDER_SUCCESS,
   HTS_TRADE_ORDER_FAILED,
   HTS_API_KEY_SUCCESS,
-  HTS_API_KEY_FAILED
+  HTS_API_KEY_FAILED,
+  HTS_MARKET_INFO_SUCCESS,
+  HTS_MARKET_INFO_FAILED,
+  HTS_ASSETS_SUCCESS,
+  HTS_ASSETS_FAILED
 } from '../../actionCmds/htsActionCmd'
 import {
   htsInfoSuccessActionType,
@@ -14,19 +21,48 @@ import {
   htsOrderSuccessActionType,
   htsOrderFailedActionType,
   htsAPIKeySuccessActionType,
-  htsAPIKeyFailedActionType
+  htsAPIKeyFailedActionType,
+  htsMarketSuccessActionType,
+  htsMarketFailedActionType,
+  htsAssetsSuccessActionType,
+  htsAssetsFailedActionType
 } from '../../actions/htsAction'
+
+/*
+  After asset Api develop, It must be modify function 'refineHTSData', 'refineManageData'
+  It have to delete asset part
+*/
 
 export function* fetchHtsInfo() {
   try {
-    const exchange = 'upbit'
     const token = window.localStorage.getItem('token') || 'empty'
-    const result = yield call(getOrderForStockApi, exchange, token)
+    const { monetaryUnit, stdUnit, exchange } = yield select((state: ReducerState) => ({
+      monetaryUnit: state.hts.monetaryUnit,
+      stdUnit: state.hts.stdUnit,
+      exchange: state.hts.exchange
+    }))
+    const result = yield call(getOrderForStockApi, exchange, token, monetaryUnit, stdUnit)
     const hts = refineHTSData(result.data)
     const manage = refineManageData(hts)
     yield put(htsInfoSuccessActionType({ type: HTS_TRADE_INFO_SUCCESS, htsData: hts, manageData: manage }))
   } catch (err) {
-    yield put(htsInfoFailedActionType({ type: HTS_TRADE_INFO_FAILED, msg: err.message }))
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(htsInfoFailedActionType({ type: HTS_TRADE_INFO_FAILED, msg: errMsg }))
+  }
+}
+
+export function* fetchHtsMarketInfo(action: any) {
+  try {
+    const token = window.localStorage.getItem('token') || 'empty'
+    const result = yield call(getMarketApi, action.exchange, token)
+    const marketDataResult = result.data.map(
+      (elm: any) => ({ ...elm, key: elm.symbol.slice(elm.symbol.indexOf('-') + 1) })
+    )
+
+    yield put(htsMarketSuccessActionType({ type: HTS_MARKET_INFO_SUCCESS, marketData: marketDataResult }))
+  } catch (err) {
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(htsMarketFailedActionType({ type: HTS_MARKET_INFO_FAILED, msg: errMsg }))
   }
 }
 
@@ -38,7 +74,8 @@ export function* fetchHtsOrder(action: any) {
     const manage = refineManageData(hts)
     yield put(htsOrderSuccessActionType({ type: HTS_TRADE_ORDER_SUCCESS, htsData: hts, manageData: manage }))
   } catch (err) {
-    yield put(htsOrderFailedActionType({ type: HTS_TRADE_ORDER_FAILED, msg: err.message }))
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(htsOrderFailedActionType({ type: HTS_TRADE_ORDER_FAILED, msg: errMsg }))
   }
 }
 
@@ -48,10 +85,21 @@ export function* fetchAPIKey(action: any) {
     const result = yield call(fetchAPIKeyAPi, action.restType, token)
     yield put(htsAPIKeySuccessActionType({ type: HTS_API_KEY_SUCCESS, answer: result.data }))
   } catch (err) {
-    yield put(htsAPIKeyFailedActionType({ type: HTS_API_KEY_FAILED, msg: err.message }))
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(htsAPIKeyFailedActionType({ type: HTS_API_KEY_FAILED, msg: errMsg }))
   }
 }
 
+export function* fetchAssets(action: any) {
+  try {
+    const token = window.localStorage.getItem('token') || 'empty'
+    const result = yield call(getAssetsApi, action.exchange, token)
+    yield put(htsAssetsSuccessActionType({ type: HTS_ASSETS_SUCCESS, assetsData: result.data.assets }))
+  } catch (err) {
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(htsAssetsFailedActionType({ type: HTS_ASSETS_FAILED, msg: errMsg }))
+  }
+}
 
 function refineHTSData(data: { assets: Array<any>, orders: Array<any> }) {
   const title = { SALE: '차 이익실현 지정', PURCHASE: '차 지정', STOPLOSS: '차 감시 지정' }
@@ -76,6 +124,7 @@ function refineHTSData(data: { assets: Array<any>, orders: Array<any> }) {
 
 function refineManageData(data: { assets: any[], sale: any[], purchase: any[], stopLoss: any[] }) {
   const res: { ownCoin: string; average: number; totalVol: any; assessment: number; profit: number }[] = []
+  if (!data.assets) { return [] }
   data.assets.forEach((walElm: any) => {
     const walData = data.purchase.filter((elm: any) => elm.symbol.indexOf(walElm.currency) === 0)
     const volume = walData.reduce((a: any, b: { volume: any }) => (a + b.volume), 0)
