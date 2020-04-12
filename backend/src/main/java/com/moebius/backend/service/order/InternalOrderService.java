@@ -10,7 +10,6 @@ import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderStatusDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
@@ -66,21 +65,17 @@ public class InternalOrderService {
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchangeAndSymbol(String memberId, Exchange exchange, String symbol) {
-		return Mono.zip(
-			getOrders(memberId, exchange),
-			assetService.getAssetResponses()
-		)
-
-			getOrders(memberId, exchange).map(orders -> filterOrdersBySymbol(orders, symbol))
+		return getOrders(memberId, exchange).map(orders -> filterOrdersBySymbol(orders, symbol))
 			.subscribeOn(COMPUTE.scheduler())
 			.map(orders -> orderAssembler.toResponseDto(orders, Collections.emptyList()))
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrderStatuses(String memberId, Exchange exchange) {
-		return getOrders(memberId, exchange).map(orders -> )
+		return getOrders(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
-
+			.map(orderAssembler::toCurrencyOrderDtos)
+			.
 			.flatMapIterable(orders -> orders.stream()
 				.map(orderAssembler::toStatusDto)
 				.collect(Collectors.toList())

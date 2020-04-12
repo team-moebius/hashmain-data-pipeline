@@ -12,7 +12,10 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -64,7 +67,25 @@ public class OrderAssembler {
 		return orderDto;
 	}
 
-	public OrderStatusDto toStatusDto(OrderDto orderDto) {
+	public Map<String, List<OrderDto>> toCurrencyOrderDtos(List<OrderDto> orders) {
+		Map<String, List<OrderDto>> currencyOrdersMap = new HashMap<>();
+
+		orders.forEach(order ->
+			currencyOrdersMap.compute(orderUtil.getCurrencyBySymbol(order.getSymbol()),
+				(currency, sameCurrencyOrders) -> {
+					if (sameCurrencyOrders == null) {
+						List<OrderDto> newCurrencyOrders = new ArrayList<>();
+						newCurrencyOrders.add(order);
+						return newCurrencyOrders;
+					}
+					sameCurrencyOrders.add(order);
+					return sameCurrencyOrders;
+				}));
+
+		return currencyOrdersMap;
+	}
+
+	public List<OrderStatusDto> toStatusDtos(Map<String, List<OrderDto>> orders) {
 		return OrderStatusDto.builder()
 			.currency(orderUtil.getCurrencyBySymbol(orderDto.getSymbol()))
 			.averagePurchasePrice()
