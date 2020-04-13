@@ -1,11 +1,13 @@
 package com.moebius.backend.assembler;
 
+import com.moebius.backend.assembler.order.OrderUtil;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto;
 import com.moebius.backend.dto.exchange.MarketsDto;
 import com.moebius.backend.dto.frontend.response.MarketResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +20,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class MarketAssembler {
+	private final OrderUtil orderUtil;
+
 	public Market toMarket(@NotNull Exchange exchange, @NotBlank String symbol) {
 		Market market = new Market();
 		market.setExchange(exchange);
@@ -46,7 +51,7 @@ public class MarketAssembler {
 
 	public Map<String, Double> toCurrencyMarketPrices(List<Market> markets) {
 		return markets.stream()
-			.collect(Collectors.toMap(Market::getSymbol, Market::getCurrentPrice));
+			.collect(Collectors.toMap(market -> orderUtil.getCurrencyBySymbol(market.getSymbol()), Market::getCurrentPrice));
 	}
 
 	public Market assemble(Market market, TradeDto tradeDto, UpbitTradeMetaDto tradeMetaDto) {

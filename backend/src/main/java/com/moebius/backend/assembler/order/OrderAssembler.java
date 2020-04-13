@@ -95,6 +95,12 @@ public class OrderAssembler {
 	}
 
 	public OrderStatusDto toStatusDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
+		if (asset == null || currentPrice == 0D) {
+			return OrderStatusDto.builder()
+				.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
+				.orderStatus(identifyOrderStatus(orders))
+				.build();
+		}
 		return OrderStatusDto.builder()
 			.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
 			.averagePurchasePrice(asset.getAveragePurchasePrice())

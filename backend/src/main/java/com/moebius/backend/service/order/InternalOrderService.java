@@ -11,8 +11,6 @@ import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.AssetDto;
-import com.moebius.backend.dto.exchange.EmptyAssetDto;
-import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
@@ -29,7 +27,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import sun.invoke.empty.Empty;
 
 import java.util.List;
 import java.util.Map;
@@ -50,10 +47,6 @@ public class InternalOrderService {
 	private final OrderCacheService orderCacheService;
 	private final AssetService assetService;
 	private final MarketService marketService;
-
-	private static final AssetDto EMPTY_ASSET_DTO = new EmptyAssetDto();
-	// The default current price should be 1 because it is needed to calculate profit loss ratio correctly.
-	private static final double DEFAULT_CURRENT_PRICE = 1D;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
 		orderValidator.validate(orderDtos);
@@ -182,8 +175,8 @@ public class InternalOrderService {
 		Map<String, Double> currencyMarketPrices) {
 		return currencyOrders.entrySet().stream()
 			.map(orderEntry -> orderAssembler.toStatusDto(orderEntry.getValue(),
-				currencyAssets.getOrDefault(orderEntry.getKey(), EMPTY_ASSET_DTO),
-				currencyMarketPrices.getOrDefault(orderEntry.getKey(), DEFAULT_CURRENT_PRICE)))
+				currencyAssets.get(orderEntry.getKey()),
+				currencyMarketPrices.get(orderEntry.getKey())))
 			.collect(Collectors.toList());
 	}
 }
