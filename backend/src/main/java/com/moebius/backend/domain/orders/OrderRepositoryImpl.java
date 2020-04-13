@@ -46,7 +46,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 	}
 
 	private Mono<Order> updateOrderStatusToExecuted(Order order) {
-		order.setOrderStatus(OrderStatus.EXECUTED);
+		order.setOrderStatus(OrderStatus.DONE);
 		order.setUpdatedAt(LocalDateTime.now());
 		return mongoTemplate.save(order);
 	}
