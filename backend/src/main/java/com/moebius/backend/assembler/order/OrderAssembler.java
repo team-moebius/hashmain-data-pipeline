@@ -5,10 +5,13 @@ import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.OrderStatusDto;
+import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderStatusDto;
+import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -20,7 +23,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class OrderAssembler {
-	private OrderUtil orderUtil;
+	private final OrderUtil orderUtil;
 
 	public Order toOrderWhenCreate(ApiKey apiKey, OrderDto dto) {
 		Order order = new Order();
@@ -67,6 +70,12 @@ public class OrderAssembler {
 		return orderDto;
 	}
 
+	public OrderResponseDto toResponseDto(List<OrderDto> orders) {
+		return OrderResponseDto.builder()
+			.orders(orders)
+			.build();
+	}
+
 	public Map<String, List<OrderDto>> toCurrencyOrderDtos(List<OrderDto> orders) {
 		Map<String, List<OrderDto>> currencyOrdersMap = new HashMap<>();
 
@@ -85,22 +94,30 @@ public class OrderAssembler {
 		return currencyOrdersMap;
 	}
 
-	public List<OrderStatusDto> toStatusDtos(Map<String, List<OrderDto>> orders) {
+	public OrderStatusDto toStatusDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
 		return OrderStatusDto.builder()
-			.currency(orderUtil.getCurrencyBySymbol(orderDto.getSymbol()))
-			.averagePurchasePrice()
-			.purchaseAmount()
-			.tradePrice()
-			.evaluatedPrice()
-			.profitLossRatio()
-			.orderStatus()
+			.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
+			.averagePurchasePrice(asset.getAveragePurchasePrice())
+			.balance(asset.getBalance())
+			.tradePrice(asset.getAveragePurchasePrice() * asset.getBalance())
+			.evaluatedPrice(currentPrice * asset.getBalance())
+			.profitLossRatio(Precision.round(currentPrice / asset.getAveragePurchasePrice() - 1, 4) * 100)
+			.orderStatus(identifyOrderStatus(orders))
+			.build();
+
+	}
+
+	public OrderStatusResponseDto toStatusResponseDto(List<OrderStatusDto> orderStatuses) {
+		return OrderStatusResponseDto.builder()
+			.orderStatuses(orderStatuses)
 			.build();
 	}
 
-	public OrderResponseDto toResponseDto(List<OrderDto> orders, List<OrderStatusDto> orderStatuses) {
-		return OrderResponseDto.builder()
-			.orders(orders)
-			.orderStatuses(orderStatuses)
-			.build();
+	private OrderStatus identifyOrderStatus(List<OrderDto> orders) {
+		return hasInProgressStatus(orders) ? OrderStatus.IN_PROGRESS : OrderStatus.READY;
+	}
+
+	private boolean hasInProgressStatus(List<OrderDto> orders) {
+		return orders.stream().anyMatch(order -> order.getOrderStatus() == OrderStatus.IN_PROGRESS);
 	}
 }

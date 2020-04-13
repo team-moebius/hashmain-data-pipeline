@@ -8,12 +8,18 @@ import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.TradeDto;
+import com.moebius.backend.dto.exchange.AssetDto;
+import com.moebius.backend.dto.exchange.EmptyAssetDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
 import com.moebius.backend.service.asset.AssetService;
+import com.moebius.backend.service.market.MarketService;
 import com.moebius.backend.service.member.ApiKeyService;
 import com.moebius.backend.service.order.validator.OrderValidator;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +29,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import sun.invoke.empty.Empty;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.moebius.backend.domain.commons.EventType.*;
@@ -42,6 +49,11 @@ public class InternalOrderService {
 	private final ApiKeyService apiKeyService;
 	private final OrderCacheService orderCacheService;
 	private final AssetService assetService;
+	private final MarketService marketService;
+
+	private static final AssetDto EMPTY_ASSET_DTO = new EmptyAssetDto();
+	// The default current price should be 1 because it is needed to calculate profit loss ratio correctly.
+	private static final double DEFAULT_CURRENT_PRICE = 1D;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
 		orderValidator.validate(orderDtos);
@@ -53,34 +65,32 @@ public class InternalOrderService {
 				.collect(Collectors.toList()))
 			.collectList()
 			.doOnSuccess(this::evictOrderCaches)
-			.map(orders -> orderAssembler.toResponseDto(orders, Collections.emptyList()))
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchange(String memberId, Exchange exchange) {
 		return getOrders(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
-			.map(orders -> orderAssembler.toResponseDto(orders, Collections.emptyList()))
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchangeAndSymbol(String memberId, Exchange exchange, String symbol) {
 		return getOrders(memberId, exchange).map(orders -> filterOrdersBySymbol(orders, symbol))
 			.subscribeOn(COMPUTE.scheduler())
-			.map(orders -> orderAssembler.toResponseDto(orders, Collections.emptyList()))
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrderStatuses(String memberId, Exchange exchange) {
-		return getOrders(memberId, exchange)
-			.subscribeOn(COMPUTE.scheduler())
-			.map(orderAssembler::toCurrencyOrderDtos)
-			.
-			.flatMapIterable(orders -> orders.stream()
-				.map(orderAssembler::toStatusDto)
-				.collect(Collectors.toList())
-			).collectList()
-			.map(orderStatuses -> orderAssembler.toResponseDto(Collections.emptyList(), orderStatuses))
+	public Mono<ResponseEntity<OrderStatusResponseDto>> getOrderStatuses(String memberId, Exchange exchange) {
+		return Mono.zip(
+			getOrdersExceptDone(memberId, exchange).map(orderAssembler::toCurrencyOrderDtos),
+			assetService.getCurrencyAssets(memberId, exchange),
+			marketService.getCurrencyMarketPrices(exchange)
+		).subscribeOn(COMPUTE.scheduler())
+			.map(tuple -> extractOrderStatuses(tuple.getT1(), tuple.getT2(), tuple.getT3()))
+			.map(orderAssembler::toStatusResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
@@ -150,9 +160,30 @@ public class InternalOrderService {
 				.collectList());
 	}
 
+	private Mono<List<OrderDto>> getOrdersExceptDone(String memberId, Exchange exchange) {
+		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
+			.map(apiKey -> orderRepository.findAllByApiKeyIdAndOrderStatusNot(apiKey.getId(), OrderStatus.DONE))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
+			.flatMap(orders -> orders.map(order -> orderAssembler.toDto(order, EventType.READ))
+				.collectList());
+	}
+
 	private List<OrderDto> filterOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
 		return orderDtos.stream()
 			.filter(orderDto -> orderDto.getSymbol().equals(symbol.toUpperCase()))
+			.collect(Collectors.toList());
+	}
+
+	private List<OrderStatusDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyOrders,
+		Map<String, AssetDto> currencyAssets,
+		Map<String, Double> currencyMarketPrices) {
+		return currencyOrders.entrySet().stream()
+			.map(orderEntry -> orderAssembler.toStatusDto(orderEntry.getValue(),
+				currencyAssets.getOrDefault(orderEntry.getKey(), EMPTY_ASSET_DTO),
+				currencyMarketPrices.getOrDefault(orderEntry.getKey(), DEFAULT_CURRENT_PRICE)))
 			.collect(Collectors.toList());
 	}
 }

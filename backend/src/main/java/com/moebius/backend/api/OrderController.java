@@ -3,7 +3,7 @@ package com.moebius.backend.api;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderStatusDto;
+import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;
 import com.moebius.backend.service.order.InternalOrderService;
@@ -76,8 +76,19 @@ public class OrderController {
 		return internalOrderService.getOrdersByExchangeAndSymbol(principal.getName(), Exchange.getBy(exchange), symbol);
 	}
 
+	@ApiOperation(
+		value = "거래소에 따른 자산을 포함한 주문 상태 정보 제공",
+		httpMethod = "GET",
+		notes = "트레이더의 거래소 api key를 기반으로, 보유한 자산별 주문 상태 정보를 제공한다."
+	)
+	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Success", response = OrderStatusResponseDto.class),
+		@ApiResponse(code = 400, message = "Api key or Exchange is wrong (not found)", response = DataNotFoundException.class),
+		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
+	})
 	@GetMapping("/status/exchanges/{exchange}")
-	public Mono<ResponseEntity<OrderResponseDto>> getOrderStatuses(Principal principal,
+	public Mono<ResponseEntity<OrderStatusResponseDto>> getOrderStatuses(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
 		return internalOrderService.getOrderStatuses(principal.getName(), Exchange.getBy(exchange));
 	}

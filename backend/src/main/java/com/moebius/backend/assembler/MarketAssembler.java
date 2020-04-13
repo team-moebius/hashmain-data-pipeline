@@ -14,6 +14,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -41,6 +42,11 @@ public class MarketAssembler {
 			.changeRate(market.getChangeRate())
 			.accumulatedTradePrice(market.getAccumulatedTradePrice())
 			.build();
+	}
+
+	public Map<String, Double> toCurrencyMarketPrices(List<Market> markets) {
+		return markets.stream()
+			.collect(Collectors.toMap(Market::getSymbol, Market::getCurrentPrice));
 	}
 
 	public Market assemble(Market market, TradeDto tradeDto, UpbitTradeMetaDto tradeMetaDto) {

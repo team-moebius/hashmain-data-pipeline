@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 
@@ -25,13 +26,20 @@ public class AssetService {
 	private final ExchangeServiceFactory exchangeServiceFactory;
 	private final AssetAssembler assetAssembler;
 
-	public Mono<ResponseEntity<AssetResponseDto>> getAssets(String memberId, Exchange exchange) {
-		return getAssetDtos(memberId, exchange)
+	public Mono<ResponseEntity<AssetResponseDto>> getAssetResponse(String memberId, Exchange exchange) {
+		return getAssets(memberId, exchange)
+			.subscribeOn(COMPUTE.scheduler())
 			.map(assetAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	private Mono<List<? extends AssetDto>> getAssetDtos(String memberId, Exchange exchange) {
+	public Mono<Map<String, AssetDto>> getCurrencyAssets(String memberId, Exchange exchange) {
+		return getAssets(memberId, exchange)
+			.subscribeOn(COMPUTE.scheduler())
+			.map(assetAssembler::toCurrencyAssetDtos);
+	}
+
+	private Mono<List<? extends AssetDto>> getAssets(String memberId, Exchange exchange) {
 		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
 
 		return apiKeyService.getExchangeAuthToken(memberId, exchange)
