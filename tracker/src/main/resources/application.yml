@@ -34,4 +34,5 @@ logging:
   level:
     root: INFO
     com.moebius: INFO
-  file: /var/log/moebius/tracker.log
+  file:
+    name: /var/log/moebius/tracker.log
