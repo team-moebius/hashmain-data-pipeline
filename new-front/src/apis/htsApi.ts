@@ -47,3 +47,10 @@ export const getAssetsApi = (exchange: string, token: string) => {
   })
   return result
 }
+
+export const getManagesApi = (exchange: string, token: string) => {
+  const result = instance.get(`orders/status/exchanges/${exchange}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return result
+}

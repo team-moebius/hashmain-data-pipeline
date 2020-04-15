@@ -74,6 +74,7 @@ function CoinsTable(props: ICoinsTableProps) {
               columns={coinsTableCols(monetaryUnit, dispatch)}
               dataSource={getData(true, inputWord, marketData)}
               size='small'
+              rowKey={(record: any, idx: number) => `coins_${idx}`}
               pagination={false}
               scroll={{ y: isRegister ? '230px' : '679px' }}
             />

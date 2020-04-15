@@ -18,7 +18,10 @@ import {
   HTS_ASSETS_REQUESTED,
   HTS_ASSETS_SUCCESS,
   HTS_ASSETS_FAILED,
-  HTS_EXCHANGE_UPDATE
+  HTS_EXCHANGE_UPDATE,
+  HTS_MANAGES_REQUESTED,
+  HTS_MANAGES_SUCCESS,
+  HTS_MANAGES_FAILED
 } from '../actionCmds/htsActionCmd'
 
 interface IHtsInfoActionType { type: typeof HTS_TRADE_INFO_REQUESTED, menuType: string }
@@ -121,9 +124,25 @@ export const htsExchangeActionType = (param: IHtsExchangeActionType): IHtsExchan
   { type: param.type, exchange: param.exchange }
 )
 
+interface IHtsManagesActionType { type: typeof HTS_MANAGES_REQUESTED, exchange: string }
+export const htsManagesActionType = (param: IHtsManagesActionType): IHtsManagesActionType => (
+  { type: param.type, exchange: param.exchange }
+)
+
+interface IHtsManagesSuccessActionType { type: typeof HTS_MANAGES_SUCCESS, manageData: any }
+export const htsMangagesSuccessActionType = (param: IHtsManagesSuccessActionType): IHtsManagesSuccessActionType => (
+  { type: param.type, manageData: param.manageData }
+)
+
+interface IHtsManagesFailedActionType { type: typeof HTS_MANAGES_FAILED, msg: string }
+export const htsManagesFailedActionType = (param: IHtsManagesFailedActionType): IHtsManagesFailedActionType => (
+  { type: param.type, msg: param.msg }
+)
+
 export type htsTypes = IHtsInfoActionType | IHtsInfoSuccessActionType | IHtsInfoFailedActionType
   | IHtsOrderActionType | IHtsOrderSuccessActionType | IHtsOrderFailedActionType | IHtsExchangeActionType
   | IHtsAPIKeyActionType | IHtsAPIKeySuccessActionType | IHtsAPIKeyFailedActionType
   | IHtsAPIKeyResetActionType | IHtsAPIKeyStateActionType | IHtsMoenytrayChangeActionType
   | IHtsMarketActionType | IHtsMarketSuccessActionType | IHtsMarketFailedActionType
   | IHtsStdUnitChangeActionType | IHtsAssetsActionType | IHtsAssetsSuccessActionType | IHtsAssetsFailedActionType
+  | IHtsManagesActionType | IHtsManagesSuccessActionType | IHtsManagesFailedActionType

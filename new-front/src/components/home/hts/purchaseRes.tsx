@@ -15,6 +15,7 @@ export function purchaseRes(type: string, tableData: any) {
     <div style={{ width: '100%', backgroundColor: '#1a1c4b', borderBottom: '1px solid #1A1C4B' }}>
       <Table
         className='customTable'
+        rowKey={(record: any, idx: number) => `purchase_${idx}`}
         columns={resCols()}
         dataSource={tableSource}
         size='small'

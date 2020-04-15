@@ -36,6 +36,7 @@ function HtsTable(props: ITableProps) {
         columns={htsTableCols(type, stdUnit, monetaryUnit, tableData, setTableData, dispatch, assetsData, exchange)}
         dataSource={tableData[type]}
         size='small'
+        rowKey={(record: any, idx: number) => `${type}_${idx}`}
         pagination={false}
         scroll={{ y: 200 }}
         footer={() => renderFooter(type, tableData)}

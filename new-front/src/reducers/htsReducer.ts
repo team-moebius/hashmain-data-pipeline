@@ -10,7 +10,8 @@ import {
   HTS_MONEYTRAY_UNIT_CHANGE,
   HTS_STD_UNIT_CHANGE,
   HTS_ASSETS_SUCCESS,
-  HTS_EXCHANGE_UPDATE
+  HTS_EXCHANGE_UPDATE,
+  HTS_MANAGES_SUCCESS
 } from '../actionCmds/htsActionCmd'
 import { htsTypes } from '../actions/htsAction'
 
@@ -35,7 +36,6 @@ const homeReducer = (state = initMap, action: htsTypes) => {
     case HTS_TRADE_INFO_SUCCESS:
       nextState = produce(state, (draft) => {
         draft.htsData = action.htsData
-        if (action.manageData) { draft.manageData = action.manageData }
       })
       break
     case HTS_API_KEY_REQUESTED:
@@ -89,6 +89,11 @@ const homeReducer = (state = initMap, action: htsTypes) => {
     case HTS_EXCHANGE_UPDATE:
       nextState = produce(state, (draft) => {
         draft.exchange = action.exchange
+      })
+      break
+    case HTS_MANAGES_SUCCESS:
+      nextState = produce(state, (draft) => {
+        draft.manageData = action.manageData
       })
       break
     default:

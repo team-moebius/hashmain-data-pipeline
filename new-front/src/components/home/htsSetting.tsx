@@ -8,9 +8,11 @@ import RightSection from './hts/rightSection'
 import ManageTable from './manage/manageTable'
 import { ReducerState } from '../../reducers/rootReducer'
 import {
-  HTS_TRADE_INFO_REQUESTED, HTS_TRADE_ORDER_REQUESTED, HTS_ASSETS_REQUESTED
+  HTS_TRADE_INFO_REQUESTED, HTS_TRADE_ORDER_REQUESTED, HTS_ASSETS_REQUESTED, HTS_MANAGES_REQUESTED
 } from '../../actionCmds/htsActionCmd'
-import { htsInfoActionType, htsOrderActionType, htsAssetsActionType } from '../../actions/htsAction'
+import {
+  htsInfoActionType, htsOrderActionType, htsAssetsActionType, htsManagesActionType
+} from '../../actions/htsAction'
 import { orderRegisterCheck } from './hts/rules'
 import { HTSBtns } from './hts/htsStdButtons'
 import { openNotification } from '../../common/common'
@@ -116,6 +118,7 @@ function HTSSetting() {
     if (Object.keys(htsData).length === 0) {
       dispatch(htsInfoActionType({ type: HTS_TRADE_INFO_REQUESTED, menuType: selectedTab }))
       dispatch(htsAssetsActionType({ type: HTS_ASSETS_REQUESTED, exchange: nowExchage }))
+      dispatch(htsManagesActionType({ type: HTS_MANAGES_REQUESTED, exchange: nowExchage }))
     } else { setData(htsData) }
   }, [dispatch, selectedTab, htsData, nowExchage])
 
@@ -127,7 +130,7 @@ function HTSSetting() {
           defaultActiveKey={selectedTab}
           style={{ width: '645px', display: 'inline-block' }}
           onChange={(key) => { setSelectedTab(key) }}
-        ><Tabs.TabPane tab={<p style={{ margin: 0, fontWeight: 600 }}>Tab 1</p>} key='trade' /></Tabs>
+        ><Tabs.TabPane tab={<p style={{ margin: 0, fontWeight: 600 }}>멀티거래 모드</p>} key='trade' /></Tabs>
         {showAsset(assetsData, stdUnit, monetaryUnit)}
         {HTSBtns(stdUnit, setStdUnit)}
         {HTSBody(dataLoading, monetaryUnit, dispatch, stdUnit, data, setData, assetsData)}

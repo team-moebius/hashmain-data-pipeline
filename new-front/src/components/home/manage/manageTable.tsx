@@ -8,13 +8,14 @@ import { ReducerState } from '../../../reducers/rootReducer'
 function ManageTable() {
   const { manageData, dataLoading } = useSelector((state: ReducerState) => ({
     manageData: state.hts.manageData,
-    dataLoading: state.common.loading['HTS_TRADE_INFO']
+    dataLoading: state.common.loading['HTS_MANAGES']
   }))
 
   return (
     <Card className='manageTableInHts' loading={dataLoading}>
       <Table
         className='customTable'
+        rowKey={(record: any, idx: number) => `manages_${idx}`}
         columns={manageCols()}
         dataSource={manageData}
         size='small'

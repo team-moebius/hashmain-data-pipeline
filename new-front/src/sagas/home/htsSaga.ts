@@ -1,6 +1,6 @@
 import { put, call, select } from 'redux-saga/effects'
 import {
-  getOrderForStockApi, fetchOrderForStockApi, fetchAPIKeyAPi, getMarketApi, getAssetsApi
+  getOrderForStockApi, fetchOrderForStockApi, fetchAPIKeyAPi, getMarketApi, getAssetsApi, getManagesApi
 } from '../../apis/htsApi'
 import { ReducerState } from '../../reducers/rootReducer'
 import {
@@ -13,7 +13,9 @@ import {
   HTS_MARKET_INFO_SUCCESS,
   HTS_MARKET_INFO_FAILED,
   HTS_ASSETS_SUCCESS,
-  HTS_ASSETS_FAILED
+  HTS_ASSETS_FAILED,
+  HTS_MANAGES_SUCCESS,
+  HTS_MANAGES_FAILED
 } from '../../actionCmds/htsActionCmd'
 import {
   htsInfoSuccessActionType,
@@ -25,7 +27,9 @@ import {
   htsMarketSuccessActionType,
   htsMarketFailedActionType,
   htsAssetsSuccessActionType,
-  htsAssetsFailedActionType
+  htsAssetsFailedActionType,
+  htsMangagesSuccessActionType,
+  htsManagesFailedActionType
 } from '../../actions/htsAction'
 
 /*
@@ -98,6 +102,17 @@ export function* fetchAssets(action: any) {
   } catch (err) {
     const errMsg = err.response ? err.response.data.message : err.message
     yield put(htsAssetsFailedActionType({ type: HTS_ASSETS_FAILED, msg: errMsg }))
+  }
+}
+
+export function* fetchManages(action: any) {
+  try {
+    const token = window.localStorage.getItem('token') || 'empty'
+    const result = yield call(getManagesApi, action.exchange, token)
+    yield put(htsMangagesSuccessActionType({ type: HTS_MANAGES_SUCCESS, manageData: result.data.orderStatuses }))
+  } catch (err) {
+    const errMsg = err.response ? err.response.data.message : err.message
+    yield put(htsManagesFailedActionType({ type: HTS_MANAGES_FAILED, msg: errMsg }))
   }
 }
 
