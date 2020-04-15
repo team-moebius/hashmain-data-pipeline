@@ -1,4 +1,4 @@
-package com.moebius.backend.service.order;
+package com.moebius.backend.service.order.factory;
 
 import com.moebius.backend.domain.orders.OrderPosition;
 import org.springframework.stereotype.Component;

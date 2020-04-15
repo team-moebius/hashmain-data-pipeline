@@ -5,7 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
-import com.moebius.backend.dto.AssetsDto;
+import com.moebius.backend.dto.exchange.AssetDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -55,12 +57,12 @@ public class UpbitService implements ExchangeService {
 	}
 
 	@Override
-	public Mono<AssetsDto> getAssets(String authToken) {
+	public Flux<? extends AssetDto> getAssets(String authToken) {
 		return webClient.get()
 			.uri(publicUri + assetUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.retrieve()
-			.bodyToMono(AssetsDto.class);
+			.bodyToFlux(UpbitAssetDto.class);
 	}
 
 	@Override
