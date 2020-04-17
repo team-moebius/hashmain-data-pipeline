@@ -1,6 +1,12 @@
-FROM node:10.1.0
+# Build
+FROM node:10.1.0 as builder
 COPY . .
 RUN yarn install --production && yarn build
 WORKDIR ./server
-EXPOSE 1337
-CMD node ./build/server.js
+
+# Deployment
+FROM nginx:1.17.2-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder ./server/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
