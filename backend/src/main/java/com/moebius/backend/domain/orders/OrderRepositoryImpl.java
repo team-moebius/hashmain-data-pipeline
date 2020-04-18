@@ -23,7 +23,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 		Query query = new Query(Criteria.where("price").lte(price)
 			.and("symbol").is(symbol)
 			.and("orderPosition").is(orderPosition)
-			.and("orderStatus").is(OrderStatus.READY)
+			.and("orderStatus").is(OrderStatus.IN_PROGRESS)
 			.and("exchange").is(exchange));
 
 		return executeQuery(query);
@@ -34,7 +34,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 		Query query = new Query(Criteria.where("price").gte(price)
 			.and("symbol").is(symbol)
 			.and("orderPosition").is(orderPosition)
-			.and("orderStatus").is(OrderStatus.READY)
+			.and("orderStatus").is(OrderStatus.IN_PROGRESS)
 			.and("exchange").is(exchange));
 
 		return executeQuery(query);
