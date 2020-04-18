@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
@@ -83,6 +84,14 @@ public class MarketService {
 					.forEach(market -> createMarketIfNotExist(market.getExchange(), market.getSymbol()).subscribe());
 				return ResponseEntity.ok().build();
 			});
+	}
+
+	public Mono<Map<String, Double>> getCurrencyMarketPrices(Exchange exchange) {
+		return marketRepository.findAllByExchange(exchange)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.collectList()
+			.map(marketAssembler::toCurrencyMarketPrices);
 	}
 
 	private Mono<Tuple2<Market, UpbitTradeMetaDto>> getMarketAndTradeMeta(TradeDto tradeDto) {

@@ -28,7 +28,6 @@ import java.io.IOException
 import java.net.URI
 
 @Service
-@RequiredArgsConstructor
 class TrackerService : ApplicationListener<ApplicationReadyEvent> {
 
     private val log = KotlinLogging.logger {}

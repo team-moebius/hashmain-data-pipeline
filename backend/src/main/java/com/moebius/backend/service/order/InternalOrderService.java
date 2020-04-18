@@ -1,21 +1,23 @@
 package com.moebius.backend.service.order;
 
-import com.moebius.backend.assembler.OrderAssembler;
+import com.moebius.backend.assembler.order.OrderAssembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
-import com.moebius.backend.dto.AssetDto;
-import com.moebius.backend.dto.AssetsDto;
 import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.TradeDto;
+import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
-import com.moebius.backend.service.exchange.ExchangeServiceFactory;
+import com.moebius.backend.service.asset.AssetService;
+import com.moebius.backend.service.market.MarketService;
 import com.moebius.backend.service.member.ApiKeyService;
 import com.moebius.backend.service.order.validator.OrderValidator;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.moebius.backend.domain.commons.EventType.*;
@@ -37,16 +40,13 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 @Service
 @RequiredArgsConstructor
 public class InternalOrderService {
-	private static final String DELIMITER = "-";
-	private static final int CURRENCY_INDEX = 1;
-	private static final int VALID_SYMBOL_INDEX = 2;
-
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
 	private final OrderValidator orderValidator;
 	private final ApiKeyService apiKeyService;
 	private final OrderCacheService orderCacheService;
-	private final ExchangeServiceFactory exchangeServiceFactory;
+	private final AssetService assetService;
+	private final MarketService marketService;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
 		orderValidator.validate(orderDtos);
@@ -58,25 +58,32 @@ public class InternalOrderService {
 				.collect(Collectors.toList()))
 			.collectList()
 			.doOnSuccess(this::evictOrderCaches)
-			.map(dtos -> orderAssembler.toResponseDto(dtos, null))
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssets(String memberId, String exchangeName) {
-		return Mono.zip(
-			getOrders(memberId, Exchange.getBy(exchangeName)),
-			getAssets(memberId, Exchange.getBy(exchangeName))
-		).subscribeOn(COMPUTE.scheduler())
-			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchange(String memberId, Exchange exchange) {
+		return getOrders(memberId, exchange)
+			.subscribeOn(COMPUTE.scheduler())
+			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderResponseDto>> getOrdersAndAssetsWithSymbol(String memberId, String exchangeName, String symbol) {
+	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchangeAndSymbol(String memberId, Exchange exchange, String symbol) {
+		return getOrders(memberId, exchange).map(orders -> filterOrdersBySymbol(orders, symbol))
+			.subscribeOn(COMPUTE.scheduler())
+			.map(orderAssembler::toResponseDto)
+			.map(ResponseEntity::ok);
+	}
+
+	public Mono<ResponseEntity<OrderStatusResponseDto>> getOrderStatuses(String memberId, Exchange exchange) {
 		return Mono.zip(
-			getOrders(memberId, Exchange.getBy(exchangeName)).map(orderDtos -> filterOrdersBySymbol(orderDtos, symbol)),
-			getAssets(memberId, Exchange.getBy(exchangeName)).map(assetDtos -> filterAssetsBySymbol(assetDtos, symbol))
+			getOrdersExceptDone(memberId, exchange).map(orderAssembler::toCurrencyOrderDtos),
+			assetService.getCurrencyAssets(memberId, exchange),
+			marketService.getCurrencyMarketPrices(exchange)
 		).subscribeOn(COMPUTE.scheduler())
-			.map(tuple -> orderAssembler.toResponseDto(tuple.getT1(), tuple.getT2()))
+			.map(tuple -> extractOrderStatuses(tuple.getT1(), tuple.getT2(), tuple.getT3()))
+			.map(orderAssembler::toStatusResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
@@ -146,11 +153,15 @@ public class InternalOrderService {
 				.collectList());
 	}
 
-	private Mono<AssetsDto> getAssets(String memberId, Exchange exchange) {
-		return apiKeyService.getExchangeAuthToken(memberId, exchange)
-			.flatMap(authToken -> exchangeServiceFactory.getService(exchange)
-				.getAssets(authToken))
-			.subscribeOn(COMPUTE.scheduler());
+	private Mono<List<OrderDto>> getOrdersExceptDone(String memberId, Exchange exchange) {
+		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
+			.map(apiKey -> orderRepository.findAllByApiKeyIdAndOrderStatusNot(apiKey.getId(), OrderStatus.DONE))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
+			.flatMap(orders -> orders.map(order -> orderAssembler.toDto(order, EventType.READ))
+				.collectList());
 	}
 
 	private List<OrderDto> filterOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
@@ -159,20 +170,13 @@ public class InternalOrderService {
 			.collect(Collectors.toList());
 	}
 
-	private List<AssetDto> filterAssetsBySymbol(List<AssetDto> assetDtos, String symbol) {
-		return assetDtos.stream()
-			.filter(assetDto -> assetDto.getCurrency().equals(getCurrencyFromSymbol(symbol)))
+	private List<OrderStatusDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyOrders,
+		Map<String, AssetDto> currencyAssets,
+		Map<String, Double> currencyMarketPrices) {
+		return currencyOrders.entrySet().stream()
+			.map(orderEntry -> orderAssembler.toStatusDto(orderEntry.getValue(),
+				currencyAssets.get(orderEntry.getKey()),
+				currencyMarketPrices.get(orderEntry.getKey())))
 			.collect(Collectors.toList());
-	}
-
-	private String getCurrencyFromSymbol(String symbol) {
-		String[] splitedSymbol = symbol.split(DELIMITER);
-
-		if (splitedSymbol.length != VALID_SYMBOL_INDEX) {
-			log.error("[Order] Failed to get currency from {}.", symbol);
-			throw new DataNotFoundException(ExceptionTypes.WRONG_DATA.getMessage("[Order] Symbol(" + symbol + ")"));
-		}
-
-		return splitedSymbol[CURRENCY_INDEX].toUpperCase();
 	}
 }
