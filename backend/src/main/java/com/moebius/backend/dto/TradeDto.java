@@ -29,4 +29,5 @@ public class TradeDto {
 	@JsonSerialize(using = LocalDateTimeSerializer.class)
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	private LocalDateTime createdAt;
+	private long receivedTime;
 }
