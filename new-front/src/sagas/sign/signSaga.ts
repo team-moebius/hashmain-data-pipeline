@@ -40,8 +40,8 @@ export function* fetchSignUp(action: any) {
 
 export function* fetchSignIn(action: any) {
   try {
-    const result = yield call(postSignInApi, 'burette@hanyang.ac.kr', 'highbal1')
-    // const result = yield call(postSignInApi, action.mail, action.pwd)
+    // const result = yield call(postSignInApi, 'burette@hanyang.ac.kr', 'highbal1')
+    const result = yield call(postSignInApi, action.mail, action.pwd)
     window.localStorage.setItem('token', result.data.token)
     // window.location.reload()
     yield put(signInSuccessAction({ type: SIGN_IN_SUCCESS }))

@@ -29,10 +29,10 @@ export function HTSBtns(stdUnit: string, setStdUnit: any) {
           className='htsStdBtn'
           disabled={value !== 'KRW'}
           style={{
-            color: stdUnit === `.${value}` ? 'rgb(255, 58, 125)' : '#B7C8F5',
+            color: stdUnit === value ? 'rgb(255, 58, 125)' : '#B7C8F5',
             opacity: value === 'KRW' ? 1 : 0.5
           }}
-          onClick={() => setStdUnit(`.${value}`)}
+          onClick={() => setStdUnit(value)}
           key={value}>{value}</Button>
       ))}
       <Select
