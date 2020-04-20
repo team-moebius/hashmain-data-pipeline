@@ -49,8 +49,10 @@ exchange:
       secret-uri: https://crix-api-endpoint.upbit.com/v1/crix/
       asset: v1/accounts
       market: v1/market/all
-      order: v1/orders
+      orders: v1/orders
+      order: v1/order
       recent: recent?codes=CRIX.UPBIT.
+
 
 server:
   port: 80

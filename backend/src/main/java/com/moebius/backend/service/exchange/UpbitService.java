@@ -32,7 +32,9 @@ public class UpbitService implements ExchangeService {
 	private String publicUri;
 	@Value("${exchange.upbit.rest.asset}")
 	private String assetUri;
-	@Value("${exchange.upbit.rest.order}")
+	@Value("${exchange.upbit‘.rest.orders}")
+	private String ordersUri;
+	@Value("${exchange.upbit‘.rest.order}")
 	private String orderUri;
 
 	private final WebClient webClient;
@@ -82,11 +84,23 @@ public class UpbitService implements ExchangeService {
 		log.info("[Upbit] Start to request order. [{}]", order);
 
 		return webClient.post()
-			.uri(publicUri + orderUri)
+			.uri(publicUri + ordersUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.body(getOrderBody(order), UpbitOrderDto.class)
 			.exchange()
 			.publishOn(COMPUTE.scheduler());
+	}
+
+	@Override
+	public Mono<ClientResponse> getOrderStatus(String authToken, Order order) {
+		log.info("[Upbit] Start to update order status. [{}])", order);
+
+		return webClient.get()
+			.uri(publicUri + orderUri)
+			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
+			.exchange()
+			.filter(clientResponse -> clientResponse.statusCode() == HttpStatus.OK)
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token")))));
 	}
 
 	private Mono<UpbitOrderDto> getOrderBody(Order order) {
