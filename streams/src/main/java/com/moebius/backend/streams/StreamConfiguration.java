@@ -1,9 +1,6 @@
 package com.moebius.backend.streams;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import com.moebius.backend.streams.dto.TradeAggsDto;
 import com.moebius.backend.streams.dto.TradeDto;
 import lombok.extern.slf4j.Slf4j;
@@ -24,15 +21,15 @@ public class StreamConfiguration {
     private final static long AGGS_TIME_INTERVAL = 60000L;
     public static final String TARGET_TOPIC = "moebius.trade.upbit";
 
-
     @Bean
     public Gson gson() {
         return new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>) (src, typeOfSrc, context) -> LocalDateTime.parse(src.getAsString(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")))
                 .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context) -> new JsonPrimitive(src.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))))
                 .create();
     }
 
-    private static <T> Serdes.WrapperSerde<T> generateWrapperSerde(Gson gson, Class<T> typeClass){
+    private static <T> Serdes.WrapperSerde<T> generateWrapperSerde(Gson gson, Class<T> typeClass) {
         return new Serdes.WrapperSerde<>((topic, data) -> gson.toJson(data).getBytes(StandardCharsets.UTF_8),
                 ((topic, data) -> gson.fromJson(new String(data), typeClass))
         );
@@ -64,8 +61,9 @@ public class StreamConfiguration {
                                                              Serdes.WrapperSerde<TradeAggsDto> serde) {
         KStream<String, TradeAggsDto> stream =
                 newKeyStream.groupByKey(Grouped.with(Serdes.String(), tradeDtoWrapperSerde))
-                        .aggregate(TradeAggsDto::new, (k, v, acc) -> acc.accumulate(k,v), Materialized.with(Serdes.String(), serde))
+                        .aggregate(TradeAggsDto::new, (k, v, acc) -> acc.accumulate(k, v), Materialized.with(Serdes.String(), serde))
                         .toStream();
+        stream.print(Printed.toSysOut());
         stream.to("trade-stats", Produced.with(Serdes.String(), serde));
         return stream;
     }
