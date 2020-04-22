@@ -3,7 +3,7 @@ package com.moebius.backend.api;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DataNotVerifiedException;
 import com.moebius.backend.service.order.InternalOrderService;
@@ -83,13 +83,13 @@ public class OrderController {
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success", response = OrderStatusResponseDto.class),
+		@ApiResponse(code = 200, message = "Success", response = OrderAssetResponseDto.class),
 		@ApiResponse(code = 400, message = "Api key or Exchange is wrong (not found)", response = DataNotFoundException.class),
 		@ApiResponse(code = 401, message = "Member is not verified", response = DataNotVerifiedException.class),
 	})
-	@GetMapping("/status/exchanges/{exchange}")
-	public Mono<ResponseEntity<OrderStatusResponseDto>> getOrderStatuses(Principal principal,
+	@GetMapping("/assets/exchanges/{exchange}")
+	public Mono<ResponseEntity<OrderAssetResponseDto>> getOrderAssets(Principal principal,
 		@PathVariable @NotBlank @ApiParam(value = "거래소", required = true) String exchange) {
-		return internalOrderService.getOrderStatuses(principal.getName(), Exchange.getBy(exchange));
+		return internalOrderService.getOrderAssets(principal.getName(), Exchange.getBy(exchange));
 	}
 }

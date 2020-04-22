@@ -8,11 +8,11 @@ import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.OrderDto;
-import com.moebius.backend.dto.OrderStatusDto;
+import com.moebius.backend.dto.OrderAssetDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
@@ -76,7 +76,7 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<ResponseEntity<OrderStatusResponseDto>> getOrderStatuses(String memberId, Exchange exchange) {
+	public Mono<ResponseEntity<OrderAssetResponseDto>> getOrderAssets(String memberId, Exchange exchange) {
 		return Mono.zip(
 			getOrdersExceptDone(memberId, exchange).map(orderAssembler::toCurrencyOrderDtos),
 			assetService.getCurrencyAssets(memberId, exchange),
@@ -95,6 +95,12 @@ public class InternalOrderService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.cache();
+	}
+
+	public Mono<Void> deleteOrder(ObjectId objectId) {
+		return orderRepository.deleteById(objectId)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
 	}
 
 	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
@@ -170,7 +176,7 @@ public class InternalOrderService {
 			.collect(Collectors.toList());
 	}
 
-	private List<OrderStatusDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyOrders,
+	private List<OrderAssetDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyOrders,
 		Map<String, AssetDto> currencyAssets,
 		Map<String, Double> currencyMarketPrices) {
 		return currencyOrders.entrySet().stream()

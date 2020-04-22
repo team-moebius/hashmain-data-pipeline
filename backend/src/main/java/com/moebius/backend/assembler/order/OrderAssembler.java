@@ -5,10 +5,10 @@ import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.dto.OrderDto;
-import com.moebius.backend.dto.OrderStatusDto;
+import com.moebius.backend.dto.OrderAssetDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.util.Precision;
@@ -94,14 +94,14 @@ public class OrderAssembler {
 		return currencyOrdersMap;
 	}
 
-	public OrderStatusDto toStatusDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
+	public OrderAssetDto toStatusDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
 		if (asset == null || currentPrice == 0D) {
-			return OrderStatusDto.builder()
+			return OrderAssetDto.builder()
 				.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
 				.orderStatus(identifyOrderStatus(orders))
 				.build();
 		}
-		return OrderStatusDto.builder()
+		return OrderAssetDto.builder()
 			.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
 			.averagePurchasePrice(asset.getAveragePurchasePrice())
 			.balance(asset.getBalance())
@@ -113,8 +113,8 @@ public class OrderAssembler {
 
 	}
 
-	public OrderStatusResponseDto toStatusResponseDto(List<OrderStatusDto> orderStatuses) {
-		return OrderStatusResponseDto.builder()
+	public OrderAssetResponseDto toStatusResponseDto(List<OrderAssetDto> orderStatuses) {
+		return OrderAssetResponseDto.builder()
 			.orderStatuses(orderStatuses)
 			.build();
 	}

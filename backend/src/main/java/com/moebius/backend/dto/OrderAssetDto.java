@@ -8,7 +8,12 @@ import lombok.ToString;
 @Getter
 @Builder
 @ToString
-public class OrderStatusDto {
-	private String id;
+public class OrderAssetDto {
+	private String currency;
+	private double averagePurchasePrice;
+	private double balance;
+	private double tradePrice;
+	private double evaluatedPrice;
+	private double profitLossRatio;
 	private OrderStatus orderStatus;
 }

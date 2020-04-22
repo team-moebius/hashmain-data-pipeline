@@ -19,5 +19,5 @@ public interface ExchangeService {
 
 	Mono<ClientResponse> order(String authToken, Order order);
 
-	Mono<OrderStatusDto> getOrderStatus(String authToken, Order order);
+	Mono<OrderStatusDto> getUpdatedOrderStatus(String authToken, Order order);
 }

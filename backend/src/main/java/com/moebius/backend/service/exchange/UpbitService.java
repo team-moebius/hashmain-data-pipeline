@@ -5,9 +5,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
+import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitOrderStatusDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
 import lombok.RequiredArgsConstructor;
@@ -92,15 +94,17 @@ public class UpbitService implements ExchangeService {
 	}
 
 	@Override
-	public Mono<OrderStatusDto> getOrderStatus(String authToken, Order order) {
-		log.info("[Upbit] Start to update order status. [{}])", order);
+	public Mono<OrderStatusDto> getUpdatedOrderStatus(String authToken, Order order) {
+		log.info("[Upbit] Start to get updated order status. [{}])", order);
 
 		return webClient.get()
 			.uri(publicUri + orderUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
-			.exchange()
-			.filter(clientResponse -> clientResponse.statusCode() == HttpStatus.OK)
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token")))));
+			.retrieve()
+			.onStatus(HttpStatus.UNAUTHORIZED::equals,
+				response -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token (" + authToken + ")"))))
+			.bodyToMono(UpbitOrderStatusDto.class)
+			.map(upbitOrderStatusDto -> upbitAssembler.toOrderStatusDto(order, upbitOrderStatusDto));
 	}
 
 	private Mono<UpbitOrderDto> getOrderBody(Order order) {
