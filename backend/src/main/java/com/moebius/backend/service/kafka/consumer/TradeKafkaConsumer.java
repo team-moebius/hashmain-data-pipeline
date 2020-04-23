@@ -19,8 +19,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 	private final ExchangeOrderService exchangeOrderService;
 	private final MarketService marketService;
 
-	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService,
-		MarketService marketService) {
+	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService, MarketService marketService) {
 		super(receiverDefaultProperties);
 		this.exchangeOrderService = exchangeOrderService;
 		this.marketService = marketService;

@@ -23,7 +23,7 @@ public class StoplossOrderFactory implements OrderFactory {
 	}
 
 	@Override
-	public Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
+	public Flux<Order> getAndUpdateOrdersToDone(TradeDto tradeDto) {
 		return orderRepository.findAndUpdateAllByBidCondition(tradeDto.getExchange(), tradeDto.getSymbol(), OrderPosition.STOPLOSS, tradeDto.getPrice())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());

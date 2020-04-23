@@ -7,6 +7,7 @@ import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
+import com.moebius.backend.domain.orders.OrderStatusCondition;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.OrderAssetDto;
 import com.moebius.backend.dto.TradeDto;
@@ -26,6 +27,7 @@ import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -97,10 +99,10 @@ public class InternalOrderService {
 			.cache();
 	}
 
-	public Mono<Void> deleteOrder(ObjectId objectId) {
-		return orderRepository.deleteById(objectId)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
+	public Flux<Order> findInProgressOrders(TradeDto tradeDto) {
+		OrderStatusCondition inProgressStatusCondition = orderAssembler.toInProgressStatusCondition(tradeDto);
+
+		return orderRepository.findAllByOrderStatusCondition(inProgressStatusCondition);
 	}
 
 	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {

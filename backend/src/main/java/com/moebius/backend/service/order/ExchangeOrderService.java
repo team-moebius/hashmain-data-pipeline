@@ -40,6 +40,15 @@ public class ExchangeOrderService {
 			.subscribe();
 	}
 
+	public void updateOrderStatusWhenInProgress(TradeDto tradeDto) {
+		Verifier.checkNullFields(tradeDto);
+
+		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
+
+		return internalOrderService.findInProgressOrders(tradeDto)
+			.map(order -> )
+	}
+
 	private Mono<Long> processTransactionalOrder(TradeDto tradeDto) {
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 
@@ -56,7 +65,7 @@ public class ExchangeOrderService {
 			Flux.fromStream(Arrays.stream(OrderPosition.values())
 				.map(orderFactoryManager::getOrdersFactory)
 				.filter(Objects::nonNull)
-				.map(ordersFactory -> ordersFactory.getAndUpdateOrders(tradeDto))
+				.map(ordersFactory -> ordersFactory.getAndUpdateOrdersToDone(tradeDto))
 			)
 		);
 	}

@@ -26,7 +26,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			.and("orderStatus").is(OrderStatus.IN_PROGRESS)
 			.and("exchange").is(exchange));
 
-		return executeQuery(query);
+		return mongoTemplate.find(query, Order.class)
+			.flatMap(this::updateOrderStatusToDone);
 	}
 
 	@Override
@@ -37,15 +38,20 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			.and("orderStatus").is(OrderStatus.IN_PROGRESS)
 			.and("exchange").is(exchange));
 
-		return executeQuery(query);
-	}
-
-	private Flux<Order> executeQuery(Query query) {
 		return mongoTemplate.find(query, Order.class)
-				.flatMap(this::updateOrderStatusToExecuted);
+			.flatMap(this::updateOrderStatusToDone);
 	}
 
-	private Mono<Order> updateOrderStatusToExecuted(Order order) {
+	@Override
+	public Flux<Order> findAllByOrderStatusCondition(OrderStatusCondition orderStatusCondition) {
+		Query query = new Query(Criteria.where("symbol").is(orderStatusCondition.getSymbol())
+			.and("exchange").is(orderStatusCondition.getExchange())
+			.and("orderStatus").is(OrderStatus.IN_PROGRESS));
+
+		return mongoTemplate.find(query, Order.class);
+	}
+
+	private Mono<Order> updateOrderStatusToDone(Order order) {
 		order.setOrderStatus(OrderStatus.DONE);
 		order.setUpdatedAt(LocalDateTime.now());
 		return mongoTemplate.save(order);

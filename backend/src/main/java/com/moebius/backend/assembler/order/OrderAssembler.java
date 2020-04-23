@@ -4,8 +4,10 @@ import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderStatus;
+import com.moebius.backend.domain.orders.OrderStatusCondition;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.OrderAssetDto;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
@@ -116,6 +118,14 @@ public class OrderAssembler {
 	public OrderAssetResponseDto toStatusResponseDto(List<OrderAssetDto> orderStatuses) {
 		return OrderAssetResponseDto.builder()
 			.orderStatuses(orderStatuses)
+			.build();
+	}
+
+	public OrderStatusCondition toInProgressStatusCondition(TradeDto tradeDto) {
+		return OrderStatusCondition.builder()
+			.exchange(tradeDto.getExchange())
+			.symbol(tradeDto.getSymbol())
+			.orderStatus(OrderStatus.IN_PROGRESS)
 			.build();
 	}
 
