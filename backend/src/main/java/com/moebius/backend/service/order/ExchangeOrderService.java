@@ -40,13 +40,15 @@ public class ExchangeOrderService {
 			.subscribe();
 	}
 
+	// TODO : Arrange this.
 	public void updateOrderStatusWhenInProgress(TradeDto tradeDto) {
 		Verifier.checkNullFields(tradeDto);
 
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
-
+		exchangeService.getUpdatedOrderStatus()
 		return internalOrderService.findInProgressOrders(tradeDto)
-			.map(order -> )
+			.map(order -> apiKeyService.getApiKeyById(order.getApiKeyId().toHexString()))
+
 	}
 
 	private Mono<Long> processTransactionalOrder(TradeDto tradeDto) {
