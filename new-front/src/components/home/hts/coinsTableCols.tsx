@@ -9,14 +9,16 @@ interface IColsType {
   title: string | ReactNode,
   dataIndex: string,
   key: string,
+  sorter: any,
   render: (value?: any, record?: any, index?: number) => any
 }
 
 export function coinsTableCols(monetaryUnit: string, dispatch: any): Array<IColsType> {
   return [{
-    title: '코인명',
+    title: getTitle('코인명'),
     dataIndex: 'key',
     key: 'key',
+    sorter: (a: any, b: any) => a.key.localeCompare(b.key),
     render: (text: string) => (
       <Button
         type='link'
@@ -28,20 +30,27 @@ export function coinsTableCols(monetaryUnit: string, dispatch: any): Array<ICols
       >{text}</Button>
     )
   }, {
-    title: '현재가',
+    title: getTitle('현재가'),
     dataIndex: 'currentPrice',
     key: 'currentPrice',
-    render: (text: number) => text
+    sorter: (a: any, b: any) => a.currentPrice - b.currentPrice,
+    render: (text: number) => numeral(text).format(',')
   }, {
-    title: '일간범위',
+    title: getTitle('일간범위'),
     dataIndex: 'changeRate',
     key: 'changeRate',
+    sorter: (a: any, b: any) => a.changeRate - b.changeRate,
     render: (text: number) => (
       <p className={text < 0 ? 'lossColor' : 'profitColor'}>{text > 0 && '+'}{numeral(text).format('0.00')}%</p>)
   }, {
-    title: '거래대금',
+    title: getTitle('거래대금'),
     dataIndex: 'accumulatedTradePrice',
     key: 'accumulatedTradePrice',
+    sorter: (a: any, b: any) => a.accumulatedTradePrice - b.accumulatedTradePrice,
     render: (text: number) => numeral(text).format('0,0.00a')
   }]
+}
+
+function getTitle(title: string): ReactNode {
+  return <p style={{ fontSize: '11px', margin: '5px 1px' }}>{title}</p>
 }
