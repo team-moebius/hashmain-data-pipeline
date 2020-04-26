@@ -108,6 +108,7 @@ public class MarketService {
 			.uri(secretUri + recentUri + symbol)
 			.retrieve()
 			.bodyToFlux(UpbitTradeMetaDto.class)
+			.doOnError(Exception.class, exception -> log.error("[Market] Failed to get trade meta from exchange.", exception))
 			.next();
 	}
 
