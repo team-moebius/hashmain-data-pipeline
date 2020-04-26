@@ -11,4 +11,5 @@ RUN ./gradlew clean build --exclude-task batch:build
 FROM openjdk:8-jre-alpine
 ENV ARTIFACT_PATH=tracker/build/libs/tracker-0.0.1-RELEASE.jar
 COPY --from=build $ARTIFACT_PATH tracker.jar
+ENV TZ Asia/Seoul
 ENTRYPOINT ["java","-Dspring.profiles.active=production","-Dreactor.netty.http.server.accessLogEnabled=true","-jar","tracker.jar"]

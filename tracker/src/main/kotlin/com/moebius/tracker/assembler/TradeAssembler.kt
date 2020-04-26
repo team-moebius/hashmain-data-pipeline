@@ -21,6 +21,7 @@ class TradeAssembler {
         tradeDto.prevClosingPrice = prevClosingPrice
         tradeDto.changePrice = changePrice
         tradeDto.createdAt = LocalDateTime.now()
+        tradeDto.receivedTime = tradeTimestamp
         tradeDto
     }
 
