@@ -37,6 +37,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 
 		exchangeOrderService.order(tradeDto);
 		marketService.updateMarketPrice(tradeDto);
+		exchangeOrderService.updateOrderStatusWhenInProgress(tradeDto);
 
 		offset.acknowledge();
 	}
