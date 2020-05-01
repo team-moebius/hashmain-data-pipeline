@@ -154,7 +154,6 @@ function plusBtnAction(
     exchange: exchange.toUpperCase(),
     symbol: `${stdUnit}-${monetaryUnit}`,
     orderPosition: type.toUpperCase(),
-    orderStatus: 'EXECUTED',
     orderType: 'LIMIT',
     price: 0,
     volume: 0,
