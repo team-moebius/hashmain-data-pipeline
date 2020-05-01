@@ -7,6 +7,7 @@ import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.domain.orders.OrderStatusCondition;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.OrderAssetDto;
+import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
@@ -27,7 +28,7 @@ import java.util.Map;
 public class OrderAssembler {
 	private final OrderUtil orderUtil;
 
-	public Order toOrderWhenCreate(ApiKey apiKey, OrderDto dto) {
+	public Order assembleOrderWhenCreate(ApiKey apiKey, OrderDto dto) {
 		Order order = new Order();
 		order.setApiKeyId(apiKey.getId());
 		order.setExchange(dto.getExchange());
@@ -44,11 +45,18 @@ public class OrderAssembler {
 		return order;
 	}
 
-	public Order toOrderWhenUpdate(Order order, OrderDto dto) {
+	public Order assembleOrderWhenUpdate(Order order, OrderDto dto) {
 		order.setOrderType(dto.getOrderType());
 		order.setPrice(dto.getPrice());
 		order.setVolume(dto.getVolume());
 		order.setLevel(dto.getLevel());
+		order.setUpdatedAt(LocalDateTime.now());
+
+		return order;
+	}
+
+	public Order assembleUpdatedStatusOrder(Order order, OrderStatusDto orderStatusDto) {
+		order.setOrderStatus(orderStatusDto.getOrderStatus());
 		order.setUpdatedAt(LocalDateTime.now());
 
 		return order;
@@ -96,7 +104,7 @@ public class OrderAssembler {
 		return currencyOrdersMap;
 	}
 
-	public OrderAssetDto toStatusDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
+	public OrderAssetDto toOrderAssetDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
 		if (asset == null || currentPrice == 0D) {
 			return OrderAssetDto.builder()
 				.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
@@ -121,7 +129,7 @@ public class OrderAssembler {
 			.build();
 	}
 
-	public OrderStatusCondition toInProgressStatusCondition(TradeDto tradeDto) {
+	public OrderStatusCondition assembleInProgressStatusCondition(TradeDto tradeDto) {
 		return OrderStatusCondition.builder()
 			.exchange(tradeDto.getExchange())
 			.symbol(tradeDto.getSymbol())

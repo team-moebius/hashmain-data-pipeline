@@ -41,12 +41,12 @@ public class ExchangeOrderService {
 			.subscribe();
 	}
 
-	public void updateOrderStatusWhenInProgress(TradeDto tradeDto) {
+	public void updateOrderStatus(TradeDto tradeDto) {
 		Verifier.checkNullFields(tradeDto);
 
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 		internalOrderService.findInProgressOrders(tradeDto)
-			.flatMap(order -> updateOrderStatus(exchangeService, order))
+			.flatMap(order -> getAndUpdateOrderStatus(exchangeService, order))
 			.subscribe();
 	}
 
@@ -84,9 +84,10 @@ public class ExchangeOrderService {
 		return Mono.just(count);
 	}
 
-	private Mono<OrderStatusDto> updateOrderStatus(ExchangeService exchangeService, Order order) {
+	private Mono<Order> getAndUpdateOrderStatus(ExchangeService exchangeService, Order order) {
 		return apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
 			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()))
-			.flatMap(authToken -> exchangeService.getUpdatedOrderStatus(authToken, order));
+			.flatMap(authToken -> exchangeService.getCurrentOrderStatus(authToken, order))
+			.flatMap(orderStatusDto -> internalOrderService.updateOrderStatus(order, orderStatusDto));
 	}
 }

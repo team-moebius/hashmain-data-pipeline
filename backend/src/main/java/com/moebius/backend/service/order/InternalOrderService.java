@@ -8,12 +8,13 @@ import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.domain.orders.OrderStatusCondition;
-import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.OrderAssetDto;
+import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.AssetDto;
-import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
@@ -100,9 +101,17 @@ public class InternalOrderService {
 	}
 
 	public Flux<Order> findInProgressOrders(TradeDto tradeDto) {
-		OrderStatusCondition inProgressStatusCondition = orderAssembler.toInProgressStatusCondition(tradeDto);
+		OrderStatusCondition inProgressStatusCondition = orderAssembler.assembleInProgressStatusCondition(tradeDto);
 
-		return orderRepository.findAllByOrderStatusCondition(inProgressStatusCondition);
+		return orderRepository.findAllByOrderStatusCondition(inProgressStatusCondition)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
+	}
+
+	public Mono<Order> updateOrderStatus(Order order, OrderStatusDto orderStatusDto) {
+		return orderRepository.save(orderAssembler.assembleUpdatedStatusOrder(order, orderStatusDto))
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
 	}
 
 	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
@@ -120,7 +129,7 @@ public class InternalOrderService {
 	}
 
 	private Mono<Order> createOrder(ApiKey apiKey, OrderDto orderDto) {
-		return orderRepository.save(orderAssembler.toOrderWhenCreate(apiKey, orderDto))
+		return orderRepository.save(orderAssembler.assembleOrderWhenCreate(apiKey, orderDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}
@@ -131,7 +140,7 @@ public class InternalOrderService {
 		}
 
 		return orderRepository.findById(new ObjectId(orderDto.getId()))
-			.map(order -> orderAssembler.toOrderWhenUpdate(order, orderDto))
+			.map(order -> orderAssembler.assembleOrderWhenUpdate(order, orderDto))
 			.flatMap(orderRepository::save)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
@@ -182,7 +191,7 @@ public class InternalOrderService {
 		Map<String, AssetDto> currencyAssets,
 		Map<String, Double> currencyMarketPrices) {
 		return currencyOrders.entrySet().stream()
-			.map(orderEntry -> orderAssembler.toStatusDto(orderEntry.getValue(),
+			.map(orderEntry -> orderAssembler.toOrderAssetDto(orderEntry.getValue(),
 				currencyAssets.get(orderEntry.getKey()),
 				currencyMarketPrices.get(orderEntry.getKey())))
 			.collect(Collectors.toList());

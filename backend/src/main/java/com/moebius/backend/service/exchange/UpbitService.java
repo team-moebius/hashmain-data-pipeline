@@ -94,7 +94,7 @@ public class UpbitService implements ExchangeService {
 	}
 
 	@Override
-	public Mono<OrderStatusDto> getUpdatedOrderStatus(String authToken, Order order) {
+	public Mono<OrderStatusDto> getCurrentOrderStatus(String authToken, Order order) {
 		log.info("[Upbit] Start to get updated order status. [{}])", order);
 
 		return webClient.get()
