@@ -19,8 +19,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 	private final ExchangeOrderService exchangeOrderService;
 	private final MarketService marketService;
 
-	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService,
-		MarketService marketService) {
+	public TradeKafkaConsumer(Map<String, String> receiverDefaultProperties, ExchangeOrderService exchangeOrderService, MarketService marketService) {
 		super(receiverDefaultProperties);
 		this.exchangeOrderService = exchangeOrderService;
 		this.marketService = marketService;
@@ -38,6 +37,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 
 		exchangeOrderService.order(tradeDto);
 		marketService.updateMarketPrice(tradeDto);
+		exchangeOrderService.updateOrderStatus(tradeDto);
 
 		offset.acknowledge();
 	}

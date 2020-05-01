@@ -23,7 +23,7 @@ public class SaleOrderFactory implements OrderFactory {
 	}
 
 	@Override
-	public Flux<Order> getAndUpdateOrders(TradeDto tradeDto) {
+	public Flux<Order> getAndUpdateOrdersToDone(TradeDto tradeDto) {
 		return orderRepository.findAndUpdateAllByAskCondition(tradeDto.getExchange(), tradeDto.getSymbol(), OrderPosition.SALE, tradeDto.getPrice())
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
