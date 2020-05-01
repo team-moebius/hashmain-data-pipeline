@@ -4,11 +4,14 @@ import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderStatus;
+import com.moebius.backend.domain.orders.OrderStatusCondition;
 import com.moebius.backend.dto.OrderDto;
+import com.moebius.backend.dto.OrderAssetDto;
 import com.moebius.backend.dto.OrderStatusDto;
+import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import com.moebius.backend.dto.frontend.response.OrderStatusResponseDto;
+import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.util.Precision;
@@ -25,7 +28,7 @@ import java.util.Map;
 public class OrderAssembler {
 	private final OrderUtil orderUtil;
 
-	public Order toOrderWhenCreate(ApiKey apiKey, OrderDto dto) {
+	public Order assembleOrderWhenCreate(ApiKey apiKey, OrderDto dto) {
 		Order order = new Order();
 		order.setApiKeyId(apiKey.getId());
 		order.setExchange(dto.getExchange());
@@ -42,11 +45,18 @@ public class OrderAssembler {
 		return order;
 	}
 
-	public Order toOrderWhenUpdate(Order order, OrderDto dto) {
+	public Order assembleOrderWhenUpdate(Order order, OrderDto dto) {
 		order.setOrderType(dto.getOrderType());
 		order.setPrice(dto.getPrice());
 		order.setVolume(dto.getVolume());
 		order.setLevel(dto.getLevel());
+		order.setUpdatedAt(LocalDateTime.now());
+
+		return order;
+	}
+
+	public Order assembleUpdatedStatusOrder(Order order, OrderStatusDto orderStatusDto) {
+		order.setOrderStatus(orderStatusDto.getOrderStatus());
 		order.setUpdatedAt(LocalDateTime.now());
 
 		return order;
@@ -94,14 +104,14 @@ public class OrderAssembler {
 		return currencyOrdersMap;
 	}
 
-	public OrderStatusDto toStatusDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
+	public OrderAssetDto toOrderAssetDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
 		if (asset == null || currentPrice == 0D) {
-			return OrderStatusDto.builder()
+			return OrderAssetDto.builder()
 				.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
 				.orderStatus(identifyOrderStatus(orders))
 				.build();
 		}
-		return OrderStatusDto.builder()
+		return OrderAssetDto.builder()
 			.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
 			.averagePurchasePrice(asset.getAveragePurchasePrice())
 			.balance(asset.getBalance())
@@ -113,9 +123,17 @@ public class OrderAssembler {
 
 	}
 
-	public OrderStatusResponseDto toStatusResponseDto(List<OrderStatusDto> orderStatuses) {
-		return OrderStatusResponseDto.builder()
+	public OrderAssetResponseDto toStatusResponseDto(List<OrderAssetDto> orderStatuses) {
+		return OrderAssetResponseDto.builder()
 			.orderStatuses(orderStatuses)
+			.build();
+	}
+
+	public OrderStatusCondition assembleInProgressStatusCondition(TradeDto tradeDto) {
+		return OrderStatusCondition.builder()
+			.exchange(tradeDto.getExchange())
+			.symbol(tradeDto.getSymbol())
+			.orderStatus(OrderStatus.IN_PROGRESS)
 			.build();
 	}
 

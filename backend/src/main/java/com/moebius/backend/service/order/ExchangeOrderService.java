@@ -2,6 +2,7 @@ package com.moebius.backend.service.order;
 
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;
+import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
@@ -40,6 +41,15 @@ public class ExchangeOrderService {
 			.subscribe();
 	}
 
+	public void updateOrderStatus(TradeDto tradeDto) {
+		Verifier.checkNullFields(tradeDto);
+
+		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
+		internalOrderService.findInProgressOrders(tradeDto)
+			.flatMap(order -> getAndUpdateOrderStatus(exchangeService, order))
+			.subscribe();
+	}
+
 	private Mono<Long> processTransactionalOrder(TradeDto tradeDto) {
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 
@@ -56,7 +66,7 @@ public class ExchangeOrderService {
 			Flux.fromStream(Arrays.stream(OrderPosition.values())
 				.map(orderFactoryManager::getOrdersFactory)
 				.filter(Objects::nonNull)
-				.map(ordersFactory -> ordersFactory.getAndUpdateOrders(tradeDto))
+				.map(ordersFactory -> ordersFactory.getAndUpdateOrdersToDone(tradeDto))
 			)
 		);
 	}
@@ -72,5 +82,12 @@ public class ExchangeOrderService {
 			orderCacheService.evictOrderCount(tradeDto.getExchange(), tradeDto.getSymbol());
 		}
 		return Mono.just(count);
+	}
+
+	private Mono<Order> getAndUpdateOrderStatus(ExchangeService exchangeService, Order order) {
+		return apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
+			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()))
+			.flatMap(authToken -> exchangeService.getCurrentOrderStatus(authToken, order))
+			.flatMap(orderStatusDto -> internalOrderService.updateOrderStatus(order, orderStatusDto));
 	}
 }

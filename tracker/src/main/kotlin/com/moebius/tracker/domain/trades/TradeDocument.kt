@@ -18,10 +18,11 @@ data class TradeDocument(
         val volume: Double,
         val prevClosingPrice: Double,
         val changePrice: Double,
+        val transactionPrice: Double,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         val createdAt: Date = Date.from(Instant.now())
 ) : ElasticDocument {
-    constructor(): this("", Exchange.UPBIT, "", TradeType.ASK, Change.EVEN, 0.0, 0.0, 0.0, 0.0, Date.from(Instant.now()))
+    constructor(): this("", Exchange.UPBIT, "", TradeType.ASK, Change.EVEN, 0.0, 0.0, 0.0, 0.0, 0.0, Date.from(Instant.now()))
     override fun getDocumentId(): String = id
     companion object {
         fun of(exchange: Exchange,
@@ -33,6 +34,6 @@ data class TradeDocument(
                prevClosingPrice: Double,
                changePrice: Double
         ): TradeDocument =
-                TradeDocument("${UUID.randomUUID()}", exchange, symbol, tradeType, change, price, volume, prevClosingPrice, changePrice)
+                TradeDocument("${UUID.randomUUID()}", exchange, symbol, tradeType, change, price, volume, prevClosingPrice, changePrice, price * volume)
     }
 }

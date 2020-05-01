@@ -5,9 +5,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.moebius.backend.assembler.exchange.UpbitAssembler;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
+import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitOrderStatusDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class UpbitService implements ExchangeService {
 	private String publicUri;
 	@Value("${exchange.upbit.rest.asset}")
 	private String assetUri;
+	@Value("${exchange.upbit.rest.orders}")
+	private String ordersUri;
 	@Value("${exchange.upbit.rest.order}")
 	private String orderUri;
 
@@ -82,11 +86,25 @@ public class UpbitService implements ExchangeService {
 		log.info("[Upbit] Start to request order. [{}]", order);
 
 		return webClient.post()
-			.uri(publicUri + orderUri)
+			.uri(publicUri + ordersUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.body(getOrderBody(order), UpbitOrderDto.class)
 			.exchange()
 			.publishOn(COMPUTE.scheduler());
+	}
+
+	@Override
+	public Mono<OrderStatusDto> getCurrentOrderStatus(String authToken, Order order) {
+		log.info("[Upbit] Start to get updated order status. [{}])", order);
+
+		return webClient.get()
+			.uri(publicUri + orderUri)
+			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
+			.retrieve()
+			.onStatus(HttpStatus.UNAUTHORIZED::equals,
+				response -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token (" + authToken + ")"))))
+			.bodyToMono(UpbitOrderStatusDto.class)
+			.map(upbitOrderStatusDto -> upbitAssembler.toOrderStatusDto(order, upbitOrderStatusDto));
 	}
 
 	private Mono<UpbitOrderDto> getOrderBody(Order order) {
