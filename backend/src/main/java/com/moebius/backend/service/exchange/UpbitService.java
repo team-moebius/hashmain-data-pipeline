@@ -34,9 +34,9 @@ public class UpbitService implements ExchangeService {
 	private String publicUri;
 	@Value("${exchange.upbit.rest.asset}")
 	private String assetUri;
-	@Value("${exchange.upbit‘.rest.orders}")
+	@Value("${exchange.upbit.rest.orders}")
 	private String ordersUri;
-	@Value("${exchange.upbit‘.rest.order}")
+	@Value("${exchange.upbit.rest.order}")
 	private String orderUri;
 
 	private final WebClient webClient;
