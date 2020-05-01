@@ -38,6 +38,8 @@ public class UpbitService implements ExchangeService {
 	private String ordersUri;
 	@Value("${exchange.upbit.rest.order}")
 	private String orderUri;
+	@Value("${exchange.upbit.rest.identifier}")
+	private String identifierUri;
 
 	private final WebClient webClient;
 	private final UpbitAssembler upbitAssembler;
@@ -98,7 +100,7 @@ public class UpbitService implements ExchangeService {
 		log.info("[Upbit] Start to get updated order status. [{}])", order);
 
 		return webClient.get()
-			.uri(publicUri + orderUri)
+			.uri(publicUri + orderUri + identifierUri + order.getId().toHexString())
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.retrieve()
 			.onStatus(HttpStatus.UNAUTHORIZED::equals,

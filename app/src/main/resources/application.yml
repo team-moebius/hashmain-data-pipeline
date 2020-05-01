@@ -51,6 +51,7 @@ exchange:
       market: v1/market/all
       orders: v1/orders
       order: v1/order
+      identifier: ?identifier=
       recent: recent?codes=CRIX.UPBIT.
 
 
