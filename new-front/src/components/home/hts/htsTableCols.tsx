@@ -58,7 +58,7 @@ export function htsTableCols(
       <Button
         className='customLink'
         type='link'
-        onClick={() => { dataChage(data, type, 'orderType', index, 0, setData) }} icon='sync'
+        onClick={() => { dataChange(data, type, 'orderType', index, 0, setData) }} icon='sync'
       />
     )
   }, {
@@ -73,7 +73,7 @@ export function htsTableCols(
           className='tableInputNumber'
           defaultValue={price}
           onChange={(value) => {
-            if (typeof value === 'number') { dataChage(data, type, 'price', index, value, setData) }
+            if (typeof value === 'number') { dataChange(data, type, 'price', index, value, setData) }
           }}
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           parser={(value = '') => value.replace(/\$\s?|(,*)/g, '')}
@@ -92,7 +92,7 @@ export function htsTableCols(
           className='tableInputNumber'
           defaultValue={volume}
           onChange={(value) => {
-            if (typeof value === 'number') { dataChage(data, type, 'volume', index, value, setData) }
+            if (typeof value === 'number') { dataChange(data, type, 'volume', index, value, setData) }
           }}
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           parser={(value = '') => value.replace(/\$\s?|(,*)/g, '')}
@@ -124,7 +124,7 @@ export function htsTableCols(
   }]
 }
 
-function dataChage(data: any, type: string, key: string, index: number, value: number, setData: any) {
+function dataChange(data: any, type: string, key: string, index: number, value: number, setData: any) {
   let temp
   if (key === 'orderType') {
     temp = produce(data, (draft: { [x: string]: { [x: string]: any }[] }) => {
