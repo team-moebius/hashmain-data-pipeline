@@ -7,10 +7,16 @@ import com.moebius.backend.domain.orders.OrderType;
 import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderStatusDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Component
 public class UpbitAssembler implements ExchangeAssembler {
 	private static final String ORDER_POSITION_BID = "bid";
@@ -41,13 +47,20 @@ public class UpbitAssembler implements ExchangeAssembler {
 			.build();
 	}
 
-	// TODO
 	public String assembleOrderParameters(Order order) {
-		return toOrderDto(order).getClass().getFields ...
-	}
+		UpbitOrderDto orderDto = toOrderDto(order);
 
-	public String assembleOrderIdentifier(String orderId) {
-		return identifierUri + orderId;
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("identifier", orderDto.getIdentifier());
+		parameters.put("market", orderDto.getMarket());
+		parameters.put("side", orderDto.getSide());
+		parameters.put("ord_type", orderDto.getOrd_type());
+		parameters.put("price", String.valueOf(orderDto.getPrice()));
+		parameters.put("volume", String.valueOf(orderDto.getVolume()));
+
+		return parameters.entrySet().stream()
+			.map(entry -> entry.getKey() + "=" + entry.getValue())
+			.collect(Collectors.joining("&"));
 	}
 
 	private String parseOrderPosition(OrderPosition orderPosition) {
@@ -82,7 +95,7 @@ public class UpbitAssembler implements ExchangeAssembler {
 	private Double parseOrderPrice(Order order) {
 		if (order.getOrderType() == OrderType.MARKET
 			&& order.getOrderPosition() != OrderPosition.PURCHASE) {
-			return null;
+			return null; // 시장가 매도일 경우 null
 		}
 		return order.getPrice();
 	}
@@ -90,7 +103,7 @@ public class UpbitAssembler implements ExchangeAssembler {
 	private Double parseOrderVolume(Order order) {
 		if (order.getOrderType() == OrderType.MARKET
 			&& order.getOrderPosition() == OrderPosition.PURCHASE) {
-			return null;
+			return null; // 시장가 매수일 경우 null
 		}
 		return order.getVolume();
 	}

@@ -110,8 +110,7 @@ public class UpbitService implements ExchangeService {
 	@Override
 	public Mono<OrderStatusDto> getCurrentOrderStatus(ApiKey apiKey, Order order) {
 		log.info("[Upbit] Start to get updated order status. [{}])", order);
-		String queryParameter = upbitAssembler.assembleOrderIdentifier(order.getId().toHexString());
-		String token = getAuthTokenWithParameter(apiKey, queryParameter);
+		String token = getAuthTokenWithParameter(apiKey, identifierUri + order.getId().toHexString());
 
 		return webClient.get()
 			.uri(publicUri + orderUri + identifierUri + order.getId().toHexString())
