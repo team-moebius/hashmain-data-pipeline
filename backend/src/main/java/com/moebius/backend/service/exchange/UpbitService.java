@@ -46,9 +46,9 @@ public class UpbitService implements ExchangeService {
 	private String orderUri;
 	@Value("${exchange.upbit.rest.identifier}")
 	private String identifierUri;
-	@Value("${exchange.upbit.message-digest.hash-algorithm")
+	@Value("${exchange.upbit.message-digest.hash-algorithm}")
 	private String messageDigestHashAlgorithm;
-	@Value("${exchange.upbit.message-digest.charset")
+	@Value("${exchange.upbit.message-digest.charset}")
 	private String messageDigestCharset;
 
 	private final WebClient webClient;
@@ -123,7 +123,7 @@ public class UpbitService implements ExchangeService {
 	}
 
 	private String getAuthTokenWithParameter(ApiKey apiKey, String query) {
-		log.info("[Upbit] Start to get auth token. [memberId: {}, query: {}, messageDigestHashAlgorithm: {}, messageDigestCharset: {}]", apiKey.getMemberId(), query, messageDigestHashAlgorithm, messageDigestCharset);
+		log.info("[Upbit] Start to get auth token. [memberId: {}, query: {}]", apiKey.getMemberId(), query);
 
 		MessageDigest messageDigest;
 		try {
