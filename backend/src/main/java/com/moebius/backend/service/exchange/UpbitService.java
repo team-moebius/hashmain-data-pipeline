@@ -123,7 +123,7 @@ public class UpbitService implements ExchangeService {
 	}
 
 	private String getAuthTokenWithParameter(ApiKey apiKey, String query) {
-		log.info("[Upbit] Start to get auth token. [memberId: {}, query: {}]", apiKey.getMemberId(), query);
+		log.info("[Upbit] Start to get auth token. [memberId: {}, query: {}, messageDigestHashAlgorithm: {}, messageDigestCharset: {}]", apiKey.getMemberId(), query, messageDigestHashAlgorithm, messageDigestCharset);
 
 		MessageDigest messageDigest;
 		try {
