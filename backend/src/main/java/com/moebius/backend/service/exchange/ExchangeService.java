@@ -1,5 +1,6 @@
 package com.moebius.backend.service.exchange;
 
+import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.dto.OrderStatusDto;
@@ -17,7 +18,7 @@ public interface ExchangeService {
 
 	Mono<ClientResponse> checkHealth(String authToken);
 
-	Mono<ClientResponse> order(String authToken, Order order);
+	Mono<ClientResponse> order(ApiKey apiKey, Order order);
 
-	Mono<OrderStatusDto> getCurrentOrderStatus(String authToken, Order order);
+	Mono<OrderStatusDto> getCurrentOrderStatus(ApiKey apiKey, Order order);
 }

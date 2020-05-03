@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Configuration
@@ -66,7 +67,7 @@ public class TrackerConfiguration extends DefaultBatchConfigurer {
     public String upbitJwtAuthToken(UpbitProperties upbitProperties) {
         return JWT.create()
             .withClaim("access_key", upbitProperties.getAccessKey())
-            .withClaim("nonce", new Date().getTime())
+            .withClaim("nonce", UUID.randomUUID().toString())
             .sign(Algorithm.HMAC256(upbitProperties.getSecretKey()));
     }
 }

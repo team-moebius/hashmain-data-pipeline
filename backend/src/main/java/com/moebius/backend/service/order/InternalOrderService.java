@@ -1,6 +1,7 @@
 package com.moebius.backend.service.order;
 
 import com.moebius.backend.assembler.order.OrderAssembler;
+import com.moebius.backend.assembler.order.OrderAssetAssembler;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
@@ -45,6 +46,7 @@ import static com.moebius.backend.utils.ThreadScheduler.IO;
 public class InternalOrderService {
 	private final OrderRepository orderRepository;
 	private final OrderAssembler orderAssembler;
+	private final OrderAssetAssembler orderAssetAssembler;
 	private final OrderValidator orderValidator;
 	private final ApiKeyService apiKeyService;
 	private final OrderCacheService orderCacheService;
@@ -81,12 +83,12 @@ public class InternalOrderService {
 
 	public Mono<ResponseEntity<OrderAssetResponseDto>> getOrderAssets(String memberId, Exchange exchange) {
 		return Mono.zip(
-			getOrdersExceptDone(memberId, exchange).map(orderAssembler::toCurrencyOrderDtos),
+			getOrdersExceptDone(memberId, exchange).map(orderAssetAssembler::toCurrencyOrderDtos),
 			assetService.getCurrencyAssets(memberId, exchange),
 			marketService.getCurrencyMarketPrices(exchange)
 		).subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> extractOrderStatuses(tuple.getT1(), tuple.getT2(), tuple.getT3()))
-			.map(orderAssembler::toStatusResponseDto)
+			.map(orderAssetAssembler::toStatusResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
@@ -191,7 +193,7 @@ public class InternalOrderService {
 		Map<String, AssetDto> currencyAssets,
 		Map<String, Double> currencyMarketPrices) {
 		return currencyOrders.entrySet().stream()
-			.map(orderEntry -> orderAssembler.toOrderAssetDto(orderEntry.getValue(),
+			.map(orderEntry -> orderAssetAssembler.toOrderAssetDto(orderEntry.getValue(),
 				currencyAssets.get(orderEntry.getKey()),
 				currencyMarketPrices.get(orderEntry.getKey())))
 			.collect(Collectors.toList());
