@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -102,7 +103,7 @@ public class UpbitService implements ExchangeService {
 		return webClient.post()
 			.uri(publicUri + ordersUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
-			.body(getOrderBody(order), UpbitOrderDto.class)
+			.body(BodyInserters.fromValue(upbitAssembler.toOrderDto(order)))
 			.exchange()
 			.publishOn(COMPUTE.scheduler());
 	}
@@ -147,10 +148,5 @@ public class UpbitService implements ExchangeService {
 			.withClaim("query_hash", queryHash)
 			.withClaim("query_hash_alg", messageDigestHashAlgorithm)
 			.sign(algorithm);
-	}
-
-	private Mono<UpbitOrderDto> getOrderBody(Order order) {
-		return Mono.fromCallable(() -> upbitAssembler.toOrderDto(order))
-			.subscribeOn(COMPUTE.scheduler());
 	}
 }
