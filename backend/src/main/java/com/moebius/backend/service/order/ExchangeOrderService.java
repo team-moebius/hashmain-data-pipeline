@@ -65,7 +65,7 @@ public class ExchangeOrderService {
 			Flux.fromStream(Arrays.stream(OrderPosition.values())
 				.map(orderFactoryManager::getOrdersFactory)
 				.filter(Objects::nonNull)
-				.map(ordersFactory -> ordersFactory.getAndUpdateOrdersToDone(tradeDto))
+				.map(ordersFactory -> ordersFactory.getAndUpdateOrdersToInProgress(tradeDto))
 			)
 		);
 	}

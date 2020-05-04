@@ -105,7 +105,7 @@ public class UpbitService implements ExchangeService {
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
 			.body(BodyInserters.fromValue(upbitAssembler.toOrderDto(order)))
 			.exchange()
-			.publishOn(COMPUTE.scheduler());
+			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to request order."));
 	}
 
 	@Override
@@ -124,8 +124,6 @@ public class UpbitService implements ExchangeService {
 	}
 
 	private String getAuthTokenWithParameter(ApiKey apiKey, String query) {
-		log.info("[Upbit] Start to get auth token. [memberId: {}, query: {}]", apiKey.getMemberId(), query);
-
 		MessageDigest messageDigest;
 		try {
 			messageDigest = MessageDigest.getInstance(messageDigestHashAlgorithm);
