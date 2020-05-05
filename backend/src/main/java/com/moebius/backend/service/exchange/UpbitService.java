@@ -105,6 +105,7 @@ public class UpbitService implements ExchangeService {
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
 			.body(BodyInserters.fromValue(upbitAssembler.toOrderDto(order)))
 			.exchange()
+			.doOnError(exception -> log.error("[Upbit] Failed to request order.", exception))
 			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to request order."));
 	}
 
