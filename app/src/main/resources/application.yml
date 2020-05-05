@@ -55,7 +55,7 @@ exchange:
       recent: recent?codes=CRIX.UPBIT.
     message-digest:
       hash-algorithm: SHA-512
-      charset: utf8
+      charset: UTF-8
 
 server:
   port: 80

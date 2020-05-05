@@ -94,7 +94,7 @@ public class InternalOrderService {
 
 	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
 	public Mono<Long> findOrderCountByTradeDto(TradeDto tradeDto) {
-		log.info("[Order] [{}/{}] Start to get count of orders from repository because not found in cache.", tradeDto.getExchange(),
+		log.info("[Order] [{}/{}] Start to get count of orders from repository for warming cache up.", tradeDto.getExchange(),
 			tradeDto.getSymbol());
 		return orderRepository.countBySymbolAndExchangeAndOrderStatus(tradeDto.getSymbol(), tradeDto.getExchange(), OrderStatus.READY)
 			.subscribeOn(IO.scheduler())

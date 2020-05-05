@@ -16,6 +16,7 @@ import com.moebius.backend.exception.WrongDataException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -96,17 +97,17 @@ public class UpbitService implements ExchangeService {
 
 	@Override
 	public Mono<ClientResponse> order(ApiKey apiKey, Order order) {
-		log.info("[Upbit] Start to request order. [{}]", order);
 		String queryParameter = upbitAssembler.assembleOrderParameters(order);
 		String token = getAuthTokenWithParameter(apiKey, queryParameter);
 
+		log.info("[Upbit] Start to request order. [queryParameter: {}, token: {}]", queryParameter, token);
 		return webClient.post()
 			.uri(publicUri + ordersUri)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
 			.body(BodyInserters.fromValue(upbitAssembler.toOrderDto(order)))
 			.exchange()
 			.doOnError(exception -> log.error("[Upbit] Failed to request order.", exception))
-			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to request order."));
+			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to request order. [Upbit response code : {}]", clientResponse.statusCode()));
 	}
 
 	@Override
@@ -145,7 +146,7 @@ public class UpbitService implements ExchangeService {
 			.withClaim("access_key", apiKey.getAccessKey())
 			.withClaim("nonce", UUID.randomUUID().toString())
 			.withClaim("query_hash", queryHash)
-			.withClaim("query_hash_alg", messageDigestHashAlgorithm)
+			.withClaim("query_hash_alg", "SHA512")
 			.sign(algorithm);
 	}
 }
