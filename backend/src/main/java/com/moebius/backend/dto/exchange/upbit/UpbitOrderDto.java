@@ -15,6 +15,6 @@ public class UpbitOrderDto {
 	private String side;
 	@NotBlank
 	private String ord_type;
-	private Double price;
-	private Double volume;
+	private String price;
+	private String volume;
 }

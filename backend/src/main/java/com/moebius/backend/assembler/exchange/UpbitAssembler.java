@@ -26,9 +26,6 @@ public class UpbitAssembler implements ExchangeAssembler {
 	private static final String ORDER_TYPE_MARKET = "market";
 	private static final String WAIT_STATE = "wait";
 
-	@Value("${exchange.upbit.rest.identifier}")
-	private String identifierUri;
-
 	public UpbitOrderDto toOrderDto(Order order) {
 		return UpbitOrderDto.builder()
 			.identifier(order.getId().toHexString())
@@ -55,8 +52,8 @@ public class UpbitAssembler implements ExchangeAssembler {
 		parameters.put("market", orderDto.getMarket());
 		parameters.put("side", orderDto.getSide());
 		parameters.put("ord_type", orderDto.getOrd_type());
-		parameters.put("price", String.valueOf(orderDto.getPrice()));
-		parameters.put("volume", String.valueOf(orderDto.getVolume()));
+		parameters.put("price", orderDto.getPrice());
+		parameters.put("volume", orderDto.getVolume());
 
 		return parameters.entrySet().stream()
 			.map(entry -> entry.getKey() + "=" + entry.getValue())
@@ -92,19 +89,19 @@ public class UpbitAssembler implements ExchangeAssembler {
 		return OrderStatus.DONE;
 	}
 
-	private Double parseOrderPrice(Order order) {
+	private String parseOrderPrice(Order order) {
 		if (order.getOrderType() == OrderType.MARKET
 			&& order.getOrderPosition() != OrderPosition.PURCHASE) {
 			return null; // 시장가 매도일 경우 null
 		}
-		return order.getPrice();
+		return Double.toString(order.getPrice());
 	}
 
-	private Double parseOrderVolume(Order order) {
+	private String parseOrderVolume(Order order) {
 		if (order.getOrderType() == OrderType.MARKET
 			&& order.getOrderPosition() == OrderPosition.PURCHASE) {
 			return null; // 시장가 매수일 경우 null
 		}
-		return order.getVolume();
+		return Double.toString(order.getVolume());
 	}
 }
