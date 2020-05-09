@@ -50,10 +50,12 @@ exchange:
       asset: v1/accounts
       market: v1/market/all
       orders: v1/orders
-      order: v1/order
-      identifier: ?identifier=
+      order: v1/order?
+      identifier: identifier=
       recent: recent?codes=CRIX.UPBIT.
-
+    message-digest:
+      hash-algorithm: SHA-512
+      charset: UTF-8
 
 server:
   port: 80

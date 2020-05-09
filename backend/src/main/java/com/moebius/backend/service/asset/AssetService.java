@@ -42,8 +42,9 @@ public class AssetService {
 	private Mono<List<? extends AssetDto>> getAssets(String memberId, Exchange exchange) {
 		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
 
-		return apiKeyService.getExchangeAuthToken(memberId, exchange)
+		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
+			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()))
 			.flatMap(authToken -> exchangeService.getAssets(authToken)
 				.collectList());
 	}

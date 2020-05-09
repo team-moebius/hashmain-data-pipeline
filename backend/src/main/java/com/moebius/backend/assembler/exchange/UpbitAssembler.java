@@ -7,10 +7,18 @@ import com.moebius.backend.domain.orders.OrderType;
 import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderStatusDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class UpbitAssembler implements ExchangeAssembler {
 	private static final String ORDER_POSITION_BID = "bid";
 	private static final String ORDER_POSITION_ASK = "ask";
@@ -20,15 +28,37 @@ public class UpbitAssembler implements ExchangeAssembler {
 	private static final String WAIT_STATE = "wait";
 
 	public UpbitOrderDto toOrderDto(Order order) {
-		UpbitOrderDto upbitOrderDto = new UpbitOrderDto();
-		upbitOrderDto.setId(order.getId().toHexString());
-		upbitOrderDto.setSymbol(order.getSymbol());
-		upbitOrderDto.setOrderPosition(parseOrderPosition(order.getOrderPosition()));
-		upbitOrderDto.setOrderType(parseOrderType(order.getOrderPosition(), order.getOrderType()));
-		upbitOrderDto.setPrice(order.getPrice());
-		upbitOrderDto.setVolume(order.getVolume());
+		return UpbitOrderDto.builder()
+			.identifier(order.getId().toHexString())
+			.market(order.getSymbol())
+			.side(parseOrderPosition(order.getOrderPosition()))
+			.ord_type(parseOrderType(order.getOrderPosition(), order.getOrderType()))
+			.price(parseOrderPrice(order))
+			.volume(parseOrderVolume(order))
+			.build();
+	}
 
-		return upbitOrderDto;
+	public OrderStatusDto toOrderStatusDto(Order order, UpbitOrderStatusDto upbitOrderStatusDto) {
+		return OrderStatusDto.builder()
+			.id(order.getId().toHexString())
+			.orderStatus(parseOrderStatus(upbitOrderStatusDto.getState()))
+			.build();
+	}
+
+	public String assembleOrderParameters(Order order) {
+		UpbitOrderDto orderDto = toOrderDto(order);
+
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("identifier", orderDto.getIdentifier());
+		parameters.put("market", orderDto.getMarket());
+		parameters.put("side", orderDto.getSide());
+		parameters.put("ord_type", orderDto.getOrd_type());
+		parameters.put("price", String.valueOf(orderDto.getPrice()));
+		parameters.put("volume", String.valueOf(orderDto.getVolume()));
+
+		return parameters.entrySet().stream()
+			.map(entry -> entry.getKey() + "=" + entry.getValue())
+			.collect(Collectors.joining("&"));
 	}
 
 	private String parseOrderPosition(OrderPosition orderPosition) {
@@ -48,13 +78,6 @@ public class UpbitAssembler implements ExchangeAssembler {
 		return ORDER_TYPE_LIMIT; // 지정가 매수, 매도
 	}
 
-	public OrderStatusDto toOrderStatusDto(Order order, UpbitOrderStatusDto upbitOrderStatusDto) {
-		return OrderStatusDto.builder()
-			.id(order.getId().toHexString())
-			.orderStatus(parseOrderStatus(upbitOrderStatusDto.getState()))
-			.build();
-	}
-
 	private OrderStatus parseOrderStatus(String state) {
 		if (StringUtils.isEmpty(state)) {
 			return OrderStatus.STOPPED;
@@ -65,5 +88,21 @@ public class UpbitAssembler implements ExchangeAssembler {
 		}
 
 		return OrderStatus.DONE;
+	}
+
+	private Double parseOrderPrice(Order order) {
+		if (order.getOrderType() == OrderType.MARKET
+			&& order.getOrderPosition() != OrderPosition.PURCHASE) {
+			return null; // 시장가 매도일 경우 null
+		}
+		return order.getPrice();
+	}
+
+	private Double parseOrderVolume(Order order) {
+		if (order.getOrderType() == OrderType.MARKET
+			&& order.getOrderPosition() == OrderPosition.PURCHASE) {
+			return null; // 시장가 매수일 경우 null
+		}
+		return order.getVolume();
 	}
 }

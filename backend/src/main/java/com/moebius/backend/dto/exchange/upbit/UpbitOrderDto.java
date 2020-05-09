@@ -1,30 +1,25 @@
 package com.moebius.backend.dto.exchange.upbit;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
 
+/**
+ * This external order dto's shape(field declaration order, type) MUST NOT be changed.
+ */
 @Getter
-@Setter
+@Builder
 @ToString
 public class UpbitOrderDto {
-	@JsonProperty("identifier")
-	private String id;
 	@NotBlank
-	@JsonProperty("market")
-	private String symbol;
+	private String market;
+	private Double volume;
+	private String identifier;
 	@NotBlank
-	@JsonProperty("side")
-	private String orderPosition;
+	private String side;
 	@NotBlank
-	@JsonProperty("ord_type")
-	private String orderType;
-	@PositiveOrZero
-	private double price;
-	@PositiveOrZero
-	private double volume;
+	private String ord_type;
+	private Double price;
 }

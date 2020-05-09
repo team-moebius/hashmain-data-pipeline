@@ -21,7 +21,7 @@ public class Verifier {
 
 				try {
 					if (Objects.isNull(field.get(object))) {
-						throw new NullPointerException(object.toString() + " is null");
+						throw new NullPointerException(object.toString() + " has null field(s).");
 					}
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();

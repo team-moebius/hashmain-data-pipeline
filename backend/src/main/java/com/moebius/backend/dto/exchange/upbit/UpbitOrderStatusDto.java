@@ -2,9 +2,8 @@ package com.moebius.backend.dto.exchange.upbit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.*;
 
 @Getter
 @Builder(builderClassName = "UpbitOrderStatusDtoBuilder", toBuilder = true)
@@ -13,4 +12,7 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpbitOrderStatusDto {
 	private String state;
+
+	@JsonPOJOBuilder(withPrefix = "")
+	public static class UpbitOrderStatusDtoBuilder { }
 }
