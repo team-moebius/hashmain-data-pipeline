@@ -6,20 +6,17 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 
-/**
- * This external order dto's shape(field declaration order, type) MUST NOT be changed.
- */
 @Getter
 @Builder
 @ToString
 public class UpbitOrderDto {
 	@NotBlank
 	private String market;
-	private Double volume;
-	private String identifier;
 	@NotBlank
 	private String side;
 	@NotBlank
 	private String ord_type;
+	private String identifier;
+	private Double volume;
 	private Double price;
 }
