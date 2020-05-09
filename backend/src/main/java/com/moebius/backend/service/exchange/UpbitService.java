@@ -90,7 +90,7 @@ public class UpbitService implements ExchangeService {
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(authToken))
 			.exchange()
 			.filter(clientResponse -> clientResponse.statusCode() == HttpStatus.OK)
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token")))));
+			.switchIfEmpty(Mono.defer(() -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Entered access key and secret key")))));
 	}
 
 	@Override
