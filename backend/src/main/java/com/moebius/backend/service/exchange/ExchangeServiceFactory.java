@@ -13,7 +13,7 @@ public class ExchangeServiceFactory {
 	private final Map<Exchange, ExchangeService> exchangeServiceMap;
 
 	public ExchangeServiceFactory(List<ExchangeService> exchangeServices) {
-		this.exchangeServiceMap = exchangeServices.stream()
+		exchangeServiceMap = exchangeServices.stream()
 			.collect(Collectors.toMap(ExchangeService::getExchange, Function.identity()));
 	}
 

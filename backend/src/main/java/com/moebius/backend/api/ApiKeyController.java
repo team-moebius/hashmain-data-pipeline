@@ -49,7 +49,7 @@ public class ApiKeyController {
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Success", responseContainer = "List", response = ApiKeyDto.class),
-		@ApiResponse(code = 404, message = "Api keys are not found at all", response = DataNotFoundException.class),
+		@ApiResponse(code = 400, message = "Api keys are not found at all", response = DataNotFoundException.class),
 	})
 	@GetMapping("")
 	public Mono<ResponseEntity<List<ApiKeyResponseDto>>> getApiKeys(Principal principal) {

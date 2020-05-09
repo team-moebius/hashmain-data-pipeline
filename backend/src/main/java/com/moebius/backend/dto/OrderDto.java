@@ -1,5 +1,6 @@
 package com.moebius.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.OrderPosition;
@@ -19,6 +20,7 @@ import javax.validation.constraints.PositiveOrZero;
 @Getter
 @Setter
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDto {
 	@Id
 	@ApiModelProperty(notes = "Order Id, 이미 생성된 order일 경우 삭제 또는 수정 시 반드시 넣어서 보내줘야 한다.")

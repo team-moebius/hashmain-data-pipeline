@@ -9,8 +9,8 @@ import com.moebius.backend.dto.frontend.response.ApiKeyResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.DuplicatedDataException;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.service.exchange.ExchangeService;
+import com.moebius.backend.service.exchange.ExchangeServiceFactory;
 import com.moebius.backend.utils.Verifier;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class ApiKeyService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ").")))))
+				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ")")))))
 			.map(apiKeyAssembler::toResponseDto)
 			.collectList()
 			.map(ResponseEntity::ok);
@@ -90,15 +90,6 @@ public class ApiKeyService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on id(" + id + ")")))));
-	}
-
-	public Mono<String> getExchangeAuthToken(String memberId, Exchange exchange) {
-		Verifier.checkBlankString(memberId);
-		Verifier.checkNullFields(exchange);
-
-		ExchangeService exchangeService = exchangeServiceFactory.getService(exchange);
-		return getApiKeyByMemberIdAndExchange(memberId, exchange)
-			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()));
 	}
 
 	private Mono<ClientResponse> verifyApiKey(ApiKeyDto apiKeyDto) {

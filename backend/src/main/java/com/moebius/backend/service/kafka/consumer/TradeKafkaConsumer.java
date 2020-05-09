@@ -35,7 +35,7 @@ public class TradeKafkaConsumer extends KafkaConsumer<String, TradeDto> {
 		ReceiverOffset offset = record.receiverOffset();
 		TradeDto tradeDto = record.value();
 
-		exchangeOrderService.order(tradeDto);
+		exchangeOrderService.orderWithTradeDto(tradeDto);
 		marketService.updateMarketPrice(tradeDto);
 		exchangeOrderService.updateOrderStatus(tradeDto);
 

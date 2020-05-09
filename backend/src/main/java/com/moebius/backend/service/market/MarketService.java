@@ -50,7 +50,7 @@ public class MarketService {
 			.subscribe();
 	}
 
-	public Mono<ResponseEntity<List<MarketResponseDto>>> getMarketsByExchange(Exchange exchange) {
+	public Mono<ResponseEntity<List<MarketResponseDto>>> getMarkets(Exchange exchange) {
 		return marketRepository.findAllByExchange(exchange)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
@@ -70,7 +70,7 @@ public class MarketService {
 	}
 
 	// TODO : External api call should be moved to specific exchange service
-	public Mono<ResponseEntity<?>> updateMarketsByExchange(Exchange exchange) {
+	public Mono<ResponseEntity<?>> updateMarkets(Exchange exchange) {
 		return webClient.get()
 			.uri(publicUri + marketUri)
 			.retrieve()
@@ -92,6 +92,13 @@ public class MarketService {
 			.publishOn(COMPUTE.scheduler())
 			.collectList()
 			.map(marketAssembler::toCurrencyMarketPrices);
+	}
+
+	public Mono<Double> getCurrentPrice(Exchange exchange, String symbol) {
+		return marketRepository.findByExchangeAndSymbol(exchange, symbol)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
+			.map(Market::getCurrentPrice);
 	}
 
 	private Mono<Tuple2<Market, UpbitTradeMetaDto>> getMarketAndTradeMeta(TradeDto tradeDto) {

@@ -34,11 +34,6 @@ export function apiKeyValidCheck(
 export function apiKeyRegister(
   registerValue: any, dispatch: any, isValid: boolean, setIsRegister: any, exchange: string
 ): void {
-  if (!isValid) {
-    openNotification('error', 'Key 유효성 체크를 해주세요')
-    return
-  }
-
   dispatch(htsAPIKeyActionType({
     type: HTS_API_KEY_REQUESTED,
     restType: {
