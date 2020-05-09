@@ -1,8 +1,8 @@
 package com.moebius.backend.dto.exchange.upbit;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Getter
 @Builder
-@JsonDeserialize(builder = UpbitOrderDto.UpbitOrderDtoBuilder.class)
+@ToString
 public class UpbitOrderDto {
 	@NotBlank
 	private String market;
