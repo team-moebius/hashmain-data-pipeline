@@ -9,18 +9,16 @@ import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto;
-import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderStatusDto;
 import com.moebius.backend.exception.ExceptionTypes;
 import com.moebius.backend.exception.WrongDataException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -97,24 +95,25 @@ public class UpbitService implements ExchangeService {
 
 	@Override
 	public Mono<ClientResponse> order(ApiKey apiKey, Order order) {
-		String queryParameter = upbitAssembler.assembleOrderParameters(order);
-		String token = getAuthTokenWithParameter(apiKey, queryParameter);
+		String queryParameters = upbitAssembler.assembleOrderParameters(order);
+		String token = getAuthTokenWithParameter(apiKey, queryParameters);
 
-		log.info("[Upbit] Start to request order. [queryParameter: {}, token: {}]", queryParameter, token);
+		log.info("[Upbit] Start to request order. [{}]", order);
 		return webClient.post()
 			.uri(publicUri + ordersUri)
+			.contentType(MediaType.APPLICATION_JSON)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
-			.body(BodyInserters.fromValue(upbitAssembler.toOrderDto(order)))
+			.bodyValue(upbitAssembler.toOrderDto(order))
 			.exchange()
 			.doOnError(exception -> log.error("[Upbit] Failed to request order.", exception))
-			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to request order. [Upbit response code : {}]", clientResponse.statusCode()));
+			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to request order. [Response code : {}]", clientResponse.statusCode()));
 	}
 
 	@Override
 	public Mono<OrderStatusDto> getCurrentOrderStatus(ApiKey apiKey, Order order) {
-		log.info("[Upbit] Start to get updated order status. [{}])", order);
 		String token = getAuthTokenWithParameter(apiKey, identifierUri + order.getId().toHexString());
 
+		log.info("[Upbit] Start to get current order status. [{}])", order);
 		return webClient.get()
 			.uri(publicUri + orderUri + identifierUri + order.getId().toHexString())
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))

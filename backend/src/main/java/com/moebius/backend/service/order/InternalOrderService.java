@@ -2,23 +2,20 @@ package com.moebius.backend.service.order;
 
 import com.moebius.backend.assembler.order.OrderAssembler;
 import com.moebius.backend.assembler.order.OrderAssetAssembler;
+import com.moebius.backend.assembler.order.OrderUtil;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderRepository;
 import com.moebius.backend.domain.orders.OrderStatus;
-import com.moebius.backend.domain.orders.OrderStatusCondition;
 import com.moebius.backend.dto.OrderAssetDto;
 import com.moebius.backend.dto.OrderDto;
-import com.moebius.backend.dto.OrderStatusDto;
-import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import com.moebius.backend.exception.DataNotFoundException;
 import com.moebius.backend.exception.ExceptionTypes;
-import com.moebius.backend.exception.WrongDataException;
 import com.moebius.backend.service.asset.AssetService;
 import com.moebius.backend.service.market.MarketService;
 import com.moebius.backend.service.member.ApiKeyService;
@@ -26,7 +23,6 @@ import com.moebius.backend.service.order.validator.OrderValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -34,9 +30,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.moebius.backend.domain.commons.EventType.*;
+import static com.moebius.backend.domain.commons.EventType.CREATE;
+import static com.moebius.backend.domain.commons.EventType.DELETE;
 import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 import static com.moebius.backend.utils.ThreadScheduler.IO;
 
@@ -48,10 +46,12 @@ public class InternalOrderService {
 	private final OrderAssembler orderAssembler;
 	private final OrderAssetAssembler orderAssetAssembler;
 	private final OrderValidator orderValidator;
+	private final OrderUtil orderUtil;
 	private final ApiKeyService apiKeyService;
-	private final OrderCacheService orderCacheService;
 	private final AssetService assetService;
 	private final MarketService marketService;
+	private final OrderCacheService orderCacheService;
+	private final ExchangeOrderService exchangeOrderService;
 
 	public Mono<ResponseEntity<OrderResponseDto>> processOrders(String memberId, Exchange exchange, List<OrderDto> orderDtos) {
 		orderValidator.validate(orderDtos);
@@ -68,14 +68,15 @@ public class InternalOrderService {
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchange(String memberId, Exchange exchange) {
-		return getOrders(memberId, exchange)
+		return getOrders(memberId, exchange, apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
 			.subscribeOn(COMPUTE.scheduler())
 			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchangeAndSymbol(String memberId, Exchange exchange, String symbol) {
-		return getOrders(memberId, exchange).map(orders -> filterOrdersBySymbol(orders, symbol))
+		return getOrders(memberId, exchange, apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
+			.map(orders -> orderUtil.filterOrdersBySymbol(orders, symbol))
 			.subscribeOn(COMPUTE.scheduler())
 			.map(orderAssembler::toResponseDto)
 			.map(ResponseEntity::ok);
@@ -83,7 +84,8 @@ public class InternalOrderService {
 
 	public Mono<ResponseEntity<OrderAssetResponseDto>> getOrderAssets(String memberId, Exchange exchange) {
 		return Mono.zip(
-			getOrdersExceptDone(memberId, exchange).map(orderAssetAssembler::toCurrencyOrderDtos),
+			getOrders(memberId, exchange, apiKey -> orderRepository.findAllByApiKeyIdAndOrderStatusNot(apiKey.getId(), OrderStatus.DONE))
+				.map(orderAssetAssembler::toCurrencyOrderDtos),
 			assetService.getCurrencyAssets(memberId, exchange),
 			marketService.getCurrencyMarketPrices(exchange)
 		).subscribeOn(COMPUTE.scheduler())
@@ -92,58 +94,30 @@ public class InternalOrderService {
 			.map(ResponseEntity::ok);
 	}
 
-	@Cacheable(value = "readyOrderCount", key = "{#tradeDto.exchange, #tradeDto.symbol, 'READY'}")
-	public Mono<Long> findOrderCountByTradeDto(TradeDto tradeDto) {
-		log.info("[Order] [{}/{}] Start to get count of orders from repository for warming cache up.", tradeDto.getExchange(),
-			tradeDto.getSymbol());
-		return orderRepository.countBySymbolAndExchangeAndOrderStatus(tradeDto.getSymbol(), tradeDto.getExchange(), OrderStatus.READY)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
-			.cache();
-	}
-
-	public Flux<Order> findInProgressOrders(TradeDto tradeDto) {
-		OrderStatusCondition inProgressStatusCondition = orderAssembler.assembleInProgressStatusCondition(tradeDto);
-
-		return orderRepository.findAllByOrderStatusCondition(inProgressStatusCondition)
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
-	public Mono<Order> updateOrderStatus(Order order, OrderStatusDto orderStatusDto) {
-		return orderRepository.save(orderAssembler.assembleUpdatedStatusOrder(order, orderStatusDto))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
-	}
-
 	private OrderDto processOrder(ApiKey apiKey, OrderDto orderDto) {
 		EventType eventType = orderDto.getEventType();
 
 		if (eventType == CREATE) {
-			createOrder(apiKey, orderDto).subscribe();
-		} else if (eventType == UPDATE) {
-			updateOrder(orderDto).subscribe();
+			Mono.zip(
+				createOrder(apiKey, orderDto),
+				marketService.getCurrentPrice(orderDto.getExchange(), orderDto.getSymbol())
+			).subscribe(tuple -> requestOrderIfNeeded(apiKey, tuple.getT1(), tuple.getT2()));
 		} else if (eventType == DELETE) {
-			deleteOrder(orderDto.getId()).subscribe();
+			deleteOrder(orderDto.getId())
+				.subscribe();
 		}
 
 		return orderDto;
 	}
 
-	private Mono<Order> createOrder(ApiKey apiKey, OrderDto orderDto) {
-		return orderRepository.save(orderAssembler.assembleOrderWhenCreate(apiKey, orderDto))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler());
+	private void requestOrderIfNeeded(ApiKey apiKey, Order order, double price) {
+		if (orderUtil.isExchangeRequestNeeded(order, price)) {
+			exchangeOrderService.order(apiKey, order);
+		}
 	}
 
-	private Mono<Order> updateOrder(OrderDto orderDto) {
-		if (orderDto.getId() == null) {
-			throw new WrongDataException("[Order] There isn't id in UPDATE or DELETE event dto. [" + orderDto + "]");
-		}
-
-		return orderRepository.findById(new ObjectId(orderDto.getId()))
-			.map(order -> orderAssembler.assembleOrderWhenUpdate(order, orderDto))
-			.flatMap(orderRepository::save)
+	private Mono<Order> createOrder(ApiKey apiKey, OrderDto orderDto) {
+		return orderRepository.save(orderAssembler.assembleReadyOrder(apiKey, orderDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler());
 	}
@@ -158,35 +132,18 @@ public class InternalOrderService {
 		orderDtos.stream()
 			.collect(Collectors.groupingBy(OrderDto::getSymbol))
 			.keySet()
-			.forEach(symbol -> orderCacheService.evictOrderCount(orderDtos.get(0).getExchange(), symbol));
+			.forEach(symbol -> orderCacheService.evictReadyOrderCount(orderDtos.get(0).getExchange(), symbol));
 	}
 
-	private Mono<List<OrderDto>> getOrders(String memberId, Exchange exchange) {
+	private Mono<List<OrderDto>> getOrders(String memberId, Exchange exchange, Function<ApiKey, Flux<Order>> getOrdersFunction) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
-			.map(apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
+			.map(getOrdersFunction)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
 			.flatMap(orders -> orders.map(order -> orderAssembler.toDto(order, EventType.READ))
 				.collectList());
-	}
-
-	private Mono<List<OrderDto>> getOrdersExceptDone(String memberId, Exchange exchange) {
-		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
-			.map(apiKey -> orderRepository.findAllByApiKeyIdAndOrderStatusNot(apiKey.getId(), OrderStatus.DONE))
-			.subscribeOn(IO.scheduler())
-			.publishOn(COMPUTE.scheduler())
-			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
-				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
-			.flatMap(orders -> orders.map(order -> orderAssembler.toDto(order, EventType.READ))
-				.collectList());
-	}
-
-	private List<OrderDto> filterOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
-		return orderDtos.stream()
-			.filter(orderDto -> orderDto.getSymbol().equals(symbol.toUpperCase()))
-			.collect(Collectors.toList());
 	}
 
 	private List<OrderAssetDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyOrders,

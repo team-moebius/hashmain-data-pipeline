@@ -32,7 +32,7 @@ public class MarketController {
 	@PutMapping("/{exchange}")
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public Mono<ResponseEntity<?>> updateMarketsByExchange(@PathVariable String exchange) {
-		return marketService.updateMarketsByExchange(Exchange.getBy(exchange));
+		return marketService.updateMarkets(Exchange.getBy(exchange));
 	}
 
 	@ApiOperation(
@@ -49,6 +49,6 @@ public class MarketController {
 	@GetMapping("/{exchange}")
 	@PreAuthorize("hasAuthority('MEMBER')")
 	public Mono<ResponseEntity<List<MarketResponseDto>>> getMarketsByExchange(@PathVariable String exchange) {
-		return marketService.getMarketsByExchange(Exchange.getBy(exchange));
+		return marketService.getMarkets(Exchange.getBy(exchange));
 	}
 }

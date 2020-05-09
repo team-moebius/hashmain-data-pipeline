@@ -1,7 +1,8 @@
 package com.moebius.backend.service.order;
 
-import com.moebius.backend.domain.orders.Order;
-import com.moebius.backend.domain.orders.OrderPosition;
+import com.moebius.backend.assembler.order.OrderAssembler;
+import com.moebius.backend.domain.apikeys.ApiKey;
+import com.moebius.backend.domain.orders.*;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
@@ -11,6 +12,7 @@ import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.UncategorizedMongoDbException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -20,21 +22,33 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
+import static com.moebius.backend.utils.ThreadScheduler.IO;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExchangeOrderService {
+	private final OrderAssembler orderAssembler;
+	private final OrderRepository orderRepository;
 	private final ApiKeyService apiKeyService;
-	private final InternalOrderService internalOrderService;
 	private final OrderCacheService orderCacheService;
 	private final ExchangeServiceFactory exchangeServiceFactory;
 	private final OrderFactoryManager orderFactoryManager;
 	private final TransactionalOperator transactionalOperator;
 
-	public void order(TradeDto tradeDto) {
+	public void order(ApiKey apiKey, Order order) {
+		ExchangeService exchangeService = exchangeServiceFactory.getService(order.getExchange());
+
+		updateOrderStatus(order, OrderStatus.IN_PROGRESS)
+			.flatMap(updatedOrder -> exchangeService.order(apiKey, updatedOrder))
+			.subscribe();
+	}
+
+	public void orderWithTradeDto(TradeDto tradeDto) {
 		Verifier.checkNullFields(tradeDto);
 
-		internalOrderService.findOrderCountByTradeDto(tradeDto)
+		orderCacheService.getReadyOrderCountByExchangeAndSymbol(tradeDto.getExchange(), tradeDto.getSymbol())
 			.filter(orderCount -> orderCount == 0)
 			.switchIfEmpty(Mono.defer(() -> processTransactionalOrder(tradeDto)))
 			.subscribe();
@@ -44,7 +58,10 @@ public class ExchangeOrderService {
 		Verifier.checkNullFields(tradeDto);
 
 		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
-		internalOrderService.findInProgressOrders(tradeDto)
+		OrderStatusCondition inProgressStatusCondition = orderAssembler.assembleInProgressStatusCondition(tradeDto);
+		orderRepository.findAllByOrderStatusCondition(inProgressStatusCondition)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler())
 			.flatMap(order -> getAndUpdateOrderStatus(exchangeService, order))
 			.subscribe();
 	}
@@ -77,7 +94,7 @@ public class ExchangeOrderService {
 
 	private Mono<Long> evictIfCountNotZero(TradeDto tradeDto, long count) {
 		if (count != 0) {
-			orderCacheService.evictOrderCount(tradeDto.getExchange(), tradeDto.getSymbol());
+			orderCacheService.evictReadyOrderCount(tradeDto.getExchange(), tradeDto.getSymbol());
 		}
 		return Mono.just(count);
 	}
@@ -85,6 +102,14 @@ public class ExchangeOrderService {
 	private Mono<Order> getAndUpdateOrderStatus(ExchangeService exchangeService, Order order) {
 		return apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
 			.flatMap(apiKey -> exchangeService.getCurrentOrderStatus(apiKey, order))
-			.flatMap(orderStatusDto -> internalOrderService.updateOrderStatus(order, orderStatusDto));
+			.flatMap(orderStatusDto -> updateOrderStatus(order, orderStatusDto.getOrderStatus()));
+	}
+
+	private Mono<Order> updateOrderStatus(Order order, OrderStatus orderStatus) {
+		Order updatedOrder = orderAssembler.assembleOrderStatus(order, orderStatus);
+
+		return orderRepository.save(updatedOrder)
+			.subscribeOn(IO.scheduler())
+			.publishOn(COMPUTE.scheduler());
 	}
 }

@@ -10,6 +10,7 @@ import com.moebius.backend.domain.commons.TradeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 
@@ -17,10 +18,12 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class TradeDto {
+	@Nullable
 	private String id;
 	private Exchange exchange;
 	private String symbol;
 	private TradeType tradeType;
+	@Nullable
 	private Change change;
 	private double price;
 	private double volume;

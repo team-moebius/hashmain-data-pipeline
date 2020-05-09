@@ -6,7 +6,6 @@ import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderStatus;
 import com.moebius.backend.domain.orders.OrderStatusCondition;
 import com.moebius.backend.dto.OrderDto;
-import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
 import org.apache.commons.lang3.ObjectUtils;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @Component
 public class OrderAssembler {
-	public Order assembleOrderWhenCreate(ApiKey apiKey, OrderDto dto) {
+	public Order assembleReadyOrder(ApiKey apiKey, OrderDto dto) {
 		Order order = new Order();
 		order.setApiKeyId(apiKey.getId());
 		order.setExchange(dto.getExchange());
@@ -34,18 +33,8 @@ public class OrderAssembler {
 		return order;
 	}
 
-	public Order assembleOrderWhenUpdate(Order order, OrderDto dto) {
-		order.setOrderType(dto.getOrderType());
-		order.setPrice(dto.getPrice());
-		order.setVolume(dto.getVolume());
-		order.setLevel(dto.getLevel());
-		order.setUpdatedAt(LocalDateTime.now());
-
-		return order;
-	}
-
-	public Order assembleUpdatedStatusOrder(Order order, OrderStatusDto orderStatusDto) {
-		order.setOrderStatus(orderStatusDto.getOrderStatus());
+	public Order assembleOrderStatus(Order order, OrderStatus orderStatus) {
+		order.setOrderStatus(orderStatus);
 		order.setUpdatedAt(LocalDateTime.now());
 
 		return order;
