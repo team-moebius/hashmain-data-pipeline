@@ -26,7 +26,7 @@ public class OrderUtil {
 		return order.getOrderType() == OrderType.LIMIT && (
 			(order.getOrderPosition() == OrderPosition.PURCHASE && order.getPrice() >= price) ||
 				(order.getOrderPosition() == OrderPosition.SALE && order.getPrice() <= price) ||
-				(order.getOrderPosition() == OrderPosition.STOPLOSS && order.getPrice() <= price));
+				(order.getOrderPosition() == OrderPosition.STOPLOSS && order.getPrice() >= price));
 	}
 
 	public List<OrderDto> filterOrdersBySymbol(List<OrderDto> orderDtos, String symbol) {
