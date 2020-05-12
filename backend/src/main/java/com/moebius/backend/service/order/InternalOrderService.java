@@ -104,14 +104,14 @@ public class InternalOrderService {
 			).subscribe(tuple -> requestOrderIfNeeded(apiKey, tuple.getT1(), tuple.getT2()));
 		} else if (eventType == DELETE) {
 			deleteOrder(orderDto.getId())
-				.subscribe();
+				.subscribe(nothing -> exchangeOrderService.cancelIfNeeded(apiKey, orderDto));
 		}
 
 		return orderDto;
 	}
 
 	private void requestOrderIfNeeded(ApiKey apiKey, Order order, double price) {
-		if (orderUtil.isExchangeRequestNeeded(order, price)) {
+		if (orderUtil.isOrderRequestNeeded(order, price)) {
 			exchangeOrderService.order(apiKey, order);
 		}
 	}

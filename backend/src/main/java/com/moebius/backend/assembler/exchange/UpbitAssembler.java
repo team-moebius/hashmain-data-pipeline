@@ -9,12 +9,12 @@ import com.moebius.backend.domain.orders.OrderType;
 import com.moebius.backend.dto.OrderStatusDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto;
 import com.moebius.backend.dto.exchange.upbit.UpbitOrderStatusDto;
+import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,9 +42,11 @@ public class UpbitAssembler implements ExchangeAssembler {
 			.build();
 	}
 
-	public OrderStatusDto toOrderStatusDto(Order order, UpbitOrderStatusDto upbitOrderStatusDto) {
+	public OrderStatusDto toOrderStatusDto(String orderId, UpbitOrderStatusDto upbitOrderStatusDto) {
+		Verifier.checkNullFields(upbitOrderStatusDto);
+
 		return OrderStatusDto.builder()
-			.id(order.getId().toHexString())
+			.id(orderId)
 			.orderStatus(parseOrderStatus(upbitOrderStatusDto.getState()))
 			.build();
 	}

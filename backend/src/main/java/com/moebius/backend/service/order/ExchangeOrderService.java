@@ -1,8 +1,10 @@
 package com.moebius.backend.service.order;
 
 import com.moebius.backend.assembler.order.OrderAssembler;
+import com.moebius.backend.assembler.order.OrderUtil;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.orders.*;
+import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.service.exchange.ExchangeService;
 import com.moebius.backend.service.exchange.ExchangeServiceFactory;
@@ -12,7 +14,6 @@ import com.moebius.backend.utils.Verifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.UncategorizedMongoDbException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -36,12 +37,13 @@ public class ExchangeOrderService {
 	private final ExchangeServiceFactory exchangeServiceFactory;
 	private final OrderFactoryManager orderFactoryManager;
 	private final TransactionalOperator transactionalOperator;
+	private final OrderUtil orderUtil;
 
 	public void order(ApiKey apiKey, Order order) {
 		ExchangeService exchangeService = exchangeServiceFactory.getService(order.getExchange());
 
 		updateOrderStatus(order, OrderStatus.IN_PROGRESS)
-			.flatMap(updatedOrder -> exchangeService.order(apiKey, updatedOrder))
+			.flatMap(updatedOrder -> exchangeService.requestOrder(apiKey, updatedOrder))
 			.subscribe();
 	}
 
@@ -57,12 +59,21 @@ public class ExchangeOrderService {
 	public void updateOrderStatus(TradeDto tradeDto) {
 		Verifier.checkNullFields(tradeDto);
 
-		ExchangeService exchangeService = exchangeServiceFactory.getService(tradeDto.getExchange());
 		OrderStatusCondition inProgressStatusCondition = orderAssembler.assembleInProgressStatusCondition(tradeDto);
 		orderRepository.findAllByOrderStatusCondition(inProgressStatusCondition)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.flatMap(order -> getAndUpdateOrderStatus(exchangeService, order))
+			.flatMap(this::getAndUpdateOrderStatus)
+			.subscribe();
+	}
+
+	public void cancelIfNeeded(ApiKey apiKey, OrderDto orderDto) {
+		Verifier.checkNullFields(orderDto);
+
+		ExchangeService exchangeService = exchangeServiceFactory.getService(orderDto.getExchange());
+		exchangeService.getCurrentOrderStatus(apiKey, orderDto.getId())
+			.filter(orderStatusDto -> orderUtil.isOrderCancelNeeded(orderDto.getOrderStatus(), orderStatusDto))
+			.flatMap(orderStatusDto -> exchangeService.cancelOrder(apiKey, orderDto.getId()))
 			.subscribe();
 	}
 
@@ -89,7 +100,7 @@ public class ExchangeOrderService {
 
 	private Mono<ClientResponse> requestOrder(ExchangeService exchangeService, Order order) {
 		return apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
-			.flatMap(apiKey -> exchangeService.order(apiKey, order));
+			.flatMap(apiKey -> exchangeService.requestOrder(apiKey, order));
 	}
 
 	private Mono<Long> evictIfCountNotZero(TradeDto tradeDto, long count) {
@@ -99,9 +110,11 @@ public class ExchangeOrderService {
 		return Mono.just(count);
 	}
 
-	private Mono<Order> getAndUpdateOrderStatus(ExchangeService exchangeService, Order order) {
+	private Mono<Order> getAndUpdateOrderStatus(Order order) {
+		ExchangeService exchangeService = exchangeServiceFactory.getService(order.getExchange());
+
 		return apiKeyService.getApiKeyById(order.getApiKeyId().toHexString())
-			.flatMap(apiKey -> exchangeService.getCurrentOrderStatus(apiKey, order))
+			.flatMap(apiKey -> exchangeService.getCurrentOrderStatus(apiKey, order.getId().toHexString()))
 			.flatMap(orderStatusDto -> updateOrderStatus(order, orderStatusDto.getOrderStatus()));
 	}
 

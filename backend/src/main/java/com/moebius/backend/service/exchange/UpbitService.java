@@ -94,7 +94,7 @@ public class UpbitService implements ExchangeService {
 	}
 
 	@Override
-	public Mono<ClientResponse> order(ApiKey apiKey, Order order) {
+	public Mono<ClientResponse> requestOrder(ApiKey apiKey, Order order) {
 		String queryParameters = upbitAssembler.assembleOrderParameters(order);
 		String token = getAuthTokenWithParameter(apiKey, queryParameters);
 
@@ -110,18 +110,31 @@ public class UpbitService implements ExchangeService {
 	}
 
 	@Override
-	public Mono<OrderStatusDto> getCurrentOrderStatus(ApiKey apiKey, Order order) {
-		String token = getAuthTokenWithParameter(apiKey, identifierUri + order.getId().toHexString());
+	public Mono<ClientResponse> cancelOrder(ApiKey apiKey, String orderId) {
+		String token = getAuthTokenWithParameter(apiKey, identifierUri + orderId);
 
-		log.info("[Upbit] Start to get current order status. [{}])", order);
+		log.info("[Upbit] Start to cancel order. [orderId : {}]", orderId);
+		return webClient.delete()
+			.uri(publicUri + orderUri + identifierUri + orderId)
+			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+			.exchange()
+			.doOnError(exception -> log.error("[Upbit] Failed to cancel order.", exception))
+			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to cancel order. [Response code : {}]", clientResponse.statusCode()));
+	}
+
+	@Override
+	public Mono<OrderStatusDto> getCurrentOrderStatus(ApiKey apiKey, String orderId) {
+		String token = getAuthTokenWithParameter(apiKey, identifierUri + orderId);
+
+		log.info("[Upbit] Start to get current order status. [orderId : {}])", orderId);
 		return webClient.get()
-			.uri(publicUri + orderUri + identifierUri + order.getId().toHexString())
+			.uri(publicUri + orderUri + identifierUri + orderId)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
 			.retrieve()
 			.onStatus(HttpStatus.UNAUTHORIZED::equals,
 				response -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token (" + apiKey + ")"))))
 			.bodyToMono(UpbitOrderStatusDto.class)
-			.map(upbitOrderStatusDto -> upbitAssembler.toOrderStatusDto(order, upbitOrderStatusDto));
+			.map(upbitOrderStatusDto -> upbitAssembler.toOrderStatusDto(orderId, upbitOrderStatusDto));
 	}
 
 	private String getAuthTokenWithParameter(ApiKey apiKey, String query) {
