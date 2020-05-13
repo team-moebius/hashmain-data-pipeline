@@ -1,5 +1,6 @@
 package com.moebius.backend.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ClientHttpConnector;
@@ -29,5 +30,10 @@ public class WebClientConfiguration {
 	@Bean
 	public ConcurrentMap<String, WebSocketSession> openedSessions() {
 		return new ConcurrentHashMap<>();
+	}
+
+	@Bean
+	public ObjectMapper objectMapper() {
+		return new ObjectMapper();
 	}
 }

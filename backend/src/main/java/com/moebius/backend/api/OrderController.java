@@ -27,7 +27,10 @@ public class OrderController {
 	@ApiOperation(
 		value = "주문(매수, 매도, 역지정) 생성 / 갱신 / 삭제",
 		httpMethod = "POST",
-		notes = "트레이더가 원하는 주문 정보를 Event Type에 따라 생성, 갱신 또는 삭제 한다."
+		notes = "트레이더가 원하는 주문 정보를 Event Type에 따라 생성, 갱신 또는 삭제 한다. 다음과 같은 거래 조건이 맞을 경우 외부 거래소로 즉시 주문이 요청된다.<br /><br />"
+			+ "1. 시장가 주문<br />"
+			+ "2. 현재 종목의 거래가보다 높은 지정가 매수 및 역지정 주문<br />"
+			+ "3. 현재 종목의 거래가보다 낮은 지정가 매도 주문"
 	)
 	@ApiImplicitParam(name = "Authorization", value = "Access token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer ${ACCESS_TOKEN}")
 	@ApiResponses({

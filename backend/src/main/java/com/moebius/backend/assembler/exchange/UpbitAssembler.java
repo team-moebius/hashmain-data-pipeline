@@ -1,5 +1,7 @@
 package com.moebius.backend.assembler.exchange;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;
 import com.moebius.backend.domain.orders.OrderStatus;
@@ -27,6 +29,8 @@ public class UpbitAssembler implements ExchangeAssembler {
 	private static final String ORDER_TYPE_MARKET = "market";
 	private static final String WAIT_STATE = "wait";
 
+	private final ObjectMapper objectMapper;
+
 	public UpbitOrderDto toOrderDto(Order order) {
 		return UpbitOrderDto.builder()
 			.identifier(order.getId().toHexString())
@@ -48,13 +52,7 @@ public class UpbitAssembler implements ExchangeAssembler {
 	public String assembleOrderParameters(Order order) {
 		UpbitOrderDto orderDto = toOrderDto(order);
 
-		Map<String, String> parameters = new HashMap<>();
-		parameters.put("identifier", orderDto.getIdentifier());
-		parameters.put("market", orderDto.getMarket());
-		parameters.put("side", orderDto.getSide());
-		parameters.put("ord_type", orderDto.getOrd_type());
-		parameters.put("price", String.valueOf(orderDto.getPrice()));
-		parameters.put("volume", String.valueOf(orderDto.getVolume()));
+		Map<String, String> parameters = objectMapper.convertValue(orderDto, new TypeReference<Map<String, String>>() {});
 
 		return parameters.entrySet().stream()
 			.map(entry -> entry.getKey() + "=" + entry.getValue())

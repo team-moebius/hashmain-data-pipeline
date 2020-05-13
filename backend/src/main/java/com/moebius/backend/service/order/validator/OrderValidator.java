@@ -1,6 +1,7 @@
 package com.moebius.backend.service.order.validator;
 
 import com.moebius.backend.domain.commons.EventType;
+import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.orders.OrderPosition;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.exception.WrongDataException;
@@ -17,6 +18,10 @@ import java.util.stream.IntStream;
 
 @Component
 public class OrderValidator {
+	private static final String KRW_BTC = "KRW-BTC";
+	private static final double UPBIT_BTC_STANDARD = 1000D;
+	private static final double UPBIT_STANDARD = 500D;
+
 	public void validate(List<OrderDto> orderDtos) {
 		if (CollectionUtils.isEmpty(orderDtos)) {
 			throw new WrongDataException("[Order] There isn't order to process.");
@@ -24,21 +29,25 @@ public class OrderValidator {
 
 		Verifier.checkNullFields(orderDtos);
 
-		if (isNotValidUpdateOrDelete(orderDtos)) {
+		if (isInvalidUpdateOrDelete(orderDtos)) {
 			throw new WrongDataException("[Order] There isn't id in UPDATE or DELETE event dto.");
+		}
+
+		if (isInvalidUpbitOrderTotalPrice(orderDtos)) {
+			throw new WrongDataException("[Order] There is a wrong upbit order that total price is less than 1000 KRW(KRW-BTC) or 500 KRW.");
 		}
 
 		orderDtos.sort(Comparator.comparing(OrderDto::getLevel));
 
-		if (isNotValidPurchase(filterByOrderPosition(orderDtos, OrderPosition.PURCHASE))) {
+		if (isInvalidPurchase(filterByOrderPosition(orderDtos, OrderPosition.PURCHASE))) {
 			throw new WrongDataException("[Order] There are wrong level and price in PURCHASE. The HIGHER LEVEL is, The LOWER PRICE should be.");
 		}
 
-		if (isNotValidSale(filterByOrderPosition(orderDtos, OrderPosition.SALE))) {
+		if (isInvalidSale(filterByOrderPosition(orderDtos, OrderPosition.SALE))) {
 			throw new WrongDataException("[Order] There are wrong level and price in SALE. The HIGHER LEVEL is, The HIGHER PRICE should be.");
 		}
 
-		if (isNotValidStoploss(filterByOrderPosition(orderDtos, OrderPosition.STOPLOSS))) {
+		if (isInvalidStoploss(filterByOrderPosition(orderDtos, OrderPosition.STOPLOSS))) {
 			throw new WrongDataException("[Order] There are wrong level and price in STOPLOSS. The HIGHER LEVEL is, The LOWER PRICE should be.");
 		}
 	}
@@ -49,27 +58,43 @@ public class OrderValidator {
 			.collect(Collectors.toList());
 	}
 
-	private boolean isNotValidUpdateOrDelete(List<OrderDto> orderDtos) {
+	private boolean isInvalidUpdateOrDelete(List<OrderDto> orderDtos) {
 		return orderDtos.stream()
 			.filter(orderDto -> Arrays.asList(EventType.UPDATE, EventType.DELETE).contains(orderDto.getEventType()))
 			.anyMatch(orderDto -> StringUtils.isBlank(orderDto.getId()));
 	}
 
-	private boolean isNotValidPurchase(List<OrderDto> orderDtos) {
+	private boolean isInvalidUpbitOrderTotalPrice(List<OrderDto> orderDtos) {
+		return orderDtos.stream()
+			.filter(orderDto -> orderDto.getExchange() == Exchange.UPBIT)
+			.anyMatch(this::isLessThanStandardPrice);
+	}
+
+	private boolean isLessThanStandardPrice(OrderDto orderDto) {
+		double totalPrice = orderDto.getPrice() * orderDto.getVolume();
+
+		if (StringUtils.equals(orderDto.getSymbol(), KRW_BTC)) {
+			return totalPrice < UPBIT_BTC_STANDARD;
+		}
+		return totalPrice < UPBIT_STANDARD;
+	}
+
+	private boolean isInvalidPurchase(List<OrderDto> orderDtos) {
 		return orderDtos.size() > 1
 			&& IntStream.range(0, orderDtos.size() - 1)
 			.anyMatch(index -> orderDtos.get(index).getPrice() <= orderDtos.get(index + 1).getPrice());
 	}
 
-	private boolean isNotValidSale(List<OrderDto> orderDtos) {
+	private boolean isInvalidSale(List<OrderDto> orderDtos) {
 		return orderDtos.size() > 1
 			&& IntStream.range(0, orderDtos.size() - 1)
 			.anyMatch(index -> orderDtos.get(index).getPrice() >= orderDtos.get(index + 1).getPrice());
 	}
 
-	private boolean isNotValidStoploss(List<OrderDto> orderDtos) {
+	private boolean isInvalidStoploss(List<OrderDto> orderDtos) {
 		return orderDtos.size() > 1
 			&& IntStream.range(0, orderDtos.size() - 1)
 			.anyMatch(index -> orderDtos.get(index).getPrice() <= orderDtos.get(index + 1).getPrice());
 	}
+
 }
