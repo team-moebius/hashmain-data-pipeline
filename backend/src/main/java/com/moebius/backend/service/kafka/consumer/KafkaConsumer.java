@@ -14,7 +14,7 @@ import static com.moebius.backend.utils.ThreadScheduler.COMPUTE;
 
 @Slf4j
 public abstract class KafkaConsumer<K, V> {
-	private KafkaReceiver<K, V> receiver;
+	private final KafkaReceiver<K, V> receiver;
 
 	public KafkaConsumer(Map<String, String> receiverDefaultProperties) {
 		Map<String, Object> properties = new HashMap<>(receiverDefaultProperties);
