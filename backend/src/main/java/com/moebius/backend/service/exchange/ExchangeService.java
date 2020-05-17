@@ -18,7 +18,9 @@ public interface ExchangeService {
 
 	Mono<ClientResponse> checkHealth(String authToken);
 
-	Mono<ClientResponse> order(ApiKey apiKey, Order order);
+	Mono<ClientResponse> requestOrder(ApiKey apiKey, Order order);
 
-	Mono<OrderStatusDto> getCurrentOrderStatus(ApiKey apiKey, Order order);
+	Mono<ClientResponse> cancelOrder(ApiKey apiKey, String orderId);
+
+	Mono<OrderStatusDto> getCurrentOrderStatus(ApiKey apiKey, String orderId);
 }
