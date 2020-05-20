@@ -33,6 +33,7 @@ class AssetServiceTest extends Specification {
 		def memberId = "5d8620bf46e0fb0001d64260"
 		def exchange = Exchange.UPBIT
 
+		and: // mock operation and limit call count
 		1 * exchangeServiceFactory.getService(exchange) >> Mock(UpbitService) {
 			1 * getAuthToken(_ as String, _ as String) >> Mono.just("authToken")
 			1 * getAssets(_ as String) >> Flux.just(UpbitAssetDto.builder().build())
