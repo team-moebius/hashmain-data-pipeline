@@ -48,4 +48,16 @@ class AssetServiceTest extends Specification {
 					assert it.getBody() instanceof AssetResponseDto
 				}).verifyComplete()
 	}
+
+	def "Should not get asset response when #SITUATION"() {
+
+	}
+
+	def "Should get currency assets"() {
+
+	}
+
+	def "Should not get currency assets when #SITUATION"() {
+
+	}
 }
