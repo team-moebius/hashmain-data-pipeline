@@ -45,6 +45,7 @@ public class AssetService {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
 			.flatMap(apiKey -> exchangeService.getAuthToken(apiKey.getAccessKey(), apiKey.getSecretKey()))
 			.flatMap(authToken -> exchangeService.getAssets(authToken)
+				.switchIfEmpty(Mono.defer(Mono::empty))
 				.collectList());
 	}
 }

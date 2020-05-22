@@ -16,72 +16,72 @@ import reactor.test.StepVerifier
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Unroll
 
 class AssetServiceTest extends Specification {
 	def apikeyService = Mock(ApiKeyService)
 	def exchangeServiceFactory = Mock(ExchangeServiceFactory)
 	def assetAssembler = Mock(AssetAssembler)
-	@Shared
 	def apiKey = Stub(ApiKey) {
 		getAccessKey() >> "accessKey"
 		getSecretKey() >> "secretKey"
 	}
-	@Shared
 	def memberId = "5d8620bf46e0fb0001d64260"
-	@Shared
 	def exchange = Exchange.UPBIT
+
+	@Shared
+	def upbitAssetDto = UpbitAssetDto.builder()
+			.currency("BTC")
+			.build()
 
 	@Subject
 	def assetService = new AssetService(apikeyService, exchangeServiceFactory, assetAssembler)
 
-	def "Should get asset response"() {
+	@Unroll
+	def "Should get asset response when #SITUATION"() {
 		given:
-		def asset = UpbitAssetDto.builder().build()
-
-		and: // mock operation and limit call count
 		1 * exchangeServiceFactory.getService(exchange) >> Mock(UpbitService) {
 			1 * getAuthToken(_ as String, _ as String) >> Mono.just("authToken")
-			1 * getAssets(_ as String) >> Flux.just(asset)
+			1 * getAssets(_ as String) >> FLUX_ASSET
 		}
 		1 * apikeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(apiKey)
-		1 * assetAssembler.toResponseDto(_ as List<? extends AssetDto>) >> AssetResponseDto.builder().assets([asset]).build()
+		1 * assetAssembler.toResponseDto(_ as List<? extends AssetDto>) >> AssetResponseDto.builder().assets(ASSETS).build()
 
 		expect:
 		StepVerifier.create(assetService.getAssetResponse(memberId, exchange))
 				.assertNext({
-					assert it.getStatusCode() == HttpStatus.OK
-					assert it.getBody() instanceof AssetResponseDto
-					assert it.getBody().getAssets() instanceof List<? extends AssetDto>
-					assert it.getBody().getAssets().get(0) instanceof UpbitAssetDto
+					it.getStatusCode() == HttpStatus.OK
+					it.getBody() instanceof AssetResponseDto
+					it.getBody().getAssets() instanceof List<? extends AssetDto>
+					it.getBody().getAssets().size() == ASSET_SIZE
 				}).verifyComplete()
+
+		where:
+		SITUATION           | FLUX_ASSET               | ASSETS          || ASSET_SIZE
+		"there is no asset" | Flux.empty()             | []              || 0
+		"there are assets"  | Flux.just(upbitAssetDto) | [upbitAssetDto] || 1
 	}
 
-	def "Should get empty asset response"() {
+	@Unroll
+	def "Should get currency assets when #SITUATION"() {
 		given:
 		1 * exchangeServiceFactory.getService(exchange) >> Mock(UpbitService) {
 			1 * getAuthToken(_ as String, _ as String) >> Mono.just("authToken")
-			1 * getAssets(_ as String) >> Flux.empty()
+			1 * getAssets(_ as String) >> FLUX_ASSET
 		}
 		1 * apikeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(apiKey)
-		1 * assetAssembler.toResponseDto([]) >> AssetResponseDto.builder().assets([]).build()
+		1 * assetAssembler.toCurrencyAssetDtos(_ as List<? extends AssetDto>) >> CURRENCY_ASSET
 
 		expect:
-		StepVerifier.create(assetService.getAssetResponse(memberId, exchange))
+		StepVerifier.create(assetService.getCurrencyAssets(memberId, exchange))
 				.assertNext({
-					assert it.getStatusCode() == HttpStatus.OK
-					assert it.getBody() instanceof AssetResponseDto
-					assert it.getBody().getAssets() instanceof List<? extends AssetDto>
-					assert it.getBody().getAssets().size() == 0
-				})
-				.expectComplete()
-				.verify()
-	}
+					it instanceof Map<String, AssetDto>
+					it.size() == CURRENCY_ASSET_SIZE
+				}).verifyComplete()
 
-//	def "Should get currency assets"() {
-//
-//	}
-//
-//	def "Should not get currency assets when #SITUATION"() {
-//
-//	}
+		where:
+		SITUATION                    | FLUX_ASSET               | CURRENCY_ASSET         || CURRENCY_ASSET_SIZE
+		"there is no currency asset" | Flux.empty()             | [:]                     || 0
+		"there are currency assets"  | Flux.just(upbitAssetDto) | ["BTC": upbitAssetDto] || 1
+	}
 }
