@@ -31,6 +31,8 @@ class UpbitServiceTest extends Specification {
 	}
 
 	def "Should get assets"() {
+		expect:
+		StepVerifier.create(upbitService.getAssets())
 	}
 
 	def "Should check health"() {
