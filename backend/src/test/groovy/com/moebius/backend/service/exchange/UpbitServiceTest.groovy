@@ -71,7 +71,7 @@ class UpbitServiceTest extends Specification {
 		1 * webClient.get() >> uriSpec
 		1 * uriSpec.uri(_ as String) >> headersSpec
 		1 * headersSpec.headers(_ as Consumer<HttpHeaders>) >> headersSpec
-		1 * headersSpec.exchange() >> Mono.just(ClientResponse.create(HttpStatus.OK))
+		1 * headersSpec.exchange() >> Mono.just(ClientResponse.create(HttpStatus.OK).build())
 
 		expect:
 		StepVerifier.create(upbitService.checkHealth(authToken))
@@ -86,13 +86,11 @@ class UpbitServiceTest extends Specification {
 		1 * webClient.get() >> uriSpec
 		1 * uriSpec.uri(_ as String) >> headersSpec
 		1 * headersSpec.headers(_ as Consumer<HttpHeaders>) >> headersSpec
-		1 * headersSpec.exchange() >> Mono.just(ClientResponse.create(HttpStatus.UNAUTHORIZED))
+		1 * headersSpec.exchange() >> Mono.just(ClientResponse.create(HttpStatus.UNAUTHORIZED).build())
 
 		expect:
 		StepVerifier.create(upbitService.checkHealth(authToken))
-				.assertNext({
-			it != null
-		}).verifyComplete()
+				.verifyError(WrongDataException.class)
 	}
 
 	def "Should request order and leave success log"() {
