@@ -14,7 +14,9 @@ import com.moebius.backend.exception.WrongDataException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.mock.http.client.MockClientHttpRequest
 import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.DefaultWebClient
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -115,6 +117,10 @@ class UpbitServiceTest extends Specification {
 
 	def "Should request order and success"() {
 		given:
+		upbitService.messageDigestHashAlgorithm = "SHA-512"
+		upbitService.messageDigestCharset = "UTF-8"
+
+		and: // mock process
 		1 * upbitAssembler.assembleOrderParameters(_ as Order) >> "dummyQueryParameter"
 		1 * webClient.post() >> bodyUriSpec
 		1 * bodyUriSpec.uri(_ as String) >> bodySpec
@@ -230,5 +236,23 @@ class UpbitServiceTest extends Specification {
 					it.getId() == orderId
 					it.getOrderStatus() == OrderStatus.STOPPED
 				}).verifyComplete()
+	}
+
+	def "Should not get current order status cause of unauthorized request"() {
+		given:
+		def responseForUnauthorizedRequest = new DefaultWebClient.DefaultResponseSpec(Mono.just(ClientResponse.create(HttpStatus.UNAUTHORIZED).build()), { new MockClientHttpRequest() })
+
+		upbitService.messageDigestHashAlgorithm = "SHA-512"
+		upbitService.messageDigestCharset = "UTF-8"
+
+		and: // mock process
+		1 * webClient.get() >> uriSpec
+		1 * uriSpec.uri(_ as String) >> headersSpec
+		1 * headersSpec.headers(_ as Consumer<HttpHeaders>) >> headersSpec
+		1 * headersSpec.retrieve() >> responseForUnauthorizedRequest
+
+		expect:
+		StepVerifier.create(upbitService.getCurrentOrderStatus(apiKey, orderId))
+				.verifyError(WrongDataException.class)
 	}
 }
