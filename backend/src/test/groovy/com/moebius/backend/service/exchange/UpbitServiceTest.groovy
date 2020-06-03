@@ -1,11 +1,15 @@
 package com.moebius.backend.service.exchange
 
 import com.moebius.backend.assembler.exchange.UpbitAssembler
+import com.moebius.backend.domain.apikeys.ApiKey
 import com.moebius.backend.domain.commons.Exchange
+import com.moebius.backend.domain.orders.Order
 import com.moebius.backend.dto.exchange.upbit.UpbitAssetDto
+import com.moebius.backend.dto.exchange.upbit.UpbitOrderDto
 import com.moebius.backend.exception.WrongDataException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
@@ -21,14 +25,27 @@ class UpbitServiceTest extends Specification {
 	def upbitAssembler = Mock(UpbitAssembler)
 	def uriSpec = Mock(WebClient.RequestHeadersUriSpec)
 	def headersSpec = Mock(WebClient.RequestHeadersSpec)
+	def bodyUriSpec = Mock(WebClient.RequestBodyUriSpec)
+	def bodySpec = Mock(WebClient.RequestBodySpec)
 	def responseSpec = Mock(WebClient.ResponseSpec)
 
 	def accessKey = "dummyAccessKey"
 	def secretKey = "dummySecretKey"
 	def authToken = "dummyAuthToken"
+	def apiKey = Stub(ApiKey) {
+		getAccessKey() >> accessKey
+		getSecretKey() >> secretKey
+	}
+	def order = Stub(Order)
+
 
 	@Subject
 	def upbitService = new UpbitService(webClient, upbitAssembler)
+
+	def setup() {
+		upbitService.messageDigestHashAlgorithm = "SHA-512"
+		upbitService.messageDigestCharset = "UTF-8"
+	}
 
 	def "Should get exchange type of upbit"() {
 		expect:
@@ -94,6 +111,21 @@ class UpbitServiceTest extends Specification {
 	}
 
 	def "Should request order and leave success log"() {
+		given:
+		1 * upbitAssembler.assembleOrderParameters(_ as Order) >> "dummyQueryParameter"
+		1 * webClient.post() >> bodyUriSpec
+		1 * bodyUriSpec.uri(_ as String) >> bodySpec
+		1 * bodySpec.contentType(_ as MediaType) >> bodySpec
+		1 * bodySpec.headers(_ as Consumer<HttpHeaders>) >> headersSpec
+		1 * bodySpec.bodyValue(_ as UpbitOrderDto) >> headersSpec
+		1 * headersSpec.exchange() >> Mono.just(ClientResponse.create(HttpStatus.CREATED).build())
+
+		expect:
+		StepVerifier.create(upbitService.requestOrder(apiKey, order))
+				.assertNext({
+					it != null
+					it.statusCode() == HttpStatus.CREATED
+				})
 	}
 
 	def "Should request order and leave fail log"() {
