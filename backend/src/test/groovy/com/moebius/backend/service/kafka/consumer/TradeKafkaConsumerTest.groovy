@@ -1,8 +1,12 @@
 package com.moebius.backend.service.kafka.consumer
 
+
+import com.moebius.backend.service.market.MarketService
+import com.moebius.backend.service.order.ExchangeOrderService
 import reactor.core.publisher.Flux
 import reactor.kafka.receiver.KafkaReceiver
 import reactor.kafka.receiver.ReceiverRecord
+import reactor.test.StepVerifier
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -16,23 +20,21 @@ class TradeKafkaConsumerTest extends Specification {
 	def consumer = Stub(Consumer)
 
 	@Subject
-	def tradeKafkaConsumer = new TradeKafkaConsumer([:])
+	def tradeKafkaConsumer = new TradeKafkaConsumer([:], Stub(ExchangeOrderService), Stub(MarketService))
 
 	def "Should consume messages"() {
 		given:
 		1 * receiver.receive() >> fluxWithReceiverRecord
-		1 * fluxWithReceiverRecord.publishOn(COMPUTE.scheduler())
-		1 * fluxWithReceiverRecord.subscribe()
+		1 * fluxWithReceiverRecord.publishOn(COMPUTE.scheduler()) >> fluxWithReceiverRecord
+		1 * fluxWithReceiverRecord.subscribe(consumer)
 
-		when:
-		tradeKafkaConsumer.consumeMessages()
-
-		then:
-		1 * receiver.receive() >> Flux.just(receiverRecord)
-		1 * receiverRecord
+		expect:
+		StepVerifier.create(tradeKafkaConsumer.consumeMessages())
+				.expectSubscription()
 	}
 
 	def "GetTopic"() {
+
 	}
 
 	def "ProcessRecord"() {
