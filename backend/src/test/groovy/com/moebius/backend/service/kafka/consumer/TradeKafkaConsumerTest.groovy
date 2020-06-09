@@ -33,11 +33,12 @@ class TradeKafkaConsumerTest extends Specification {
 				.expectSubscription()
 	}
 
-	def "GetTopic"() {
+	def "Should get topic"() {
 
 	}
 
 	def "ProcessRecord"() {
+
 	}
 
 	def "GetKeyDeserializerClass"() {
