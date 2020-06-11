@@ -29,7 +29,6 @@ class TradeKafkaConsumerTest extends Specification {
 		tradeKafkaConsumer.processRecord(receiverRecord)
 	}
 
-
 	def "Should get topic"() {
 		expect:
 		tradeKafkaConsumer.getTopic() == "moebius.trade.upbit"
