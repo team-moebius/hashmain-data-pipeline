@@ -54,7 +54,8 @@ class AssetServiceTest extends Specification {
 					it.getBody() instanceof AssetResponseDto
 					it.getBody().getAssets() instanceof List<? extends AssetDto>
 					it.getBody().getAssets().size() == ASSET_SIZE
-				}).verifyComplete()
+				})
+				.verifyComplete()
 
 		where:
 		SITUATION           | FLUX_ASSET               | ASSETS          || ASSET_SIZE
@@ -77,7 +78,8 @@ class AssetServiceTest extends Specification {
 				.assertNext({
 					it instanceof Map<String, AssetDto>
 					it.size() == CURRENCY_ASSET_SIZE
-				}).verifyComplete()
+				})
+				.verifyComplete()
 
 		where:
 		SITUATION                    | FLUX_ASSET               | CURRENCY_ASSET         || CURRENCY_ASSET_SIZE

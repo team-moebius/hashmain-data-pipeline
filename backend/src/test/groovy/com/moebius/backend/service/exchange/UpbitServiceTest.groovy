@@ -63,7 +63,8 @@ class UpbitServiceTest extends Specification {
 				.assertNext({
 					it != null
 					it.length() > 0
-				}).verifyComplete()
+				})
+				.verifyComplete()
 	}
 
 	def "Should get assets"() {
@@ -85,7 +86,8 @@ class UpbitServiceTest extends Specification {
 					it.getCurrency() == "BTC"
 					it.getBalance() == 10000D
 					it.getAveragePurchasePrice() == 2000000D
-				}).verifyComplete()
+				})
+				.verifyComplete()
 	}
 
 	def "Should check health when return ok response"() {
@@ -100,7 +102,8 @@ class UpbitServiceTest extends Specification {
 				.assertNext({
 					it != null
 					it.statusCode() == HttpStatus.OK
-				}).verifyComplete()
+				})
+				.verifyComplete()
 	}
 
 	def "Should not check health when not return ok response"() {
@@ -134,7 +137,8 @@ class UpbitServiceTest extends Specification {
 				.assertNext({
 					it != null
 					it.statusCode() == HttpStatus.CREATED
-				}).verifyComplete()
+				})
+				.verifyComplete()
 	}
 
 	def "Should request order and fail cause of unauthorized request"() {
@@ -235,7 +239,8 @@ class UpbitServiceTest extends Specification {
 					it instanceof OrderStatusDto
 					it.getId() == orderId
 					it.getOrderStatus() == OrderStatus.STOPPED
-				}).verifyComplete()
+				})
+				.verifyComplete()
 	}
 
 	def "Should not get current order status cause of unauthorized request"() {
