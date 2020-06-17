@@ -85,9 +85,9 @@ public class InternalOrderService {
 	public Mono<ResponseEntity<OrderAssetResponseDto>> getOrderAssets(String memberId, Exchange exchange) {
 		return Mono.zip(
 			getOrders(memberId, exchange, apiKey -> orderRepository.findAllByApiKeyIdAndOrderStatusNot(apiKey.getId(), OrderStatus.DONE))
-				.map(orderAssetAssembler::toCurrencyOrderDtos),
-			assetService.getCurrencyAssets(memberId, exchange),
-			marketService.getCurrencyMarketPrices(exchange)
+				.map(orderAssetAssembler::toCurrencyOrderDtosMap),
+			assetService.getCurrencyAssetMap(memberId, exchange),
+			marketService.getCurrencyMarketPriceMap(exchange)
 		).subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> extractOrderStatuses(tuple.getT1(), tuple.getT2(), tuple.getT3()))
 			.map(orderAssetAssembler::toStatusResponseDto)
@@ -137,13 +137,13 @@ public class InternalOrderService {
 
 	private Mono<List<OrderDto>> getOrders(String memberId, Exchange exchange, Function<ApiKey, Flux<Order>> getOrdersFunction) {
 		return apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange)
-			.map(getOrdersFunction)
+			.flatMapMany(getOrdersFunction)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
-			.flatMap(orders -> orders.map(order -> orderAssembler.toDto(order, EventType.READ))
-				.collectList());
+			.map(order -> orderAssembler.toDto(order, EventType.READ))
+			.collectList();
 	}
 
 	private List<OrderAssetDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyOrders,

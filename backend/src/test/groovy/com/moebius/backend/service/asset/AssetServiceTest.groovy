@@ -74,7 +74,7 @@ class AssetServiceTest extends Specification {
 		1 * assetAssembler.toCurrencyAssetDtos(_ as List<? extends AssetDto>) >> CURRENCY_ASSET
 
 		expect:
-		StepVerifier.create(assetService.getCurrencyAssets(memberId, exchange))
+		StepVerifier.create(assetService.getCurrencyAssetMap(memberId, exchange))
 				.assertNext({
 					it instanceof Map<String, AssetDto>
 					it.size() == CURRENCY_ASSET_SIZE
