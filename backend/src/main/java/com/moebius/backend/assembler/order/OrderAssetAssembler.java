@@ -19,7 +19,7 @@ import java.util.Map;
 public class OrderAssetAssembler {
 	private final OrderUtil orderUtil;
 
-	public Map<String, List<OrderDto>> toCurrencyOrderDtos(List<OrderDto> orders) {
+	public Map<String, List<OrderDto>> toCurrencyOrderDtosMap(List<OrderDto> orders) {
 		Map<String, List<OrderDto>> currencyOrdersMap = new HashMap<>();
 
 		orders.forEach(order ->
