@@ -10,11 +10,8 @@ import com.moebius.backend.exception.DataNotFoundException
 import com.moebius.backend.exception.DataNotVerifiedException
 import com.moebius.backend.exception.DuplicatedDataException
 import com.moebius.backend.exception.WrongDataException
-import com.mongodb.DuplicateKeyException
-import com.mongodb.ServerAddress
-import com.mongodb.WriteConcernResult
-import org.bson.BsonDocument
 import org.bson.types.ObjectId
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -22,6 +19,7 @@ import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Unroll
 
 class MemberServiceTest extends Specification {
 	def memberRepository = Mock(MemberRepository)
@@ -80,14 +78,20 @@ class MemberServiceTest extends Specification {
 				.verifyComplete()
 	}
 
-	def "Should not create duplicated member"() {
+	@Unroll
+	def "Should not create member cause of #REASON"() {
 		given:
 		1 * memberAssembler.toMember(_ as SignupDto) >> Stub(Member)
-		1 * memberRepository.save(_ as Member) >> { throw(new DuplicateKeyException(Stub(BsonDocument), Stub(ServerAddress), Stub(WriteConcernResult))) }
+		1 * memberRepository.save(_ as Member) >> Mono.error(EXCEPTION)
 
 		expect:
 		StepVerifier.create(memberService.createMember(Stub(SignupDto)))
-				.verifyError(DuplicatedDataException.class)
+				.verifyError(EXPECTED_EXCEPTION)
+
+		where:
+		REASON              | EXCEPTION                                        || EXPECTED_EXCEPTION
+		"duplicated member" | new DuplicateKeyException("duplicated ObjectId") || DuplicatedDataException.class
+		"something wrong"   | new Exception()                                  || Exception.class
 	}
 
 	def "Should login"() {
