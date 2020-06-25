@@ -33,7 +33,7 @@ public class AssetService {
 			.map(ResponseEntity::ok);
 	}
 
-	public Mono<Map<String, AssetDto>> getCurrencyAssets(String memberId, Exchange exchange) {
+	public Mono<Map<String, AssetDto>> getCurrencyAssetMap(String memberId, Exchange exchange) {
 		return getAssets(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
 			.map(assetAssembler::toCurrencyAssetDtos);

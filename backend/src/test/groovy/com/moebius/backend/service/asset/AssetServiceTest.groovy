@@ -54,7 +54,8 @@ class AssetServiceTest extends Specification {
 					it.getBody() instanceof AssetResponseDto
 					it.getBody().getAssets() instanceof List<? extends AssetDto>
 					it.getBody().getAssets().size() == ASSET_SIZE
-				}).verifyComplete()
+				})
+				.verifyComplete()
 
 		where:
 		SITUATION           | FLUX_ASSET               | ASSETS          || ASSET_SIZE
@@ -73,11 +74,12 @@ class AssetServiceTest extends Specification {
 		1 * assetAssembler.toCurrencyAssetDtos(_ as List<? extends AssetDto>) >> CURRENCY_ASSET
 
 		expect:
-		StepVerifier.create(assetService.getCurrencyAssets(memberId, exchange))
+		StepVerifier.create(assetService.getCurrencyAssetMap(memberId, exchange))
 				.assertNext({
 					it instanceof Map<String, AssetDto>
 					it.size() == CURRENCY_ASSET_SIZE
-				}).verifyComplete()
+				})
+				.verifyComplete()
 
 		where:
 		SITUATION                    | FLUX_ASSET               | CURRENCY_ASSET         || CURRENCY_ASSET_SIZE
