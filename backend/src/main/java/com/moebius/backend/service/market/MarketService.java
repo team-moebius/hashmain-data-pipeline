@@ -86,7 +86,7 @@ public class MarketService {
 			});
 	}
 
-	public Mono<Map<String, Double>> getCurrencyMarketPrices(Exchange exchange) {
+	public Mono<Map<String, Double>> getCurrencyMarketPriceMap(Exchange exchange) {
 		return marketRepository.findAllByExchange(exchange)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
