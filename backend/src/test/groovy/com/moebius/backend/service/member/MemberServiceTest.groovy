@@ -10,8 +10,8 @@ import com.moebius.backend.exception.DataNotFoundException
 import com.moebius.backend.exception.DataNotVerifiedException
 import com.moebius.backend.exception.DuplicatedDataException
 import com.moebius.backend.exception.WrongDataException
+import com.mongodb.DuplicateKeyException
 import org.bson.types.ObjectId
-import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -89,9 +89,9 @@ class MemberServiceTest extends Specification {
 				.verifyError(EXPECTED_EXCEPTION)
 
 		where:
-		REASON              | EXCEPTION                                        || EXPECTED_EXCEPTION
-		"duplicated member" | new DuplicateKeyException("duplicated ObjectId") || DuplicatedDataException.class
-		"something wrong"   | new Exception()                                  || Exception.class
+		REASON              | EXCEPTION                   || EXPECTED_EXCEPTION
+		"duplicated member" | Stub(DuplicateKeyException) || DuplicatedDataException.class
+		"something wrong"   | Stub(Exception)             || Exception.class
 	}
 
 	def "Should login"() {
