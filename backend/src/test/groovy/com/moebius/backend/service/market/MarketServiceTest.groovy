@@ -3,21 +3,22 @@ package com.moebius.backend.service.market
 import spock.lang.Specification
 
 class MarketServiceTest extends Specification {
-	def "UpdateMarketPrice"() {
+	def "Should update market price"() {
 	}
 
-	def "GetMarkets"() {
+	def "Should get markets"() {
 	}
 
-	def "DeleteMarket"() {
+	def "Should delete market"() {
 	}
 
-	def "UpdateMarkets"() {
+	def "Should update markets"() {
 	}
 
-	def "GetCurrencyMarketPrices"() {
+	def "Should get currency market prices"() {
 	}
 
-	def "GetCurrentPrice"() {
+	def "Should get current price"() {
+
 	}
 }
