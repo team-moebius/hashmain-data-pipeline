@@ -1,12 +1,59 @@
 package com.moebius.backend.service.market
 
+import com.moebius.backend.assembler.MarketAssembler
+import com.moebius.backend.domain.commons.Exchange
+import com.moebius.backend.domain.markets.Market
+import com.moebius.backend.domain.markets.MarketRepository
+import com.moebius.backend.dto.TradeDto
+import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto
+import com.moebius.backend.dto.frontend.response.MarketResponseDto
+import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 import spock.lang.Specification
+import spock.lang.Subject
 
 class MarketServiceTest extends Specification {
+	def webClient = Mock(WebClient)
+	def marketRepository = Mock(MarketRepository)
+	def marketAssembler = Mock(MarketAssembler)
+	def uriSpec = Mock(WebClient.RequestHeadersUriSpec)
+	def responseSpec = Mock(WebClient.ResponseSpec)
+	def exchange = Exchange.UPBIT
+
+	@Subject
+	def marketService = new MarketService(webClient, marketRepository, marketAssembler)
+
+	// TODO : Refactor updating market price logic
 	def "Should update market price"() {
+		given:
+		marketAssembler.assemble(_ as Market, _ as TradeDto, _ as UpbitTradeMetaDto) >> Stub(Market)
+
+		when:
+		marketService.updateMarketPrice(Stub(TradeDto))
+
+		then:
+		1 * marketRepository.findByExchangeAndSymbol(_ as Exchange, _ as String) >> Mono.just(Stub(Market))
+		1 * webClient.get() >> uriSpec
+		1 * uriSpec.uri(_ as String) >> uriSpec
+		1 * uriSpec.retrieve() >> responseSpec
+		1 * responseSpec.bodyToFlux(UpbitTradeMetaDto.class) >> Flux.just(Stub(UpbitTradeMetaDto))
 	}
 
 	def "Should get markets"() {
+		given:
+		1 * marketRepository.findAllByExchange(_ as Exchange) >> Flux.just(Stub(Market), Stub(Market))
+		2 * marketAssembler.toResponseDto(_ as Market) >> Stub(MarketResponseDto)
+
+		expect:
+		StepVerifier.create(marketService.getMarkets(exchange))
+				.assertNext({
+					it != null
+					it.getStatusCode() == HttpStatus.OK
+				})
+				.verifyComplete()
 	}
 
 	def "Should delete market"() {
@@ -19,6 +66,5 @@ class MarketServiceTest extends Specification {
 	}
 
 	def "Should get current price"() {
-
 	}
 }
