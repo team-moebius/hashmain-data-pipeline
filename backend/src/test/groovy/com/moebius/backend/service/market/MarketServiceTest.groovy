@@ -7,6 +7,7 @@ import com.moebius.backend.domain.markets.MarketRepository
 import com.moebius.backend.dto.TradeDto
 import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto
 import com.moebius.backend.dto.frontend.response.MarketResponseDto
+import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
@@ -22,6 +23,7 @@ class MarketServiceTest extends Specification {
 	def uriSpec = Mock(WebClient.RequestHeadersUriSpec)
 	def responseSpec = Mock(WebClient.ResponseSpec)
 	def exchange = Exchange.UPBIT
+	def marketId = "5e7a30eceea97a67367a4b6a"
 
 	@Subject
 	def marketService = new MarketService(webClient, marketRepository, marketAssembler)
@@ -57,6 +59,16 @@ class MarketServiceTest extends Specification {
 	}
 
 	def "Should delete market"() {
+		given:
+		1 * marketRepository.deleteById(_ as ObjectId) >> Mono.just(new Void())
+
+		expect:
+		StepVerifier.create(marketService.deleteMarket(marketId))
+				.assertNext({
+					it != null
+					it.getStatusCode() == HttpStatus.OK
+				})
+				.verifyComplete()
 	}
 
 	def "Should update markets"() {
