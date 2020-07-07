@@ -5,6 +5,7 @@ import com.moebius.backend.domain.commons.Exchange
 import com.moebius.backend.domain.markets.Market
 import com.moebius.backend.domain.markets.MarketRepository
 import com.moebius.backend.dto.TradeDto
+import com.moebius.backend.dto.exchange.MarketsDto
 import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto
 import com.moebius.backend.dto.frontend.response.MarketResponseDto
 import org.bson.types.ObjectId
@@ -71,12 +72,40 @@ class MarketServiceTest extends Specification {
 				.verifyComplete()
 	}
 
-	def "Should update markets"() {
+	def "Should update markets with create if not exist except non-KRW market"() {
+		given:
+		1 * webClient.get() >> uriSpec
+		1 * uriSpec.uri(_ as String) >> uriSpec
+		1 * uriSpec.retrieve() >> responseSpec
+		1 * responseSpec.bodyToMono(MarketsDto.class) >> Mono.just(Stub(MarketsDto))
+		1 * marketAssembler.toMarkets(_ as Exchange, _ as MarketsDto) >> [buildMarket("KRW-BTC"), buildMarket("KRW-ETH"), buildMarket("BTC-ETH")]
+		1 * marketAssembler.toMarket(Exchange.UPBIT, "KRW-BTC") >> Stub(Market) {
+			getExchange() >> Exchange.UPBIT
+			getSymbol() >> "KRW-BTC"
+		}
+		1 * marketService.createMarketIfNotExist(Exchange.UPBIT, "KRW-BTC") >> Mono.just(new Boolean(false))
+		1 * marketService.createMarketIfNotExist(Exchange.UPBIT, "KRW-ETH") >> Mono.just(new Boolean(true))
+
+		expect:
+		StepVerifier.create(marketService.updateMarkets(Exchange.UPBIT))
+				.assertNext({
+					it != null
+					it.getStatusCode() == HttpStatus.OK
+				})
+				.verifyComplete()
 	}
 
 	def "Should get currency market prices"() {
 	}
 
 	def "Should get current price"() {
+	}
+
+	Market buildMarket(String symbol) {
+		Market market = new Market()
+		market.setExchange(Exchange.UPBIT)
+		market.setSymbol(symbol)
+
+		return market
 	}
 }
