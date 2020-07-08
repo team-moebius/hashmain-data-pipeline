@@ -82,7 +82,7 @@ class MarketServiceTest extends Specification {
 		1 * marketAssembler.toMarket(Exchange.UPBIT, "KRW-BTC") >> Stub(Market) {
 			getExchange() >> Exchange.UPBIT
 			getSymbol() >> "KRW-BTC"
-		}
+		}ㅇ
 		1 * marketService.createMarketIfNotExist(Exchange.UPBIT, "KRW-BTC") >> Mono.just(new Boolean(false))
 		1 * marketService.createMarketIfNotExist(Exchange.UPBIT, "KRW-ETH") >> Mono.just(new Boolean(true))
 
