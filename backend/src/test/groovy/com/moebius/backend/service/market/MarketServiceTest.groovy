@@ -96,6 +96,7 @@ class MarketServiceTest extends Specification {
 	}
 
 	def "Should get currency market prices"() {
+
 	}
 
 	def "Should get current price"() {
