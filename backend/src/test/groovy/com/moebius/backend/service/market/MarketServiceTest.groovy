@@ -83,8 +83,9 @@ class MarketServiceTest extends Specification {
 			getExchange() >> Exchange.UPBIT
 			getSymbol() >> "KRW-BTC"
 		}
-		1 * marketService.createMarketIfNotExist(Exchange.UPBIT, "KRW-BTC") >> Mono.just(new Boolean(false))
-		1 * marketService.createMarketIfNotExist(Exchange.UPBIT, "KRW-ETH") >> Mono.just(new Boolean(true))
+		1 * marketRepository.findByExchangeAndSymbol(Exchange.UPBIT, "KRW-BTC") >> Mono.empty()
+		1 * marketRepository.findByExchangeAndSymbol(Exchange.UPBIT, "KRW-ETH") >> Mono.just(Stub(Market))
+		1 * marketRepository.save(_ as Market) >> Mono.just(Stub(Market))
 
 		expect:
 		StepVerifier.create(marketService.updateMarkets(Exchange.UPBIT))
@@ -96,10 +97,34 @@ class MarketServiceTest extends Specification {
 	}
 
 	def "Should get currency market prices"() {
+		given:
+		1 * marketRepository.findAllByExchange(_ as Exchange) >> Flux.just(Stub(Market), Stub(Market))
+		1 * marketAssembler.toCurrencyMarketPrices(_ as List) >> ["BTC": 10000000D, "ETH": 300000D]
 
+		expect:
+		StepVerifier.create(marketService.getCurrencyMarketPriceMap(Exchange.UPBIT))
+				.assertNext({
+					it instanceof Map<String, Double>
+					it.get("BTC") == 10000000D
+					it.get("ETH") == 300000D
+				})
+				.verifyComplete()
 	}
 
 	def "Should get current price"() {
+		given:
+		def market = Stub(Market) {
+			getCurrentPrice() >> 100000000000D
+		}
+		1 * marketRepository.findByExchangeAndSymbol(_ as Exchange, _ as String) >> Mono.just(market)
+
+		expect:
+		StepVerifier.create(marketService.getCurrentPrice(Exchange.UPBIT, "KRW-KNU"))
+				.assertNext({
+					it instanceof Double
+					it == 100000000000D
+				})
+				.verifyComplete()
 	}
 
 	Market buildMarket(String symbol) {
