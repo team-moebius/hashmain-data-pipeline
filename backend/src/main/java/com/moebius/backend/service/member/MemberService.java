@@ -45,7 +45,7 @@ public class MemberService {
 	public Mono<ResponseEntity<?>> createMember(SignupDto signupDto) {
 		log.info("[Member] Start to create member. [{}]", signupDto);
 
-		return memberRepository.save(memberAssembler.toMember(signupDto))
+		return memberRepository.save(memberAssembler.assembleMember(signupDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
@@ -75,7 +75,7 @@ public class MemberService {
 		return memberRepository.findById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(memberAssembler::toDto)
+			.map(memberAssembler::assembleDto)
 			.map(ResponseEntity::ok);
 	}
 }

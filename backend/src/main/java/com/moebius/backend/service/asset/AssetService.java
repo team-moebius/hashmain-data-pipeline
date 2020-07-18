@@ -29,14 +29,14 @@ public class AssetService {
 	public Mono<ResponseEntity<AssetResponseDto>> getAssetResponse(String memberId, Exchange exchange) {
 		return getAssets(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
-			.map(assetAssembler::toResponseDto)
+			.map(assetAssembler::assembleResponse)
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<Map<String, AssetDto>> getCurrencyAssetMap(String memberId, Exchange exchange) {
 		return getAssets(memberId, exchange)
 			.subscribeOn(COMPUTE.scheduler())
-			.map(assetAssembler::toCurrencyAssetDtos);
+			.map(assetAssembler::assembleCurrencyAssets);
 	}
 
 	private Mono<List<? extends AssetDto>> getAssets(String memberId, Exchange exchange) {

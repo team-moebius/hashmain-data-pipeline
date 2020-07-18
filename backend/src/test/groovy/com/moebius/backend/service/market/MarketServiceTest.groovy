@@ -32,7 +32,7 @@ class MarketServiceTest extends Specification {
 	// TODO : Refactor updating market price logic
 	def "Should update market price"() {
 		given:
-		marketAssembler.assemble(_ as Market, _ as TradeDto, _ as UpbitTradeMetaDto) >> Stub(Market)
+		marketAssembler.assembleUpdatedMarket(_ as Market, _ as TradeDto, _ as UpbitTradeMetaDto) >> Stub(Market)
 
 		when:
 		marketService.updateMarketPrice(Stub(TradeDto))
@@ -48,7 +48,7 @@ class MarketServiceTest extends Specification {
 	def "Should get markets"() {
 		given:
 		1 * marketRepository.findAllByExchange(_ as Exchange) >> Flux.just(Stub(Market), Stub(Market))
-		2 * marketAssembler.toResponseDto(_ as Market) >> Stub(MarketResponseDto)
+		2 * marketAssembler.assembleResponse(_ as Market) >> Stub(MarketResponseDto)
 
 		expect:
 		StepVerifier.create(marketService.getMarkets(exchange))
@@ -78,8 +78,8 @@ class MarketServiceTest extends Specification {
 		1 * uriSpec.uri(_ as String) >> uriSpec
 		1 * uriSpec.retrieve() >> responseSpec
 		1 * responseSpec.bodyToMono(MarketsDto.class) >> Mono.just(Stub(MarketsDto))
-		1 * marketAssembler.toMarkets(_ as Exchange, _ as MarketsDto) >> [buildMarket("KRW-BTC"), buildMarket("KRW-ETH"), buildMarket("BTC-ETH")]
-		1 * marketAssembler.toMarket(Exchange.UPBIT, "KRW-BTC") >> Stub(Market) {
+		1 * marketAssembler.assembleMarkets(_ as Exchange, _ as MarketsDto) >> [buildMarket("KRW-BTC"), buildMarket("KRW-ETH"), buildMarket("BTC-ETH")]
+		1 * marketAssembler.assembleMarket(Exchange.UPBIT, "KRW-BTC") >> Stub(Market) {
 			getExchange() >> Exchange.UPBIT
 			getSymbol() >> "KRW-BTC"
 		}
@@ -99,7 +99,7 @@ class MarketServiceTest extends Specification {
 	def "Should get currency market prices"() {
 		given:
 		1 * marketRepository.findAllByExchange(_ as Exchange) >> Flux.just(Stub(Market), Stub(Market))
-		1 * marketAssembler.toCurrencyMarketPrices(_ as List) >> ["BTC": 10000000D, "ETH": 300000D]
+		1 * marketAssembler.assembleCurrencyMarketPrices(_ as List) >> ["BTC": 10000000D, "ETH": 300000D]
 
 		expect:
 		StepVerifier.create(marketService.getCurrencyMarketPriceMap(Exchange.UPBIT))

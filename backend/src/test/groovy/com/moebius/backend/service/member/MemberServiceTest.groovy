@@ -65,7 +65,7 @@ class MemberServiceTest extends Specification {
 
 	def "Should create member"() {
 		given:
-		1 * memberAssembler.toMember(_ as SignupDto) >> Stub(Member)
+		1 * memberAssembler.assembleMember(_ as SignupDto) >> Stub(Member)
 		1 * memberRepository.save(_ as Member) >> Mono.just(Stub(Member))
 		1 * emailService.requestToVerifyEmail(_ as String) >> Mono.just(ResponseEntity.ok(HttpStatus.OK.getReasonPhrase()))
 
@@ -81,7 +81,7 @@ class MemberServiceTest extends Specification {
 	@Unroll
 	def "Should not create member cause of #REASON"() {
 		given:
-		1 * memberAssembler.toMember(_ as SignupDto) >> Stub(Member)
+		1 * memberAssembler.assembleMember(_ as SignupDto) >> Stub(Member)
 		1 * memberRepository.save(_ as Member) >> Mono.error(EXCEPTION)
 
 		expect:
@@ -148,7 +148,7 @@ class MemberServiceTest extends Specification {
 	def "Should get member"() {
 		given:
 		1 * memberRepository.findById(_ as ObjectId) >> Mono.just(Stub(Member))
-		1 * memberAssembler.toDto(_ as Member) >> Stub(MemberDto)
+		1 * memberAssembler.assembleDto(_ as Member) >> Stub(MemberDto)
 
 		expect:
 		StepVerifier.create(memberService.getMember("5e52ab07b6e75567ac2376ae"))

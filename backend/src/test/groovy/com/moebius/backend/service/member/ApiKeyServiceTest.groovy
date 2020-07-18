@@ -61,9 +61,9 @@ class ApiKeyServiceTest extends Specification {
 		1 * exchangeServiceFactory.getService(_ as Exchange) >> upbitService
 		1 * upbitService.getAuthToken(_ as String, _ as String) >> Mono.just("dummyToken")
 		1 * upbitService.checkHealth(_ as String) >> Mono.just(Stub(ClientResponse))
-		1 * apiKeyAssembler.toApiKey(_ as ApiKeyDto, _ as String) >> Stub(ApiKey)
+		1 * apiKeyAssembler.assembleApiKey(_ as ApiKeyDto, _ as String) >> Stub(ApiKey)
 		1 * apiKeyRepository.save(_ as ApiKey) >> Mono.just(Stub(ApiKey))
-		1 * apiKeyAssembler.toResponseDto(_ as ApiKey) >> Stub(ApiKeyResponseDto)
+		1 * apiKeyAssembler.assembleResponse(_ as ApiKey) >> Stub(ApiKeyResponseDto)
 
 		expect:
 		StepVerifier.create(apiKeyService.verifyAndCreateApiKey(apiKeyDto, memberId))
@@ -85,7 +85,7 @@ class ApiKeyServiceTest extends Specification {
 		1 * exchangeServiceFactory.getService(_ as Exchange) >> upbitService
 		1 * upbitService.getAuthToken(_ as String, _ as String) >> Mono.just("dummyToken")
 		1 * upbitService.checkHealth(_ as String) >> Mono.just(Stub(ClientResponse))
-		1 * apiKeyAssembler.toApiKey(_ as ApiKeyDto, _ as String) >> Stub(ApiKey)
+		1 * apiKeyAssembler.assembleApiKey(_ as ApiKeyDto, _ as String) >> Stub(ApiKey)
 		1 * apiKeyRepository.save(_ as ApiKey) >> Mono.error(EXCEPTION)
 
 		expect:
@@ -101,7 +101,7 @@ class ApiKeyServiceTest extends Specification {
 	def "Should get api keys by member id"() {
 		given:
 		1 * apiKeyRepository.findAllByMemberId(_ as ObjectId) >> Flux.just(Stub(ApiKey), Stub(ApiKey))
-		2 * apiKeyAssembler.toResponseDto(_ as ApiKey) >> Stub(ApiKeyResponseDto)
+		2 * apiKeyAssembler.assembleResponse(_ as ApiKey) >> Stub(ApiKeyResponseDto)
 
 		expect:
 		StepVerifier.create(apiKeyService.getApiKeysByMemberId(memberId))

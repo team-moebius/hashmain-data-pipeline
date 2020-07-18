@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class AssetAssembler {
-	public AssetResponseDto toResponseDto(List<? extends AssetDto> assets) {
+	public AssetResponseDto assembleResponse(List<? extends AssetDto> assets) {
 		return AssetResponseDto.builder()
 			.assets(assets)
 			.build();
 	}
 
-	public Map<String, AssetDto> toCurrencyAssetDtos(List<? extends AssetDto> assets) {
+	public Map<String, AssetDto> assembleCurrencyAssets(List<? extends AssetDto> assets) {
 		return assets.stream()
 			.collect(Collectors.toMap(AssetDto::getCurrency, Function.identity()));
 	}

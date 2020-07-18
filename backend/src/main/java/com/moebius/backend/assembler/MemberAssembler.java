@@ -21,7 +21,7 @@ public class MemberAssembler {
 	private static final String ROLE = "MEMBER";
 	private final PasswordEncoder passwordEncoder;
 
-	public Member toMember(@NotNull SignupDto signupDto) {
+	public Member assembleMember(@NotNull SignupDto signupDto) {
 		Verifier.checkNullFields(signupDto);
 
 		Set<Role> roles = new HashSet<>();
@@ -39,7 +39,7 @@ public class MemberAssembler {
 		return member;
 	}
 
-	public MemberDto toDto(@NotNull Member member) {
+	public MemberDto assembleDto(@NotNull Member member) {
 		Verifier.checkNullFields(member);
 
 		MemberDto dto = new MemberDto();
