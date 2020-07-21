@@ -37,7 +37,23 @@ class UpbitAssemblerTest extends Specification {
 		result.getId() == orderId
 	}
 
-	def "AssembleOrderParameters"() {
+	def "Should assemble order parameters"() {
+
+	}
+
+	def "Should parse order position"() {
+
+	}
+
+	def "Should parse order status"() {
+
+	}
+
+	def "Should parse order price"() {
+
+	}
+
+	def "Should parse order volume"() {
 
 	}
 }
