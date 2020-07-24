@@ -45,7 +45,7 @@ public class MarketService {
 	public void updateMarketPrice(TradeDto tradeDto) {
 		getMarketAndTradeMeta(tradeDto)
 			.onErrorResume(UncategorizedMongoDbException.class, exception -> getMarketAndTradeMeta(tradeDto))
-			.map(tuple -> marketAssembler.assemble(tuple.getT1(), tradeDto, tuple.getT2()))
+			.map(tuple -> marketAssembler.assembleUpdatedMarket(tuple.getT1(), tradeDto, tuple.getT2()))
 			.flatMap(marketRepository::save)
 			.subscribe();
 	}
@@ -54,7 +54,7 @@ public class MarketService {
 		return marketRepository.findAllByExchange(exchange)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(marketAssembler::toResponseDto)
+			.map(marketAssembler::assembleResponse)
 			.collectList()
 			.map(ResponseEntity::ok);
 	}
@@ -77,7 +77,7 @@ public class MarketService {
 			.bodyToMono(MarketsDto.class)
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(marketsDto -> marketAssembler.toMarkets(exchange, marketsDto))
+			.map(marketsDto -> marketAssembler.assembleMarkets(exchange, marketsDto))
 			.map(markets -> {
 				markets.stream()
 					.filter(market -> market.getSymbol().startsWith("KRW"))
@@ -91,7 +91,7 @@ public class MarketService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.collectList()
-			.map(marketAssembler::toCurrencyMarketPrices);
+			.map(marketAssembler::assembleCurrencyMarketPrices);
 	}
 
 	public Mono<Double> getCurrentPrice(Exchange exchange, String symbol) {
@@ -124,7 +124,7 @@ public class MarketService {
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.hasElement()
-			.flatMap(exist -> exist ? Mono.just(Boolean.FALSE) : saveMarket(marketAssembler.toMarket(exchange, symbol)));
+			.flatMap(exist -> exist ? Mono.just(Boolean.FALSE) : saveMarket(marketAssembler.assembleMarket(exchange, symbol)));
 	}
 
 	private Mono<Boolean> saveMarket(Market market) {

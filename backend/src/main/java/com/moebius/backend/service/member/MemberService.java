@@ -11,10 +11,10 @@ import com.moebius.backend.dto.frontend.SignupDto;
 import com.moebius.backend.dto.frontend.response.LoginResponseDto;
 import com.moebius.backend.exception.*;
 import com.moebius.backend.utils.Verifier;
+import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,7 @@ public class MemberService {
 	public Mono<ResponseEntity<?>> createMember(SignupDto signupDto) {
 		log.info("[Member] Start to create member. [{}]", signupDto);
 
-		return memberRepository.save(memberAssembler.toMember(signupDto))
+		return memberRepository.save(memberAssembler.assembleMember(signupDto))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
@@ -75,7 +75,7 @@ public class MemberService {
 		return memberRepository.findById(new ObjectId(id))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
-			.map(memberAssembler::toDto)
+			.map(memberAssembler::assembleDto)
 			.map(ResponseEntity::ok);
 	}
 }

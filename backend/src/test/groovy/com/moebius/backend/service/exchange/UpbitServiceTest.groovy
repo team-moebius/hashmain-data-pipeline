@@ -227,7 +227,7 @@ class UpbitServiceTest extends Specification {
 		1 * headersSpec.retrieve() >> responseSpec
 		1 * responseSpec.onStatus(_ as Predicate<HttpStatus>, _ as Function<ClientResponse, Mono<? extends Throwable>>) >> responseSpec
 		1 * responseSpec.bodyToMono(UpbitOrderStatusDto.class) >> Mono.just(UpbitOrderStatusDto.builder().build())
-		1 * upbitAssembler.toOrderStatusDto(_ as String, _ as UpbitOrderStatusDto) >> OrderStatusDto.builder()
+		1 * upbitAssembler.assembleOrderStatus(_ as String, _ as UpbitOrderStatusDto) >> OrderStatusDto.builder()
 				.id(orderId)
 				.orderStatus(OrderStatus.STOPPED)
 				.build()

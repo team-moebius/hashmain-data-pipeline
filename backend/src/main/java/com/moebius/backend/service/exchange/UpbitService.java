@@ -103,7 +103,7 @@ public class UpbitService implements ExchangeService {
 			.uri(publicUri + ordersUri)
 			.contentType(MediaType.APPLICATION_JSON)
 			.headers(httpHeaders -> httpHeaders.setBearerAuth(token))
-			.bodyValue(upbitAssembler.toOrderDto(order))
+			.bodyValue(upbitAssembler.assembleOrder(order))
 			.exchange()
 			.doOnError(exception -> log.error("[Upbit] Failed to request order.", exception))
 			.doOnSuccess(clientResponse -> log.info("[Upbit] Succeeded to request order. [Response code : {}]", clientResponse.statusCode()));
@@ -134,7 +134,7 @@ public class UpbitService implements ExchangeService {
 			.onStatus(HttpStatus.UNAUTHORIZED::equals,
 				response -> Mono.error(new WrongDataException(ExceptionTypes.UNVERIFIED_DATA.getMessage("Auth token (" + apiKey + ")"))))
 			.bodyToMono(UpbitOrderStatusDto.class)
-			.map(upbitOrderStatusDto -> upbitAssembler.toOrderStatusDto(orderId, upbitOrderStatusDto));
+			.map(upbitOrderStatusDto -> upbitAssembler.assembleOrderStatus(orderId, upbitOrderStatusDto));
 	}
 
 	private String getAuthTokenWithParameter(ApiKey apiKey, String query) {

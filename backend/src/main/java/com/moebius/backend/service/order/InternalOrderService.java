@@ -2,7 +2,7 @@ package com.moebius.backend.service.order;
 
 import com.moebius.backend.assembler.order.OrderAssembler;
 import com.moebius.backend.assembler.order.OrderAssetAssembler;
-import com.moebius.backend.assembler.order.OrderUtil;
+import com.moebius.backend.utils.OrderUtil;
 import com.moebius.backend.domain.apikeys.ApiKey;
 import com.moebius.backend.domain.commons.EventType;
 import com.moebius.backend.domain.commons.Exchange;
@@ -63,14 +63,14 @@ public class InternalOrderService {
 				.collect(Collectors.toList()))
 			.collectList()
 			.doOnSuccess(this::evictOrderCaches)
-			.map(orderAssembler::toResponseDto)
+			.map(orderAssembler::assembleResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderResponseDto>> getOrdersByExchange(String memberId, Exchange exchange) {
 		return getOrders(memberId, exchange, apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
 			.subscribeOn(COMPUTE.scheduler())
-			.map(orderAssembler::toResponseDto)
+			.map(orderAssembler::assembleResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
@@ -78,19 +78,19 @@ public class InternalOrderService {
 		return getOrders(memberId, exchange, apiKey -> orderRepository.findAllByApiKeyId(apiKey.getId()))
 			.map(orders -> orderUtil.filterOrdersBySymbol(orders, symbol))
 			.subscribeOn(COMPUTE.scheduler())
-			.map(orderAssembler::toResponseDto)
+			.map(orderAssembler::assembleResponseDto)
 			.map(ResponseEntity::ok);
 	}
 
 	public Mono<ResponseEntity<OrderAssetResponseDto>> getOrderAssets(String memberId, Exchange exchange) {
 		return Mono.zip(
 			getOrders(memberId, exchange, apiKey -> orderRepository.findAllByApiKeyIdAndOrderStatusNot(apiKey.getId(), OrderStatus.DONE))
-				.map(orderAssetAssembler::toCurrencyOrderDtosMap),
+				.map(orderAssetAssembler::assembleCurrencyToOrderDtos),
 			assetService.getCurrencyAssetMap(memberId, exchange),
 			marketService.getCurrencyMarketPriceMap(exchange)
 		).subscribeOn(COMPUTE.scheduler())
 			.map(tuple -> extractOrderStatuses(tuple.getT1(), tuple.getT2(), tuple.getT3()))
-			.map(orderAssetAssembler::toStatusResponseDto)
+			.map(orderAssetAssembler::assembleOrderAssetResponse)
 			.map(ResponseEntity::ok);
 	}
 
@@ -142,15 +142,15 @@ public class InternalOrderService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[Order] order information based on memberId(" + memberId + ")")))))
-			.map(order -> orderAssembler.toDto(order, EventType.READ))
+			.map(order -> orderAssembler.assembleDto(order, EventType.READ))
 			.collectList();
 	}
 
-	private List<OrderAssetDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyOrders,
+	private List<OrderAssetDto> extractOrderStatuses(Map<String, List<OrderDto>> currencyToSameSymbolOrders,
 		Map<String, AssetDto> currencyAssets,
 		Map<String, Double> currencyMarketPrices) {
-		return currencyOrders.entrySet().stream()
-			.map(orderEntry -> orderAssetAssembler.toOrderAssetDto(orderEntry.getValue(),
+		return currencyToSameSymbolOrders.entrySet().stream()
+			.map(orderEntry -> orderAssetAssembler.assembleOrderAssetDto(orderEntry.getValue(),
 				currencyAssets.get(orderEntry.getKey()),
 				currencyMarketPrices.get(orderEntry.getKey())))
 			.collect(Collectors.toList());

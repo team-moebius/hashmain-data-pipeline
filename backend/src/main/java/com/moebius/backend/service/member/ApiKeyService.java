@@ -52,7 +52,7 @@ public class ApiKeyService {
 			.publishOn(COMPUTE.scheduler())
 			.switchIfEmpty(Mono.defer(() -> Mono.error(new DataNotFoundException(
 				ExceptionTypes.NONEXISTENT_DATA.getMessage("[ApiKey] Api key based on memberId(" + memberId + ")")))))
-			.map(apiKeyAssembler::toResponseDto)
+			.map(apiKeyAssembler::assembleResponse)
 			.collectList()
 			.map(ResponseEntity::ok);
 	}
@@ -103,13 +103,13 @@ public class ApiKeyService {
 	private Mono<ResponseEntity<ApiKeyResponseDto>> createApiKey(ApiKeyDto apiKeyDto, String memberId) {
 		log.info("[ApiKey] Start to create api key. [{}]", apiKeyDto);
 
-		return apiKeyRepository.save(apiKeyAssembler.toApiKey(apiKeyDto, memberId))
+		return apiKeyRepository.save(apiKeyAssembler.assembleApiKey(apiKeyDto, memberId))
 			.subscribeOn(IO.scheduler())
 			.publishOn(COMPUTE.scheduler())
 			.onErrorMap(exception -> exception instanceof DuplicateKeyException ?
 				new DuplicatedDataException(ExceptionTypes.DUPLICATED_DATA.getMessage(apiKeyDto.getName())) :
 				exception)
-			.map(apiKeyAssembler::toResponseDto)
+			.map(apiKeyAssembler::assembleResponse)
 			.map(ResponseEntity::ok);
 	}
 }

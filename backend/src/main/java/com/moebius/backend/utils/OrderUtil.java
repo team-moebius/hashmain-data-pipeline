@@ -1,4 +1,4 @@
-package com.moebius.backend.assembler.order;
+package com.moebius.backend.utils;
 
 import com.moebius.backend.domain.orders.Order;
 import com.moebius.backend.domain.orders.OrderPosition;

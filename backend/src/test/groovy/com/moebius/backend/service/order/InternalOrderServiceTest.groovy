@@ -2,7 +2,7 @@ package com.moebius.backend.service.order
 
 import com.moebius.backend.assembler.order.OrderAssembler
 import com.moebius.backend.assembler.order.OrderAssetAssembler
-import com.moebius.backend.assembler.order.OrderUtil
+import com.moebius.backend.utils.OrderUtil
 import com.moebius.backend.domain.apikeys.ApiKey
 import com.moebius.backend.domain.commons.EventType
 import com.moebius.backend.domain.commons.Exchange
@@ -67,7 +67,7 @@ class InternalOrderServiceTest extends Specification {
 		1 * orderUtil.isOrderRequestNeeded(_ as Order, 10000000D) >> IS_ORDER_REQEUEST_NEEDED
 		EXCHANGE_ORDER_COUNT * exchangeOrderService.order(_ as ApiKey, _ as Order)
 		1 * orderRepository.deleteById(_ as ObjectId) >> Mono.empty()
-		1 * orderAssembler.toResponseDto(_ as List) >> OrderResponseDto.builder().orders(orderDtos).build()
+		1 * orderAssembler.assembleResponseDto(_ as List) >> OrderResponseDto.builder().orders(orderDtos).build()
 
 		expect:
 		StepVerifier.create(internalOrderService.processOrders(memberId, exchange, orderDtos))
@@ -92,8 +92,8 @@ class InternalOrderServiceTest extends Specification {
 
 		1 * apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(Stub(ApiKey))
 		1 * orderRepository.findAllByApiKeyId(_ as ObjectId) >> Flux.just(Stub(Order), Stub(Order))
-		2 * orderAssembler.toDto(_ as Order, EventType.READ) >> Stub(OrderDto)
-		1 * orderAssembler.toResponseDto(_ as List) >> OrderResponseDto.builder().orders(orderDtos).build()
+		2 * orderAssembler.assembleDto(_ as Order, EventType.READ) >> Stub(OrderDto)
+		1 * orderAssembler.assembleResponseDto(_ as List) >> OrderResponseDto.builder().orders(orderDtos).build()
 
 		expect:
 		StepVerifier.create(internalOrderService.getOrdersByExchange(memberId, exchange))
@@ -114,9 +114,9 @@ class InternalOrderServiceTest extends Specification {
 
 		1 * apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(Stub(ApiKey))
 		1 * orderRepository.findAllByApiKeyId(_ as ObjectId) >> Flux.just(Stub(Order), Stub(Order))
-		2 * orderAssembler.toDto(_ as Order, EventType.READ) >> Stub(OrderDto)
+		2 * orderAssembler.assembleDto(_ as Order, EventType.READ) >> Stub(OrderDto)
 		1 * orderUtil.filterOrdersBySymbol(_ as List, "KRW-BTC") >> filteredOrderDtos
-		1 * orderAssembler.toResponseDto(_ as List) >> OrderResponseDto.builder().orders(filteredOrderDtos).build()
+		1 * orderAssembler.assembleResponseDto(_ as List) >> OrderResponseDto.builder().orders(filteredOrderDtos).build()
 
 		expect:
 		StepVerifier.create(internalOrderService.getOrdersByExchangeAndSymbol(memberId, exchange, "KRW-BTC"))
@@ -133,8 +133,8 @@ class InternalOrderServiceTest extends Specification {
 		given:
 		1 * apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(Stub(ApiKey))
 		1 * orderRepository.findAllByApiKeyId(_ as ObjectId) >> Flux.empty()
-		0 * orderAssembler.toDto(_ as Order, EventType.READ)
-		0 * orderAssembler.toResponseDto(_ as List)
+		0 * orderAssembler.assembleDto(_ as Order, EventType.READ)
+		0 * orderAssembler.assembleResponseDto(_ as List)
 
 		expect:
 		StepVerifier.create(internalOrderService.getOrdersByExchange(memberId, exchange))
@@ -148,20 +148,20 @@ class InternalOrderServiceTest extends Specification {
 
 		1 * apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(Stub(ApiKey))
 		1 * orderRepository.findAllByApiKeyIdAndOrderStatusNot(_ as ObjectId, OrderStatus.DONE) >> Flux.just(Stub(Order), Stub(Order))
-		2 * orderAssembler.toDto(_ as Order, EventType.READ) >> Stub(OrderDto)
-		1 * orderAssetAssembler.toCurrencyOrderDtosMap(_ as List) >> ["BTC": orderDtos]
+		2 * orderAssembler.assembleDto(_ as Order, EventType.READ) >> Stub(OrderDto)
+		1 * orderAssetAssembler.assembleCurrencyToOrderDtos(_ as List) >> ["BTC": orderDtos]
 		1 * assetService.getCurrencyAssetMap(memberId, exchange) >> Mono.just(["BTC": Stub(AssetDto)])
 		1 * marketService.getCurrencyMarketPriceMap(exchange) >> Mono.just(["BTC": 10000000D])
-		1 * orderAssetAssembler.toOrderAssetDto(_ as List, _ as AssetDto, 10000000D) >> Stub(OrderAssetDto)
-		1 * orderAssetAssembler.toStatusResponseDto(_ as List) >> OrderAssetResponseDto.builder().orderStatuses([Stub(OrderAssetDto)]).build()
+		1 * orderAssetAssembler.assembleOrderAssetDto(_ as List, _ as AssetDto, 10000000D) >> Stub(OrderAssetDto)
+		1 * orderAssetAssembler.assembleOrderAssetResponse(_ as List) >> OrderAssetResponseDto.builder().orderAssets([Stub(OrderAssetDto)]).build()
 
 		expect:
 		StepVerifier.create(internalOrderService.getOrderAssets(memberId, exchange))
 				.assertNext({
 					it.getStatusCode() == HttpStatus.OK
 					it.getBody() instanceof OrderAssetResponseDto
-					it.getBody().getOrderStatuses() instanceof List<? extends OrderAssetDto>
-					it.getBody().getOrderStatuses().size() == 1
+					it.getBody().getOrderAssets() instanceof List<? extends OrderAssetDto>
+					it.getBody().getOrderAssets().size() == 1
 				})
 				.verifyComplete()
 	}

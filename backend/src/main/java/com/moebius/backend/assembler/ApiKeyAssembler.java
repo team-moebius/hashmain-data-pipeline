@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class ApiKeyAssembler {
-	public ApiKey toApiKey(@NotNull ApiKeyDto apiKeyDto, @NotBlank String memberId) {
+	public ApiKey assembleApiKey(@NotNull ApiKeyDto apiKeyDto, @NotBlank String memberId) {
 		ApiKey apiKey = new ApiKey();
 
 		apiKey.setMemberId(new ObjectId(memberId));
@@ -26,7 +26,7 @@ public class ApiKeyAssembler {
 		return apiKey;
 	}
 
-	public ApiKeyResponseDto toResponseDto(@NotNull ApiKey apiKey) {
+	public ApiKeyResponseDto assembleResponse(@NotNull ApiKey apiKey) {
 		ApiKeyResponseDto apiKeyResponseDto = new ApiKeyResponseDto();
 
 		apiKeyResponseDto.setId(apiKey.getId().toHexString());
