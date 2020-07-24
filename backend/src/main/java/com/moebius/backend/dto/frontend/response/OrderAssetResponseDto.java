@@ -11,5 +11,5 @@ import java.util.List;
 @Builder
 @ToString
 public class OrderAssetResponseDto {
-	private List<OrderAssetDto> orderStatuses;
+	private List<OrderAssetDto> orderAssets;
 }
