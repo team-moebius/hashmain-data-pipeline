@@ -31,7 +31,7 @@ public class UpbitAssembler implements ExchangeAssembler {
 
 	private final ObjectMapper objectMapper;
 
-	public UpbitOrderDto toOrderDto(Order order) {
+	public UpbitOrderDto assembleOrder(Order order) {
 		return UpbitOrderDto.builder()
 			.identifier(order.getId().toHexString())
 			.market(order.getSymbol())
@@ -42,7 +42,7 @@ public class UpbitAssembler implements ExchangeAssembler {
 			.build();
 	}
 
-	public OrderStatusDto toOrderStatusDto(String orderId, UpbitOrderStatusDto upbitOrderStatusDto) {
+	public OrderStatusDto assembleOrderStatus(String orderId, UpbitOrderStatusDto upbitOrderStatusDto) {
 		Verifier.checkNullFields(upbitOrderStatusDto);
 
 		return OrderStatusDto.builder()
@@ -52,7 +52,7 @@ public class UpbitAssembler implements ExchangeAssembler {
 	}
 
 	public String assembleOrderParameters(Order order) {
-		UpbitOrderDto orderDto = toOrderDto(order);
+		UpbitOrderDto orderDto = assembleOrder(order);
 
 		Map<String, String> parameters = objectMapper.convertValue(orderDto, new TypeReference<Map<String, String>>() {});
 

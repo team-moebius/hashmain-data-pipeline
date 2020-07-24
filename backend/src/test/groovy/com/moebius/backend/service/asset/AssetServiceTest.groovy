@@ -19,7 +19,7 @@ import spock.lang.Subject
 import spock.lang.Unroll
 
 class AssetServiceTest extends Specification {
-	def apikeyService = Mock(ApiKeyService)
+	def apiKeyService = Mock(ApiKeyService)
 	def exchangeServiceFactory = Mock(ExchangeServiceFactory)
 	def assetAssembler = Mock(AssetAssembler)
 	def apiKey = Stub(ApiKey) {
@@ -35,7 +35,7 @@ class AssetServiceTest extends Specification {
 			.build()
 
 	@Subject
-	def assetService = new AssetService(apikeyService, exchangeServiceFactory, assetAssembler)
+	def assetService = new AssetService(apiKeyService, exchangeServiceFactory, assetAssembler)
 
 	@Unroll
 	def "Should get asset response when #SITUATION"() {
@@ -44,8 +44,8 @@ class AssetServiceTest extends Specification {
 			1 * getAuthToken(_ as String, _ as String) >> Mono.just("authToken")
 			1 * getAssets(_ as String) >> FLUX_ASSET
 		}
-		1 * apikeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(apiKey)
-		1 * assetAssembler.toResponseDto(_ as List<? extends AssetDto>) >> AssetResponseDto.builder().assets(ASSETS).build()
+		1 * apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(apiKey)
+		1 * assetAssembler.assembleResponse(_ as List<? extends AssetDto>) >> AssetResponseDto.builder().assets(ASSETS).build()
 
 		expect:
 		StepVerifier.create(assetService.getAssetResponse(memberId, exchange))
@@ -70,8 +70,8 @@ class AssetServiceTest extends Specification {
 			1 * getAuthToken(_ as String, _ as String) >> Mono.just("authToken")
 			1 * getAssets(_ as String) >> FLUX_ASSET
 		}
-		1 * apikeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(apiKey)
-		1 * assetAssembler.toCurrencyAssetDtos(_ as List<? extends AssetDto>) >> CURRENCY_ASSET
+		1 * apiKeyService.getApiKeyByMemberIdAndExchange(memberId, exchange) >> Mono.just(apiKey)
+		1 * assetAssembler.assembleCurrencyAssets(_ as List<? extends AssetDto>) >> CURRENCY_ASSET
 
 		expect:
 		StepVerifier.create(assetService.getCurrencyAssetMap(memberId, exchange))

@@ -8,11 +8,11 @@ import com.moebius.backend.domain.orders.OrderStatusCondition;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.TradeDto;
 import com.moebius.backend.dto.frontend.response.OrderResponseDto;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class OrderAssembler {
@@ -40,9 +40,9 @@ public class OrderAssembler {
 		return order;
 	}
 
-	public OrderDto toDto(Order order, EventType eventType) {
+	public OrderDto assembleDto(Order order, EventType eventType) {
 		OrderDto orderDto = new OrderDto();
-		if (ObjectUtils.allNotNull(order.getId())) {
+		if (Objects.nonNull(order.getId())) {
 			orderDto.setId(order.getId().toHexString());
 		}
 		orderDto.setEventType(eventType);
@@ -58,7 +58,7 @@ public class OrderAssembler {
 		return orderDto;
 	}
 
-	public OrderResponseDto toResponseDto(List<OrderDto> orders) {
+	public OrderResponseDto assembleResponseDto(List<OrderDto> orders) {
 		return OrderResponseDto.builder()
 			.orders(orders)
 			.build();

@@ -5,6 +5,7 @@ import com.moebius.backend.dto.OrderAssetDto;
 import com.moebius.backend.dto.OrderDto;
 import com.moebius.backend.dto.exchange.AssetDto;
 import com.moebius.backend.dto.frontend.response.OrderAssetResponseDto;
+import com.moebius.backend.utils.OrderUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import java.util.Map;
 public class OrderAssetAssembler {
 	private final OrderUtil orderUtil;
 
-	public Map<String, List<OrderDto>> toCurrencyOrderDtosMap(List<OrderDto> orders) {
+	public Map<String, List<OrderDto>> assembleCurrencyToOrderDtos(List<OrderDto> orders) {
 		Map<String, List<OrderDto>> currencyOrdersMap = new HashMap<>();
 
 		orders.forEach(order ->
@@ -37,28 +38,28 @@ public class OrderAssetAssembler {
 		return currencyOrdersMap;
 	}
 
-	public OrderAssetDto toOrderAssetDto(List<OrderDto> orders, AssetDto asset, double currentPrice) {
+	public OrderAssetDto assembleOrderAssetDto(List<OrderDto> sameSymbolOrders, AssetDto asset, double currentPrice) {
 		if (asset == null || currentPrice == 0D) {
 			return OrderAssetDto.builder()
-				.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
-				.orderStatus(identifyOrderStatus(orders))
+				.currency(orderUtil.getCurrencyBySymbol(sameSymbolOrders.get(0).getSymbol()))
+				.orderStatus(identifyOrderStatus(sameSymbolOrders))
 				.build();
 		}
 		return OrderAssetDto.builder()
-			.currency(orderUtil.getCurrencyBySymbol(orders.get(0).getSymbol()))
+			.currency(orderUtil.getCurrencyBySymbol(sameSymbolOrders.get(0).getSymbol()))
 			.averagePurchasePrice(asset.getAveragePurchasePrice())
 			.balance(asset.getBalance())
 			.tradePrice(asset.getAveragePurchasePrice() * asset.getBalance())
 			.evaluatedPrice(currentPrice * asset.getBalance())
 			.profitLossRatio(Precision.round(currentPrice / asset.getAveragePurchasePrice() - 1, 4) * 100)
-			.orderStatus(identifyOrderStatus(orders))
+			.orderStatus(identifyOrderStatus(sameSymbolOrders))
 			.build();
 
 	}
 
-	public OrderAssetResponseDto toStatusResponseDto(List<OrderAssetDto> orderStatuses) {
+	public OrderAssetResponseDto assembleOrderAssetResponse(List<OrderAssetDto> orderAssets) {
 		return OrderAssetResponseDto.builder()
-			.orderStatuses(orderStatuses)
+			.orderAssets(orderAssets)
 			.build();
 	}
 

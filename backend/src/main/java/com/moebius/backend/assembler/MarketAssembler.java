@@ -1,12 +1,12 @@
 package com.moebius.backend.assembler;
 
-import com.moebius.backend.assembler.order.OrderUtil;
 import com.moebius.backend.domain.commons.Exchange;
 import com.moebius.backend.domain.markets.Market;
 import com.moebius.backend.dto.TradeDto;
-import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto;
 import com.moebius.backend.dto.exchange.MarketsDto;
+import com.moebius.backend.dto.exchange.upbit.UpbitTradeMetaDto;
 import com.moebius.backend.dto.frontend.response.MarketResponseDto;
+import com.moebius.backend.utils.OrderUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 public class MarketAssembler {
 	private final OrderUtil orderUtil;
 
-	public Market toMarket(@NotNull Exchange exchange, @NotBlank String symbol) {
+	public Market assembleMarket(@NotNull Exchange exchange, @NotBlank String symbol) {
 		Market market = new Market();
 		market.setExchange(exchange);
 		market.setSymbol(symbol);
@@ -33,13 +34,14 @@ public class MarketAssembler {
 		return market;
 	}
 
-	public List<Market> toMarkets(@NotNull Exchange exchange, @NotEmpty MarketsDto marketsDto) {
+	public List<Market> assembleMarkets(@NotNull Exchange exchange, @NotEmpty MarketsDto marketsDto) {
 		return marketsDto.stream()
-			.map(marketDto -> toMarket(exchange, marketDto.getMarket()))
+			.filter(Objects::nonNull)
+			.map(marketDto -> assembleMarket(exchange, marketDto.getMarket()))
 			.collect(Collectors.toList());
 	}
 
-	public MarketResponseDto toResponseDto(Market market) {
+	public MarketResponseDto assembleResponse(Market market) {
 		return MarketResponseDto.builder()
 			.exchange(market.getExchange())
 			.symbol(market.getSymbol())
@@ -49,12 +51,16 @@ public class MarketAssembler {
 			.build();
 	}
 
-	public Map<String, Double> toCurrencyMarketPrices(List<Market> markets) {
+	public Map<String, Double> assembleCurrencyMarketPrices(List<Market> markets) {
 		return markets.stream()
+			.filter(Objects::nonNull)
 			.collect(Collectors.toMap(market -> orderUtil.getCurrencyBySymbol(market.getSymbol()), Market::getCurrentPrice));
 	}
 
-	public Market assemble(Market market, TradeDto tradeDto, UpbitTradeMetaDto tradeMetaDto) {
+	public Market assembleUpdatedMarket(Market market, TradeDto tradeDto, UpbitTradeMetaDto tradeMetaDto) {
+		if (tradeDto == null || tradeMetaDto == null) {
+			return market;
+		}
 		market.setCurrentPrice(tradeDto.getPrice());
 		market.setChangeRate(Precision.round(tradeDto.getPrice() / tradeDto.getPrevClosingPrice() - 1, 4) * 100);
 		market.setAccumulatedTradePrice(tradeMetaDto.getAccumulatedTradePrice());
