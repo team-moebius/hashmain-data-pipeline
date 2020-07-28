@@ -1,0 +1,20 @@
+
+dependencies {
+    implementation 'io.springfox:springfox-swagger2:3.0.0-SNAPSHOT'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0-SNAPSHOT'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+
+    compile project(':data')
+
+    testCompile "org.testcontainers:elasticsearch:1.14.3"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
