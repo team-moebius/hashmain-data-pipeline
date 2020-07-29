@@ -16,6 +16,8 @@ import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.ParsedFilter;
+import org.elasticsearch.search.aggregations.metrics.ParsedMax;
+import org.elasticsearch.search.aggregations.metrics.ParsedMin;
 import org.elasticsearch.search.aggregations.metrics.ParsedSum;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ public class TradeAggregationService {
         SearchRequest searchRequest = new SearchRequest(DocumentIndex.TRADE_STAT.toString());
         generateAggregationQuery(exchange, symbol, minutesAgo, searchRequest);
         try {
+            // TODO: non-blocking
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             return mappedToDto(response, exchange, symbol);
         } catch (IOException e) {
@@ -48,17 +51,23 @@ public class TradeAggregationService {
     private TradeAggregationDto mappedToDto(SearchResponse response, Exchange exchange, String symbol) {
         ParsedFilter parsedFilter = response.getAggregations().get(AGGREGATION_CONTEXT_NAME);
         Map<String, Object> map = parsedFilter.getAggregations().getAsMap().entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(),
-                        e -> getValueFrom(e.getValue())));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> getValueFrom(e.getValue())));
 
         map.put("exchange", exchange);
         map.put("symbol", symbol);
         return objectMapper.convertValue(map, TradeAggregationDto.class);
     }
 
-    private double getValueFrom(Aggregation aggregation) {
-        ParsedSum parsedSum = (ParsedSum) aggregation;
-        return parsedSum.getValue();
+    private Object getValueFrom(Aggregation aggregation) {
+        // TODO: refactoring
+        if(aggregation instanceof ParsedSum){
+            return ((ParsedSum)aggregation).getValue();
+        } else if(aggregation instanceof ParsedMax){
+            return ((ParsedMax)aggregation).getValueAsString();
+        } else if(aggregation instanceof ParsedMin){
+            return ((ParsedMin)aggregation).getValueAsString();
+        }
+        return null;
     }
 
     private void generateAggregationQuery(Exchange exchange, String symbol, int minutesAgo, SearchRequest searchRequest) {
@@ -69,7 +78,7 @@ public class TradeAggregationService {
         builder.filter(QueryBuilders.termQuery("symbol", symbol));
         builder.filter(QueryBuilders.rangeQuery("statsDate")
                 .from(String.format("now/m-%dm", minutesAgo))
-                .to(String.format("now/m", minutesAgo))
+                .to("now/m")
         );
 
         AggregationBuilder aggregationBuilder = AggregationBuilders.filter(AGGREGATION_CONTEXT_NAME, builder);
@@ -94,6 +103,6 @@ public class TradeAggregationService {
                 AggregationBuilders.min("startAt").field("statsDate"),
                 AggregationBuilders.max("endAt").field("statsDate")
         );
-        subAggregation.forEach(o -> sourceBuilder.subAggregation(o));
+        subAggregation.forEach(sourceBuilder::subAggregation);
     }
 }

@@ -1,10 +1,12 @@
 package com.moebius.api.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.moebius.api.derse.TimeZoneStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -33,7 +35,9 @@ public class TradeAggregationDto {
 
     private Double totalTransactionVolume;
 
-    private LocalDateTime startAt;
+    @JsonSerialize(using = TimeZoneStringSerializer.class)
+    private ZonedDateTime startAt;
 
-    private LocalDateTime endAt;
+    @JsonSerialize(using = TimeZoneStringSerializer.class)
+    private ZonedDateTime endAt;
 }
