@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,4 +32,8 @@ public class TradeAggregationDto {
     private Double totalTransactionPrice;
 
     private Double totalTransactionVolume;
+
+    private LocalDateTime startAt;
+
+    private LocalDateTime endAt;
 }

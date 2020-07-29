@@ -2,6 +2,7 @@ package com.moebius.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moebius.api.dto.TradeAggregationDto;
+import com.moebius.api.entity.TradeAggregation;
 import com.moebius.data.DocumentIndex;
 import com.moebius.data.type.Exchange;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,10 @@ public class TradeAggregationService {
         BoolQueryBuilder builder = QueryBuilders.boolQuery();
         builder.filter(QueryBuilders.termQuery("exchange", exchange));
         builder.filter(QueryBuilders.termQuery("symbol", symbol));
-        builder.filter(QueryBuilders.rangeQuery("statsDate").from(String.format("now-%dm/m", minutesAgo)));
+        builder.filter(QueryBuilders.rangeQuery("statsDate")
+                .from(String.format("now/m-%dm", minutesAgo))
+                .to(String.format("now/m", minutesAgo))
+        );
 
         AggregationBuilder aggregationBuilder = AggregationBuilders.filter(AGGREGATION_CONTEXT_NAME, builder);
         bindSubAggregationQuery(aggregationBuilder);
@@ -86,7 +90,9 @@ public class TradeAggregationService {
                 AggregationBuilders.sum("totalBidVolume").field("totalBidVolume"),
                 AggregationBuilders.sum("totalTransactionCount").field("totalTransactionCount"),
                 AggregationBuilders.sum("totalTransactionPrice").field("totalTransactionPrice"),
-                AggregationBuilders.sum("totalTransactionVolume").field("totalTransactionVolume")
+                AggregationBuilders.sum("totalTransactionVolume").field("totalTransactionVolume"),
+                AggregationBuilders.min("startAt").field("statsDate"),
+                AggregationBuilders.max("endAt").field("statsDate")
         );
         subAggregation.forEach(o -> sourceBuilder.subAggregation(o));
     }

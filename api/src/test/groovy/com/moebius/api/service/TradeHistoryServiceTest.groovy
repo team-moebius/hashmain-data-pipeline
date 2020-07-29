@@ -1,5 +1,6 @@
 package com.moebius.api.service
 
+import com.moebius.data.type.Exchange
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
@@ -12,7 +13,7 @@ class TradeHistoryServiceTest extends Specification {
 
     def "FindAllByExchangeAndSymbolAndLatestByCount"() {
         when:
-        def result = tradeHistoryService.findAllByExchangeAndSymbolAndLatestByCount("UPBIT", "KRW-EOS", 1)
+        def result = tradeHistoryService.getLatestHistory(Exchange.UPBIT, "KRW-EOS", 1)
 
         then:
         result.size() > 0

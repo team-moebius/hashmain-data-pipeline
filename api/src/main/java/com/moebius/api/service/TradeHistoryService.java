@@ -33,6 +33,7 @@ public class TradeHistoryService {
         SearchRequest request = getSearchRequest(exchange, symbol, count);
         try {
             SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+            //TODO: refactoring
             return Arrays.stream(response.getHits().getHits()).map(o -> {
                 try {
                     return objectMapper.readValue(o.getSourceAsString(), TradeHistory.class);

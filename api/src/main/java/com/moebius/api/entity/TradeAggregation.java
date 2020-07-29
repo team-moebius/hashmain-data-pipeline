@@ -1,5 +1,6 @@
 package com.moebius.api.entity;
 
+import com.moebius.api.annotation.Aggregation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,30 +26,39 @@ public class TradeAggregation {
     @Field(type = FieldType.Keyword)
     private String timeUnit;
 
+    @Aggregation
     @Field(type = FieldType.Long)
     private Long totalAskCount;
 
+    @Aggregation
     @Field(type = FieldType.Double)
     private Double totalAskPrice;
 
+    @Aggregation
     @Field(type = FieldType.Double)
     private Double totalAskVolume;
 
+    @Aggregation
     @Field(type = FieldType.Long)
     private Long totalBidCount;
 
+    @Aggregation
     @Field(type = FieldType.Double)
     private Double totalBidPrice;
 
+    @Aggregation
     @Field(type = FieldType.Double)
     private Double totalBidVolume;
 
+    @Aggregation
     @Field(type = FieldType.Long)
     private Long totalTransactionCount;
 
+    @Aggregation
     @Field(type = FieldType.Double)
     private Double totalTransactionPrice;
 
+    @Aggregation
     @Field(type = FieldType.Double)
     private Double totalTransactionVolume;
 
