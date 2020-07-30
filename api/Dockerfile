@@ -5,7 +5,7 @@ COPY /gradle gradle
 COPY api api
 COPY data data
 RUN chmod +x ./gradlew
-RUN ./gradlew clean :api:jar
+RUN ./gradlew clean :api:bootJar
 
 # Run
 FROM openjdk:11-jre-slim
