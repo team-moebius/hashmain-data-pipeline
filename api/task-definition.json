@@ -20,7 +20,7 @@
   "volumes": [],
   "networkMode": "awsvpc",
   "memory": "512",
-  "cpu": "512",
+  "cpu": "256",
   "executionRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
   "family": "moebius-api",
   "taskRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
