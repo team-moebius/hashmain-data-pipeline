@@ -1,0 +1,2 @@
+jar { enabled = true }
+project.version = '0.0.1-RELEASE'
