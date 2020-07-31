@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - HMDP-develop
+      - HMA-develop
 
 name: Deploy to Amazon ECS
 
