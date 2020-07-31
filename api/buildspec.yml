@@ -1,0 +1,38 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+      docker: 18
+  pre_build:
+    commands:
+      - ./gradlew clean :api:test
+#      - echo Logging in to Amazon ECR...
+#      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+#      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+#      - BUILD_TAG=${COMMIT_HASH:=latest}
+#      - REPO_URI=$(echo $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME)
+#      - echo $COMMIT_HASH
+#      - echo $BUILD_TAG
+#      - echo $REPO_URI
+#      - echo $CODEBUILD_WEBHOOK_TRIGGER
+#      - echo $BUILD_BRANCH
+#  build:
+#    commands:
+#      - echo build start on `date`
+#      - echo building the docker image
+#      - docker build -t $REPO_URI:latest -f streams/Dockerfile .
+#      - docker tag $REPO_URI:latest $REPO_URI:$BUILD_TAG
+#      - docker tag $REPO_URI:latest $REPO_URI:$BUILD_BRANCH
+#  post_build:
+#    commands:
+#      - echo Build completed on `date`
+#      - echo Pushing the Docker image...
+#      - docker push $REPO_URI:latest
+#      - docker push $REPO_URI:$BUILD_TAG
+#      - docker push $REPO_URI:$BUILD_BRANCH
+#      - echo Writing image definitions file...
+#      - printf '[{"name":"streams","imageUri":"%s"}]' $REPO_URI:latest > imagedefinitions.json
+#artifacts:
+#  files: imagedefinitions.json

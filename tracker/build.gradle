@@ -1,5 +1,33 @@
 apply plugin: 'org.springframework.boot'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-jpa'
+apply plugin: 'kotlin-spring'
+apply plugin: 'kotlin-allopen'
+
+ext {
+    kotlinVersion='1.3.31'
+}
 
 dependencies {
     implementation(project(":backend"))
+
+    // kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    compile 'io.github.microutils:kotlin-logging:1.7.4'
+
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = ['-Xjsr305=strict', '-Xjvm-default=compatibility']
+            jvmTarget = '1.8'
+        }
+    }
+
+    compileTestKotlin {
+        kotlinOptions {
+            freeCompilerArgs = ['-Xjsr305=strict', '-Xjvm-default=compatibility']
+            jvmTarget = '1.8'
+        }
+    }
 }
