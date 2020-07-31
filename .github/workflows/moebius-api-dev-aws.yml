@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - HMA/dev
+      - HMA/develop
 
 name: [Deploy] Hashmain Api develop
 
