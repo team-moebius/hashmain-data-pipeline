@@ -1,4 +1,9 @@
 # Moebius
+## status
+| service | feature-build | develop-deploy |
+|:---:|:---:|:---:|
+|moebius-api|![Build - moebius api](https://github.com/team-moebius/hashmain-data-pipeline/workflows/Build%20-%20moebius%20api/badge.svg)|![Deploy - moebius dev api](https://github.com/team-moebius/hashmain-data-pipeline/workflows/Deploy%20-%20moebius%20dev%20api/badge.svg?branch=HMA%2Fdevelop)
+
 
 ## Definition
 Moebius is a platform for supporting crypto currency trades conveniently, safely.
