@@ -3,7 +3,7 @@ on:
     branches:
       - HMA/develop
 
-name: Deploy - Hashmain Api develop
+name: Deploy - moebius dev api
 
 jobs:
   deploy:
