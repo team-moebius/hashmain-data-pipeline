@@ -1,4 +1,4 @@
-rootProject.name = 'moebius'
+rootProject.name = 'hashmain-data-pipeline'
 include 'backend'
 include 'tracker'
 include 'streams'
