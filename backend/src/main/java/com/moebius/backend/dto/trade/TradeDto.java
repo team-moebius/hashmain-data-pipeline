@@ -1,4 +1,4 @@
-package com.moebius.backend.dto;
+package com.moebius.backend.dto.trade;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
