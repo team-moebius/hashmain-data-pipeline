@@ -1,6 +1,6 @@
 package com.moebius.tracker.assembler
 
-import com.moebius.backend.dto.TradeDto
+import com.moebius.backend.dto.trade.TradeDto
 import com.moebius.tracker.domain.trades.TradeDocument
 import com.moebius.tracker.dto.upbit.UpbitTradeDto
 import org.springframework.stereotype.Component
