@@ -2,17 +2,14 @@ package com.moebius.api.service
 
 import com.moebius.api.dto.TradeAggregationRequest
 import com.moebius.data.type.Exchange
+import org.junit.Ignore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
 @SpringBootTest()
-@TestPropertySource(properties = [
-    "spring.elasticsearch.rest.username=moebius",
-    "spring.elasticsearch.rest.password=highbal1!"
-]
-)
+//TODO: change to unit case
+@Ignore
 class TradeAggregationServiceTest extends Specification {
 
     @Autowired
