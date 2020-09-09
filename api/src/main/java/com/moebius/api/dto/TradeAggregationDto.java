@@ -2,38 +2,40 @@ package com.moebius.api.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.moebius.api.derse.TimeZoneStringSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.moebius.data.type.Exchange;
+import lombok.*;
 
 import java.time.ZonedDateTime;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TradeAggregationDto {
 
-    private String exchange;
+    private long docCount;
+
+    private Exchange exchange;
 
     private String symbol;
 
-    private Long totalAskCount;
+    private long totalAskCount;
 
-    private Double totalAskPrice;
+    private double totalAskPrice;
 
-    private Double totalAskVolume;
+    private double totalAskVolume;
 
-    private Long totalBidCount;
+    private long totalBidCount;
 
-    private Double totalBidPrice;
+    private double totalBidPrice;
 
-    private Double totalBidVolume;
+    private double totalBidVolume;
 
-    private Long totalTransactionCount;
+    private long totalTransactionCount;
 
-    private Double totalTransactionPrice;
+    private double totalTransactionPrice;
 
-    private Double totalTransactionVolume;
+    private double totalTransactionVolume;
 
     @JsonSerialize(using = TimeZoneStringSerializer.class)
     private ZonedDateTime startAt;
