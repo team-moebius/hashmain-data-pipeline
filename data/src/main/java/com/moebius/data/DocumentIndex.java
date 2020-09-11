@@ -1,7 +1,18 @@
 package com.moebius.data;
 
-public class DocumentIndex {
+public enum DocumentIndex {
 
-    public static final String TRADE_HISTORY ="trade-stream-search";
-    public static final String TRADE_STAT ="trade-stats-v2";
+    TRADE_HISTORY("trade-stream-search"),
+    TRADE_STAT("trade-stats-v2");
+
+    private String index;
+
+    DocumentIndex(String index){
+        this.index = index;
+    }
+
+    @Override
+    public String toString() {
+        return index;
+    }
 }
