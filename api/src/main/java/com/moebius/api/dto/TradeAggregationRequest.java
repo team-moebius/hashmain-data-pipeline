@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 @Value
 @Builder
@@ -13,13 +12,12 @@ public class TradeAggregationRequest {
     Exchange exchange;
     String symbol;
     int minutesAgo;
-    ZonedDateTime from;
-    ZonedDateTime to;
-    int interval;
+    LocalDateTime from;
+    LocalDateTime to;
 
     public static class TradeAggregationRequestBuilder{
         public TradeAggregationRequestBuilder minutesAgo(int minutesAgo){
-            this.to = ZonedDateTime.now();
+            this.to = LocalDateTime.now();
             this.from = this.to.minusMinutes(minutesAgo);
             return this;
         }
