@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +42,8 @@ public class TradeHistoryService {
                     e.printStackTrace();
                     return null;
                 }
-            }).map(TradeHistoryDto::fromEntity).collect(Collectors.toList());
+            }).filter(Objects::nonNull)
+                    .map(TradeHistoryDto::fromEntity).collect(Collectors.toList());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,7 +52,7 @@ public class TradeHistoryService {
     }
 
     private SearchRequest getSearchRequest(Exchange exchange, String symbol, int count) {
-        SearchRequest request = new SearchRequest(DocumentIndex.TRADE_HISTORY.toString());
+        SearchRequest request = new SearchRequest(DocumentIndex.TRADE_HISTORY);
         request.source(SearchSourceBuilder.searchSource().query(QueryBuilders.boolQuery()
                 .must(QueryBuilders.termQuery("exchange", exchange))
                 .must(QueryBuilders.termQuery("symbol", symbol))
