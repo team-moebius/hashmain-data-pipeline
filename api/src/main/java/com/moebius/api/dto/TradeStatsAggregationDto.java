@@ -14,5 +14,5 @@ public class TradeStatsAggregationDto {
     String symbol;
     int interval;
 
-    List<TradeStatsAggregationBucketDto> buckets;
+    List<TradeStatsAggregationBucketDto> aggregatedTradeHistories;
 }
