@@ -12,7 +12,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -26,16 +25,16 @@ public class TradeHistoryController {
     @ApiOperation(value = "aggregated history")
     @GetMapping("/aggregated/{exchange}/{symbol}")
     public TradeStatsAggregationDto getAggregatedTradeHistory(@PathVariable Exchange exchange, @PathVariable String symbol,
-                                                              @RequestParam("from") String from,
-                                                              @RequestParam("to") String to,
+                                                              @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
+                                                              @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to,
                                                               @RequestParam("interval") int interval
     ) {
 
         TradeAggregationRequest request = TradeAggregationRequest.builder()
                 .exchange(exchange)
                 .symbol(symbol)
-                .from(ZonedDateTime.parse(from, DateTimeFormatter.ISO_DATE_TIME))
-                .to(ZonedDateTime.parse(to, DateTimeFormatter.ISO_DATE_TIME))
+                .from(from)
+                .to(to)
                 .interval(interval)
                 .build();
         return aggregationService.getTradeStatsAggregation(request);
