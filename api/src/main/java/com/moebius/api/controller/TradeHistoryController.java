@@ -21,8 +21,6 @@ public class TradeHistoryController {
 
     private final TradeAggregationService aggregationService;
     private final TradeHistoryService tradeHistoryService;
-    private static final String REQUEST_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
-
 
     @ApiOperation(value = "aggregated history")
     @GetMapping("/aggregated/{exchange}/{symbol}")
