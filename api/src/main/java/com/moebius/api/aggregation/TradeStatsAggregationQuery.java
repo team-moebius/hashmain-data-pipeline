@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TradeStatsAggregationQuery {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'");
     private static final List<AggregationBuilder> fieldAggregations = FieldsAggregation.getAggregations(TradeStatsAggregation.class);
 
     public SearchSourceBuilder getQuery(TradeAggregationRequest request) {
@@ -33,8 +32,8 @@ public class TradeStatsAggregationQuery {
                 .filter(QueryBuilders.termQuery("exchange", request.getExchange()))
                 .filter(QueryBuilders.termQuery("symbol", request.getSymbol()))
                 .filter(QueryBuilders.rangeQuery("statsDate")
-                        .from(request.getFrom().format(formatter))
-                        .to(request.getTo().format(formatter), false)
+                        .from(request.getFrom().format(DateTimeFormatter.ISO_DATE_TIME))
+                        .to(request.getTo().format(DateTimeFormatter.ISO_DATE_TIME), false)
                 );
 
         return AggregationBuilders.filter("filterQuery", builder);
