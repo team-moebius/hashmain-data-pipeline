@@ -49,7 +49,10 @@ public class TradeAggsDto {
             this.setTimeUnit("1m");
             this.setSymbol(tradeDto.getSymbol());
             this.setExchange(tradeDto.getExchange());
-            this.setStatsDate(ZonedDateTime.ofInstant(Instant.ofEpochMilli(tradeDto.getReceivedTime()), ZoneOffset.UTC));
+            this.setStatsDate(ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(tradeDto.getReceivedTime()),
+                    ZoneOffset.UTC).withNano(0)
+                    .withSecond(0));
         }
 
         double price = tradeDto.getPrice() * tradeDto.getVolume();
