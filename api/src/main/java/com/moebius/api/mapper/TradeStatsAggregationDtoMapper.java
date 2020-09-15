@@ -17,7 +17,7 @@ public class TradeStatsAggregationDtoMapper {
     private final TradeStatsAggregationBucketMapper bucketMapper;
 
     public TradeStatsAggregationDto map(List<TradeStatsAggregation> aggregation, TradeAggregationRequest request) {
-        var buckets = aggregation.stream().map(o -> bucketMapper.map(o, request.getInterval())).collect(toList());
+        var buckets = aggregation.stream().map(o -> bucketMapper.map(o, request)).collect(toList());
         return TradeStatsAggregationDto.builder()
                 .aggregatedTradeHistories(buckets)
                 .exchange(request.getExchange())
