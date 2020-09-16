@@ -7,11 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
@@ -19,13 +20,18 @@ import java.time.format.DateTimeFormatter;
 public class StreamConfiguration {
 
     private final static long AGGS_TIME_INTERVAL = 60000L;
-    public static final String TARGET_TOPIC = "moebius.trade.upbit";
+
+    @Value("${stream.source.topic}")
+    private String sourceTopic;
+
+    @Value("${stream.output.topic}")
+    private String outputTopic;
 
     @Bean
     public Gson gson() {
         return new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>) (src, typeOfSrc, context) -> LocalDateTime.parse(src.getAsString(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")))
-                .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context) -> new JsonPrimitive(src.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))))
+                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (src, typeOfSrc, context) -> ZonedDateTime.parse(src.getAsString(), DateTimeFormatter.ISO_DATE_TIME))
+                .registerTypeAdapter(ZonedDateTime.class, (JsonSerializer<ZonedDateTime>) (src, typeOfSrc, context) -> new JsonPrimitive(src.format(DateTimeFormatter.ISO_DATE_TIME)))
                 .create();
     }
 
@@ -47,7 +53,7 @@ public class StreamConfiguration {
 
     @Bean
     public KStream<String, TradeDto> tradeStream(StreamsBuilder streamsBuilder, Serdes.WrapperSerde<TradeDto> serde) {
-        return streamsBuilder.stream(TARGET_TOPIC, Consumed.with(Serdes.String(), serde));
+        return streamsBuilder.stream(sourceTopic, Consumed.with(Serdes.String(), serde));
     }
 
     @Bean
@@ -63,8 +69,8 @@ public class StreamConfiguration {
                 newKeyStream.groupByKey(Grouped.with(Serdes.String(), tradeDtoWrapperSerde))
                         .aggregate(TradeAggsDto::new, (k, v, acc) -> acc.accumulate(k, v), Materialized.with(Serdes.String(), serde))
                         .toStream();
-        stream.print(Printed.toSysOut());
-        stream.to("trade-stats", Produced.with(Serdes.String(), serde));
+//        stream.print(Printed.toSysOut());
+        stream.to(outputTopic, Produced.with(Serdes.String(), serde));
         return stream;
     }
 }

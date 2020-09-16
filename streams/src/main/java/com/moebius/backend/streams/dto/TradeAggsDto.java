@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -28,7 +28,7 @@ public class TradeAggsDto {
     private Double totalTransactionPrice;
     private Double totalTransactionVolume;
 
-    private LocalDateTime statsDate;
+    private ZonedDateTime statsDate;
 
     public TradeAggsDto() {
         totalAskCount = 0L;
@@ -43,13 +43,16 @@ public class TradeAggsDto {
     }
 
     // TODO if exists other accumulation, extract it
-    public TradeAggsDto accumulate(String key, TradeDto tradeDto){
+    public TradeAggsDto accumulate(String key, TradeDto tradeDto) {
         if (this.getId() == null) {
             this.setId(key);
             this.setTimeUnit("1m");
             this.setSymbol(tradeDto.getSymbol());
             this.setExchange(tradeDto.getExchange());
-            this.setStatsDate(LocalDateTime.ofInstant(Instant.ofEpochMilli(tradeDto.getReceivedTime()), ZoneId.of("Asia/Seoul")));
+            this.setStatsDate(ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(tradeDto.getReceivedTime()),
+                    ZoneOffset.UTC).withNano(0)
+                    .withSecond(0));
         }
 
         double price = tradeDto.getPrice() * tradeDto.getVolume();
