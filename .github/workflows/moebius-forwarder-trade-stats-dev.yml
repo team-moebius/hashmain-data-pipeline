@@ -34,7 +34,7 @@ jobs:
         run: |
           # Build a docker container and
           # push it to ECR so that it can be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f forwarder/trade-stats/Dockerfile .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f forwarder/trade-stats/Dockerfile forwarder/trade-stats
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
