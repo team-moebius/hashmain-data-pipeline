@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - HMDP/develop/forwarder
+      - HMF/develop
 
 name: Deploy - moebius forwarder - trade-stats
 
