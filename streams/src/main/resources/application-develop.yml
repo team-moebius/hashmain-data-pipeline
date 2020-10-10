@@ -1,0 +1,23 @@
+
+stream:
+  real-time:
+    source-topic: moebius.trade.upbit
+    output-topic: test.moebius.trade.upbit.aggs.1m
+    flush-interval-ms: 5000
+    application-id: moebius-stream-develop-real-time-202011152047
+    aggregation-interval-minutes: 1
+  short-term:
+    source-topic: moebius.trade.upbit
+    output-topic: test.moebius.trade.upbit.aggs.5m
+    flush-interval-ms: 10000
+    application-id: moebius-stream-develop-short-term-${random.int}
+    aggregation-interval-minutes: 5
+  debounce:
+    application-id: moebius-stream-develop-debounce-${random.int}
+    flush-interval-ms: 30000
+    source-topic: test.moebius.trade.upbit.aggs.1m
+    output-topic: test.moebius.trade.upbit.aggs.1m.debounce
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: latest
