@@ -1,8 +1,13 @@
 apply plugin: 'org.springframework.boot'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
 
 dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.apache.kafka:kafka-streams'
-    compile 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    compile 'com.google.code.gson:gson:2.8.5'
 }

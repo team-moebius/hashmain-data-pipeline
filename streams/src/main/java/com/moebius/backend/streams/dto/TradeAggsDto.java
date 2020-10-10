@@ -30,6 +30,9 @@ public class TradeAggsDto {
 
     private ZonedDateTime statsDate;
 
+    private ZonedDateTime startDate;
+    private ZonedDateTime endDate;
+
     public TradeAggsDto() {
         totalAskCount = 0L;
         totalBidCount = 0L;
@@ -43,17 +46,37 @@ public class TradeAggsDto {
     }
 
     // TODO if exists other accumulation, extract it
-    public TradeAggsDto accumulate(String key, TradeDto tradeDto) {
-        if (this.getId() == null) {
-            this.setId(key);
-            this.setTimeUnit("1m");
-            this.setSymbol(tradeDto.getSymbol());
-            this.setExchange(tradeDto.getExchange());
-            this.setStatsDate(ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(tradeDto.getReceivedTime()),
-                    ZoneOffset.UTC).withNano(0)
-                    .withSecond(0));
+    public TradeAggsDto accumulate(TradeDto tradeDto, String timeUnit) {
+        ZonedDateTime tradeTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochMilli(tradeDto.getReceivedTime()), ZoneOffset.UTC);
+
+        if (getTimeUnit() == null) {
+            setTimeUnit(timeUnit);
         }
+        if (getSymbol() == null) {
+            setSymbol(tradeDto.getSymbol());
+        }
+
+        if (getExchange() == null) {
+            setExchange(tradeDto.getExchange());
+        }
+
+        if (getStatsDate() == null) {
+            int mod = tradeTimestamp.getSecond() % 10;
+            this.setStatsDate(tradeTimestamp.withNano(0).minusSeconds(mod));
+        }
+
+        if (this.getId() == null) {
+            this.setId(String.format("%s-%s-%d", getSymbol(), getTimeUnit(), getStatsDate().toEpochSecond()));
+        }
+
+        if (this.getStartDate() == null || this.getStartDate().isAfter(tradeTimestamp)) {
+            this.setStartDate(tradeTimestamp);
+        }
+
+        if (this.getEndDate() == null || this.getEndDate().isBefore(tradeTimestamp)) {
+            this.setEndDate(tradeTimestamp);
+        }
+
 
         double price = tradeDto.getPrice() * tradeDto.getVolume();
         double volume = tradeDto.getVolume();
@@ -74,6 +97,45 @@ public class TradeAggsDto {
         this.setTotalTransactionPrice(this.getTotalTransactionPrice() + price);
         this.setTotalTransactionVolume(this.getTotalTransactionVolume() + volume);
 
+        return this;
+    }
+
+    public TradeAggsDto accumulate(TradeAggsDto tradeAggsDto, String timeUnit) {
+        if (getId() == null) {
+            setId(tradeAggsDto.getId());
+        }
+
+        if (getExchange() == null) {
+            setExchange(tradeAggsDto.getExchange());
+        }
+
+        if (getSymbol() == null) {
+            setSymbol(tradeAggsDto.getSymbol());
+        }
+
+        this.totalAskCount += tradeAggsDto.getTotalAskCount();
+        this.totalAskPrice += tradeAggsDto.getTotalAskPrice();
+        this.totalAskVolume += tradeAggsDto.getTotalAskVolume();
+
+        this.totalBidCount += tradeAggsDto.getTotalBidCount();
+        this.totalBidPrice += tradeAggsDto.getTotalBidPrice();
+        this.totalBidVolume += tradeAggsDto.getTotalBidVolume();
+
+        this.totalTransactionCount += tradeAggsDto.getTotalTransactionCount();
+        this.totalTransactionPrice += tradeAggsDto.getTotalTransactionPrice();
+        this.totalTransactionVolume += tradeAggsDto.getTotalTransactionVolume();
+
+        if (this.startDate == null || this.startDate.isAfter(tradeAggsDto.getStartDate())) {
+            this.setStatsDate(tradeAggsDto.getStatsDate());
+        }
+
+        if (this.startDate == null || this.getStartDate().isAfter(tradeAggsDto.getStartDate())) {
+            this.setStartDate(tradeAggsDto.getStartDate());
+        }
+
+        if (this.endDate == null || this.getEndDate().isBefore(tradeAggsDto.getEndDate())) {
+            this.setEndDate(tradeAggsDto.getEndDate());
+        }
         return this;
     }
 }
