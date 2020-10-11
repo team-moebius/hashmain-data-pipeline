@@ -51,8 +51,7 @@ class TradeAggregationServiceTest extends Specification {
         result.get().getAggregatedTradeHistories().size() > 1
         result.get().getAggregatedTradeHistories() == [
                 TradeStatsAggregationBucketDto.builder().startTime(getZonedTime(startTime, 0)).endTime(getZonedTime(startTime, 1)).build(),
-                TradeStatsAggregationBucketDto.builder().startTime(getZonedTime(startTime, 1)).endTime(getZonedTime(startTime, 2)).build(),
-                TradeStatsAggregationBucketDto.builder().startTime(getZonedTime(startTime, 2)).endTime(getZonedTime(startTime, 3)).build()
+                TradeStatsAggregationBucketDto.builder().startTime(getZonedTime(startTime, 1)).endTime(getZonedTime(startTime, 2)).build()
         ]
     }
 
