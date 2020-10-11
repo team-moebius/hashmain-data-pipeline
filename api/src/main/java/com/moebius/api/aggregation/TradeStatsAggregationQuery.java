@@ -42,6 +42,7 @@ public class TradeStatsAggregationQuery {
     private AggregationBuilder getDateHistogram(int timeWindow) {
         return AggregationBuilders.dateHistogram("dateHistogram")
                 .field("statsDate")
+                .minDocCount(1)
                 .dateHistogramInterval(DateHistogramInterval.minutes(timeWindow));
     }
 }
