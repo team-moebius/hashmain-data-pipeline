@@ -4,7 +4,8 @@ import com.moebius.api.entity.TradeHistory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -28,7 +29,7 @@ public class TradeHistoryDto {
 
     private Double changePrice;
 
-    private LocalDateTime createdAt;
+    private ZonedDateTime createdAt;
 
     public static TradeHistoryDto fromEntity(TradeHistory entity) {
         return new TradeHistoryDto(entity.getId(),
@@ -40,6 +41,6 @@ public class TradeHistoryDto {
                 entity.getVolume(),
                 entity.getPrevClosingPrice(),
                 entity.getChangePrice(),
-                entity.getCreatedAt());
+                entity.getCreatedAt().atZone(ZoneId.of("UTC")));
     }
 }
