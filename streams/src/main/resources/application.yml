@@ -2,7 +2,7 @@
 spring:
   kafka:
     streams:
-      application-id: moebius-streams-dev
+      application-id: moebius-streams
       bootstrap-servers: kafka.hashmainpro.com:9092
       properties:
         security.protocol: SASL_PLAINTEXT
