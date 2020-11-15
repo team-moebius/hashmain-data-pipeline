@@ -28,8 +28,8 @@ public class TradeAggregationService {
 
     private List<TradeStatsAggregation> fillNotExistsTime(List<TradeStatsAggregation> list, TradeAggregationRequest request) {
         List<TradeStatsAggregation> result = new ArrayList<>();
-        ZonedDateTime startTime = request.getRoundUpFrom();
-        ZonedDateTime endTime = request.getRoundDownTo();
+        ZonedDateTime startTime = request.getFrom();
+        ZonedDateTime endTime = request.getTo();
         int counter = 0;
         for (; endTime.isAfter(startTime); startTime = startTime.plusMinutes(request.getInterval())) {
             if (list.size() > counter && list.get(counter).getTimeKey().toEpochSecond() - startTime.toEpochSecond() == 0) {
