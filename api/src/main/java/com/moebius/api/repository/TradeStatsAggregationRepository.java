@@ -29,13 +29,13 @@ public class TradeStatsAggregationRepository {
 
     public List<TradeStatsAggregation> findTradeStatsAggregation(TradeAggregationRequest request) {
         final var query = tradeStatsAggregationQuery.getQuery(request);
-        final var searchRequest = getSearchRequest(DocumentIndex.TRADE_STAT, query);
+        final var searchRequest = getSearchRequest(DocumentIndex.TRADE_AGGREGATION, query);
         return search(searchRequest);
     }
 
     public CompletableFuture<List<TradeStatsAggregation>> asyncFindTradeStatsAggregation(TradeAggregationRequest request) {
         final var query = tradeStatsAggregationQuery.getQuery(request);
-        final var searchRequest = getSearchRequest(DocumentIndex.TRADE_STAT, query);
+        final var searchRequest = getSearchRequest(DocumentIndex.TRADE_AGGREGATION, query);
         return searchAsync(searchRequest);
     }
 

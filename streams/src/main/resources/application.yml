@@ -15,13 +15,5 @@ spring:
         password: VVbRzWYK4OHE
     bootstrap-servers: kafka.hashmainpro.com:9092
 
-#      properties:
-#        jass:
-#          login-module: org.apache.kafka.common.security.plain.PlainLoginModule
 server:
   port: 8081
-#
-
-stream:
-  source.topic: "moebius.trade.upbit"
-  output.topic: "trade-stats"

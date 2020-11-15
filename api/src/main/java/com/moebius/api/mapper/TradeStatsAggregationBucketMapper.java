@@ -13,8 +13,8 @@ public class TradeStatsAggregationBucketMapper {
         final var zoneId = request.getFrom().getZone();
         ZonedDateTime zonedDateTime = aggregation.getTimeKey().withZoneSameInstant(zoneId);
         var endTime = zonedDateTime.plusMinutes(request.getInterval());
-        if (endTime.toEpochSecond() > request.getRoundDownTo().toEpochSecond()) {
-            endTime = request.getRoundDownTo();
+        if (endTime.toEpochSecond() > request.getTo().toEpochSecond()) {
+            endTime = request.getTo();
         }
         return TradeStatsAggregationBucketDto.builder()
                 .startTime(zonedDateTime)
