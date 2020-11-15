@@ -1,0 +1,7 @@
+stream:
+  real-time:
+    source-topic: "moebius.trade.upbit"
+    output-topic: "moebius.trade.upbit.aggs.1m"
+    flush-interval-ms: 5000
+    application-id: "moebius-stream-aggs-prod"
+    aggregation-interval-minutes: 1

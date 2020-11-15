@@ -10,18 +10,19 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInter
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Component;
 
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
 public class TradeStatsAggregationQuery {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'");
     private static final List<AggregationBuilder> fieldAggregations = FieldsAggregation.getAggregations(TradeStatsAggregation.class);
 
     public SearchSourceBuilder getQuery(TradeAggregationRequest request) {
-        AggregationBuilder dateHistogramBuilder = getDateHistogram(request.getInterval());
+        AggregationBuilder dateHistogramBuilder = getDateHistogram(request);
         return new TradeAggregationQuery.Builder(filterAggregation(request))
                 .ofRoot(dateHistogramBuilder)
                 .ofChild(dateHistogramBuilder.getName(), fieldAggregations)
@@ -33,16 +34,27 @@ public class TradeStatsAggregationQuery {
                 .filter(QueryBuilders.termQuery("exchange", request.getExchange()))
                 .filter(QueryBuilders.termQuery("symbol", request.getSymbol()))
                 .filter(QueryBuilders.rangeQuery("statsDate")
-                        .from(request.getFrom().format(formatter))
-                        .to(request.getTo().format(formatter), false)
+                        .from(request.getRoundUpFrom()
+                                .format(DateTimeFormatter.ISO_DATE_TIME))
+                        .to(request.getRoundDownTo()
+                                .format(DateTimeFormatter.ISO_DATE_TIME), false)
                 );
 
         return AggregationBuilders.filter("filterQuery", builder);
     }
 
-    private AggregationBuilder getDateHistogram(int timeWindow) {
+    private AggregationBuilder getDateHistogram(TradeAggregationRequest request) {
         return AggregationBuilders.dateHistogram("dateHistogram")
                 .field("statsDate")
-                .dateHistogramInterval(DateHistogramInterval.minutes(timeWindow));
+                .minDocCount(1)
+                .offset(getDateHistogramOffset(request.getRoundUpFrom(), request.getInterval()))
+                .dateHistogramInterval(DateHistogramInterval.minutes(request.getInterval()));
+    }
+
+    private String getDateHistogramOffset(ZonedDateTime from, int interval) {
+        long epochSecond = from.toEpochSecond();
+        long aggregationStartEpochSecond = Math.floorDiv(epochSecond, TimeUnit.MINUTES.toSeconds(interval)) * TimeUnit.MINUTES.toSeconds(interval);
+        long offsetMinutes = epochSecond - aggregationStartEpochSecond;
+        return DateHistogramInterval.minutes((int) TimeUnit.SECONDS.toMinutes(offsetMinutes)).toString();
     }
 }
