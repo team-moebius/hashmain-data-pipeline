@@ -99,43 +99,4 @@ public class TradeAggsDto {
 
         return this;
     }
-
-    public TradeAggsDto accumulate(TradeAggsDto tradeAggsDto, String timeUnit) {
-        if (getId() == null) {
-            setId(tradeAggsDto.getId());
-        }
-
-        if (getExchange() == null) {
-            setExchange(tradeAggsDto.getExchange());
-        }
-
-        if (getSymbol() == null) {
-            setSymbol(tradeAggsDto.getSymbol());
-        }
-
-        this.totalAskCount += tradeAggsDto.getTotalAskCount();
-        this.totalAskPrice += tradeAggsDto.getTotalAskPrice();
-        this.totalAskVolume += tradeAggsDto.getTotalAskVolume();
-
-        this.totalBidCount += tradeAggsDto.getTotalBidCount();
-        this.totalBidPrice += tradeAggsDto.getTotalBidPrice();
-        this.totalBidVolume += tradeAggsDto.getTotalBidVolume();
-
-        this.totalTransactionCount += tradeAggsDto.getTotalTransactionCount();
-        this.totalTransactionPrice += tradeAggsDto.getTotalTransactionPrice();
-        this.totalTransactionVolume += tradeAggsDto.getTotalTransactionVolume();
-
-        if (this.startDate == null || this.startDate.isAfter(tradeAggsDto.getStartDate())) {
-            this.setStatsDate(tradeAggsDto.getStatsDate());
-        }
-
-        if (this.startDate == null || this.getStartDate().isAfter(tradeAggsDto.getStartDate())) {
-            this.setStartDate(tradeAggsDto.getStartDate());
-        }
-
-        if (this.endDate == null || this.getEndDate().isBefore(tradeAggsDto.getEndDate())) {
-            this.setEndDate(tradeAggsDto.getEndDate());
-        }
-        return this;
-    }
 }

@@ -1,6 +1,5 @@
 package com.moebius.backend.streams;
 
-import com.moebius.backend.streams.config.stream.RealtimeAggregationDebounceTopologyConfig;
 import com.moebius.backend.streams.config.stream.RealtimeAggregationTopologyConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
