@@ -5,9 +5,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator
 import org.springframework.stereotype.Component
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.util.function.Tuple2
 
 @Component("tracker")
 class TrackerHealthCheckIndicator(
