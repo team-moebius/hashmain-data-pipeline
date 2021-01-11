@@ -33,4 +33,5 @@ public class TradeDto {
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	private LocalDateTime createdAt;
 	private long receivedTime;
+	private long sequentialId;
 }
