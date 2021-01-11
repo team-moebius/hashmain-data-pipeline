@@ -22,6 +22,7 @@ class TradeAssembler {
         tradeDto.changePrice = changePrice
         tradeDto.createdAt = LocalDateTime.now()
         tradeDto.receivedTime = tradeTimestamp
+        tradeDto.sequentialId = sequentialId
         tradeDto
     }
 
