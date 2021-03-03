@@ -1,14 +1,19 @@
 package com.moebius.backend.service.kafka.producer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.MetricName;
+import org.apache.kafka.common.Metric;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 import reactor.kafka.sender.SenderRecord;
 import reactor.kafka.sender.SenderResult;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,5 +57,11 @@ public abstract class KafkaProducer<K, V, T> {
 	public Flux<SenderResult<T>> produceMessages(V message) {
 		return sender.send(
 			Mono.just(SenderRecord.create(new ProducerRecord<>(getTopic(), getKey(message), message), getCorrelationMetadata(message))));
+	}
+
+	public Flux<Tuple2<MetricName, ? extends Metric>> metricsFromProducer() {
+		return this.sender.doOnProducer(Producer::metrics)
+				.flatMapIterable(Map::entrySet)
+				.map(m -> Tuples.of(m.getKey(), m.getValue()));
 	}
 }

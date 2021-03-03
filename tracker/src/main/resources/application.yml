@@ -19,7 +19,6 @@ spring:
       options:
         username: moebius
         password: VVbRzWYK4OHE
-
 exchange:
   upbit:
     websocket:
@@ -36,3 +35,7 @@ logging:
     com.moebius: INFO
   file:
     name: /var/log/moebius/tracker.log
+management:
+  endpoint:
+    health:
+      show-details: always
