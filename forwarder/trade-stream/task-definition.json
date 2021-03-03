@@ -1,0 +1,33 @@
+{
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "inferenceAccelerators": [],
+  "containerDefinitions": [
+    {
+      "name": "forwarder-trade-stream",
+      "image": "435149896473.dkr.ecr.ap-northeast-2.amazonaws.com/moebius/forwarder-trade-stream:latest",
+      "resourceRequirements": null,
+      "essential": true,
+      "portMappings": [
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/forwarder-trade-stream",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "environment": []
+    }
+  ],
+  "volumes": [],
+  "networkMode": "awsvpc",
+  "memory": "1024",
+  "cpu": "256",
+  "executionRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
+  "family": "moebius-api",
+  "taskRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
+  "placementConstraints": []
+}
