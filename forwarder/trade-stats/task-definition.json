@@ -27,7 +27,7 @@
   "memory": "1024",
   "cpu": "256",
   "executionRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
-  "family": "moebius-api",
+  "family": "forwarder-trade-stats",
   "taskRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
   "placementConstraints": []
 }
