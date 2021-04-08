@@ -1,0 +1,62 @@
+{
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "inferenceAccelerators": [],
+  "containerDefinitions": [
+    {
+      "name": "moebius-tracker",
+      "image": "435149896473.dkr.ecr.ap-northeast-2.amazonaws.com/moebius/tracker:latest",
+      "resourceRequirements": null,
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": "8080",
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/moebius-tracker",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "environment": [
+        {
+          "name": "spring.elasticsearch.rest.password",
+          "value": "highbal1!"
+        },
+        {
+          "name": "spring.elasticsearch.rest.uris",
+          "value": "http://ip-172-31-22-215.ap-northeast-2.compute.internal:9200,http://ip-172-31-21-91.ap-northeast-2.compute.internal:9200,http://ip-172-31-27-194.ap-northeast-2.compute.internal:9200"
+        },
+        {
+          "name": "spring.elasticsearch.rest.username",
+          "value": "moebius"
+        },
+        {
+          "name": "management.endpoints.web.exposure.include",
+          "value": "metrics,health"
+        },
+        {
+          "name": "spring.security.user.name",
+          "value": "moebius"
+        },
+        {
+          "name": "spring.security.user.password",
+          "value": "MMcALlUyVQ"
+        }
+      ]
+    }
+  ],
+  "volumes": [],
+  "networkMode": "awsvpc",
+  "memory": "1024",
+  "cpu": "512",
+  "executionRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
+  "family": "moebius-tracker",
+  "taskRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
+  "placementConstraints": []
+}

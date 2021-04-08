@@ -1,18 +1,29 @@
 package com.moebius.api.dto;
 
-import com.moebius.data.type.Exchange;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Value;
 
-import java.util.List;
+import java.time.ZonedDateTime;
 
 @Value
 @Builder
 public class TradeStatsAggregationDto {
 
-    Exchange exchange;
-    String symbol;
-    int interval;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "Asia/Seoul")
+    ZonedDateTime startTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "Asia/Seoul")
+    ZonedDateTime endTime;
 
-    List<TradeStatsAggregationBucketDto> aggregatedTradeHistories;
+    long totalAskCount;
+    long totalBidCount;
+    long totalTransactionCount;
+
+    double totalAskPrice;
+    double totalAskVolume;
+    double totalBidPrice;
+    double totalBidVolume;
+    double totalTransactionPrice;
+    double totalTransactionVolume;
 }
