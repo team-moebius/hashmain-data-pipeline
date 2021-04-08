@@ -1,15 +1,13 @@
 package com.moebius.api.service;
 
 import com.moebius.api.dto.TradeAggregationRequest;
-import com.moebius.api.dto.TradeStatsAggregationDto;
+import com.moebius.api.dto.TradeStatsAggregationResponse;
 import com.moebius.api.entity.TradeStatsAggregation;
 import com.moebius.api.mapper.TradeStatsAggregationDtoMapper;
 import com.moebius.api.repository.TradeStatsAggregationRepository;
-import com.moebius.api.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +19,7 @@ public class TradeAggregationService {
     private final TradeStatsAggregationRepository repository;
     private final TradeStatsAggregationDtoMapper aggregationDtoMapper;
 
-    public CompletableFuture<TradeStatsAggregationDto> getTradeStatsAggregation(TradeAggregationRequest request) {
+    public CompletableFuture<TradeStatsAggregationResponse> getTradeStatsAggregation(TradeAggregationRequest request) {
         return repository.asyncFindTradeStatsAggregation(request).thenApply(
                 o -> aggregationDtoMapper.map(fillNotExistsTime(o, request), request));
     }

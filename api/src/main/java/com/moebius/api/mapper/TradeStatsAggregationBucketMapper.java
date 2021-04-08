@@ -1,22 +1,21 @@
 package com.moebius.api.mapper;
 
 import com.moebius.api.dto.TradeAggregationRequest;
-import com.moebius.api.dto.TradeStatsAggregationBucketDto;
-import com.moebius.api.entity.TradeStatsAggregation;
+import com.moebius.api.dto.TradeStatsAggregationDto;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 
 @Component
 public class TradeStatsAggregationBucketMapper {
-    public TradeStatsAggregationBucketDto map(TradeStatsAggregation aggregation, TradeAggregationRequest request) {
+    public TradeStatsAggregationDto map(com.moebius.api.entity.TradeStatsAggregation aggregation, TradeAggregationRequest request) {
         final var zoneId = request.getFrom().getZone();
         ZonedDateTime zonedDateTime = aggregation.getTimeKey().withZoneSameInstant(zoneId);
         var endTime = zonedDateTime.plusMinutes(request.getInterval());
         if (endTime.toEpochSecond() > request.getRoundDownTo().toEpochSecond()) {
             endTime = request.getRoundDownTo();
         }
-        return TradeStatsAggregationBucketDto.builder()
+        return TradeStatsAggregationDto.builder()
                 .startTime(zonedDateTime)
                 .endTime(endTime)
                 .totalAskCount(Double.valueOf(aggregation.getTotalAskCount()).longValue())
