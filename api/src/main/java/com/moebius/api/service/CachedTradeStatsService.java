@@ -60,8 +60,8 @@ public class CachedTradeStatsService {
 
 
     private Collection<TradeStatsAggregationDto> getTradeStats(TradeAggregationRequest request) {
-        var from = request.getRoundUpFrom();
-        var to = request.getRoundDownTo();
+        var from = request.getFrom();
+        var to = request.getTo().minusMinutes(1);
         var diff = (to.toEpochSecond() - from.toEpochSecond()) / TimeUnit.MINUTES.toSeconds(1);
 
         var values = IntStream.rangeClosed(0, (int) diff)
