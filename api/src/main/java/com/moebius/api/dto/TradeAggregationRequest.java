@@ -23,13 +23,18 @@ public class TradeAggregationRequest {
             this.from = this.to.minusMinutes(minutesAgo);
             return this;
         }
-    }
 
-    public ZonedDateTime getRoundUpFrom() {
-        return TimeUtils.getRoundUpTime(getFrom());
-    }
-
-    public ZonedDateTime getRoundDownTo() {
-        return TimeUtils.getRoundDownTime(getTo());
+        public TradeAggregationRequestBuilder from(ZonedDateTime from) {
+            this.from = TimeUtils.getRoundUpTime(from);
+            return this;
+        }
+        public TradeAggregationRequestBuilder to(ZonedDateTime to){
+            if(to.compareTo(ZonedDateTime.now()) > 0){
+                this.to = TimeUtils.getRoundUpTime(ZonedDateTime.now(to.getZone()));
+            }else{
+                this.to = TimeUtils.getRoundUpTime(to);
+            }
+            return this;
+        }
     }
 }
