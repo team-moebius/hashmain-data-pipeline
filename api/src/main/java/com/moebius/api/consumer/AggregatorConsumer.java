@@ -24,9 +24,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class AggregatorConsumer implements ConsumerSeekAware {
 
-    @Value("${consumer.offset.rewind.ms:30000}")
-    private long rewindMs;
-
     private final Cache<String, TradeStats> tradeStatsCache;
     private final ObjectMapper mapper;
 

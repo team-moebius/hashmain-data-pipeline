@@ -20,7 +20,17 @@ spring:
     properties:
       security:
         protocol: SASL_PLAINTEXT
+    admin:
+      properties:
+        sasl:
+          jaas:
+            config: org.apache.kafka.common.security.plain.PlainLoginModule required username=moebius password=VVbRzWYK4OHE;
+          mechanism: PLAIN
+        security:
+          protocol: SASL_PLAINTEXT
 
-consumer:
-  offset:
-    rewind.ms: 30000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
