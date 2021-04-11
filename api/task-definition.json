@@ -36,13 +36,15 @@
           "name": "spring.elasticsearch.rest.username",
           "value": "moebius"
         }
-      ]
+      ],
+      "cpu": 1024,
+      "memoryReservation": 2048
     }
   ],
   "volumes": [],
   "networkMode": "awsvpc",
-  "memory": "512",
-  "cpu": "256",
+  "memory": "2048",
+  "cpu": "1024",
   "executionRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
   "family": "moebius-api",
   "taskRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
