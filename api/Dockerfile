@@ -11,4 +11,4 @@ RUN ./gradlew clean :api:bootJar
 FROM openjdk:11-jre-slim
 ENV ARTIFACT_PATH=api/build/libs/*.jar
 COPY --from=build $ARTIFACT_PATH app.jar
-ENTRYPOINT ["java","-Dspring.profiles.active=production","-jar","app.jar"]
+ENTRYPOINT ["java","-Dspring.profiles.active=production", "-Xmx2048m", "-Xms1024m", "-jar","app.jar"]
