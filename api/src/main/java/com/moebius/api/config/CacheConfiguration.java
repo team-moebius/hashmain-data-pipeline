@@ -16,7 +16,7 @@ public class CacheConfiguration {
     @Bean
     public Cache<String, TradeStats> tradeStatsCache(){
         return Caffeine.newBuilder()
-                .expireAfterWrite(6, TimeUnit.MINUTES)
+                .expireAfterWrite(1, TimeUnit.HOURS)
                 .build();
     }
 
