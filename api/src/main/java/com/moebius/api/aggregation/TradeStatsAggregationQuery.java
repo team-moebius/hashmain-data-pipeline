@@ -34,9 +34,8 @@ public class TradeStatsAggregationQuery {
                 .filter(QueryBuilders.termQuery("exchange", request.getExchange()))
                 .filter(QueryBuilders.termQuery("symbol", request.getSymbol()))
                 .filter(QueryBuilders.rangeQuery("statsDate")
-                        .from(request.getRoundUpFrom()
-                                .format(DateTimeFormatter.ISO_DATE_TIME))
-                        .to(request.getRoundDownTo()
+                        .from(request.getFrom().format(DateTimeFormatter.ISO_DATE_TIME))
+                        .to(request.getTo()
                                 .format(DateTimeFormatter.ISO_DATE_TIME), false)
                 );
 
@@ -47,7 +46,7 @@ public class TradeStatsAggregationQuery {
         return AggregationBuilders.dateHistogram("dateHistogram")
                 .field("statsDate")
                 .minDocCount(1)
-                .offset(getDateHistogramOffset(request.getRoundUpFrom(), request.getInterval()))
+                .offset(getDateHistogramOffset(request.getFrom(), request.getInterval()))
                 .dateHistogramInterval(DateHistogramInterval.minutes(request.getInterval()));
     }
 

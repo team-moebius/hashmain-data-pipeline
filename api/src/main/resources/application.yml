@@ -2,3 +2,35 @@ spring:
   elasticsearch:
     rest:
       uris: http://ec2-52-78-128-79.ap-northeast-2.compute.amazonaws.com:9200,ec2-13-125-5-159.ap-northeast-2.compute.amazonaws.com,ec2-52-79-149-94.ap-northeast-2.compute.amazonaws.com
+
+  kafka:
+    consumer:
+      group-id: data-api-${random.uuid}
+      topics: moebius.trade.upbit.aggs.1m
+      properties:
+        sasl:
+          mechanism: PLAIN
+    bootstrap-servers: kafka.hashmainpro.com:9092
+    jaas:
+      login-module: org.apache.kafka.common.security.plain.PlainLoginModule
+      enabled: true
+      options:
+        username: moebius
+        password: VVbRzWYK4OHE
+    properties:
+      security:
+        protocol: SASL_PLAINTEXT
+    admin:
+      properties:
+        sasl:
+          jaas:
+            config: org.apache.kafka.common.security.plain.PlainLoginModule required username=moebius password=VVbRzWYK4OHE;
+          mechanism: PLAIN
+        security:
+          protocol: SASL_PLAINTEXT
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
