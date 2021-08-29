@@ -15,14 +15,6 @@
           "protocol": "tcp"
         }
       ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/moebius-tracker",
-          "awslogs-region": "ap-northeast-2",
-          "awslogs-stream-prefix": "ecs"
-        }
-      },
       "environment": [
         {
           "name": "spring.elasticsearch.rest.password",

@@ -22,7 +22,6 @@ plugins {
 allprojects {
 	repositories {
 		mavenCentral()
-		maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
 		maven { url 'https://jitpack.io' }
 	}
 }
