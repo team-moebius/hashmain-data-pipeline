@@ -46,9 +46,6 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
     private lateinit var openedSessions: MutableMap<String, WebSocketSession>
 
     @Autowired
-    private lateinit var tradeDocumentRepository: TradeDocumentRepository
-
-    @Autowired
     private lateinit var tradeAssembler: TradeAssembler
 
     @Autowired
@@ -73,7 +70,6 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                                 .thenMany<WebSocketMessage>(session.receive().map<WebSocketMessage> { webSocketMessage ->
                                     try {
                                         val upbitTradeDto = objectMapper.readValue(webSocketMessage.getPayloadAsText(), UpbitTradeDto::class.java)
-                                        accumulateTrade(upbitTradeDto)
                                         tradeKafkaProducer.produceMessages(tradeAssembler.toCommonDto(upbitTradeDto)).subscribe()
                                     } catch (e: IOException) {
                                         log.error(e.message)
@@ -88,13 +84,5 @@ class TrackerService : ApplicationListener<ApplicationReadyEvent> {
                                 })
                     }.subscribe()
                 }.subscribe()
-    }
-
-    private fun accumulateTrade(upbitTradeDto: UpbitTradeDto) {
-        Mono.fromCallable { tradeAssembler.toTradeDocument(upbitTradeDto) }
-                .subscribeOn(COMPUTE.scheduler())
-                .publishOn(IO.scheduler())
-                .flatMap { tradeDocumentRepository.saveAsync(it) }
-                .subscribe()
     }
 }

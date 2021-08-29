@@ -1,7 +1,7 @@
 package com.moebius.api.service
 
 import com.moebius.api.dto.TradeAggregationRequest
-import com.moebius.api.dto.TradeStatsAggregationBucketDto
+import com.moebius.api.dto.TradeStatsAggregationDto
 import com.moebius.api.entity.TradeStatsAggregation
 import com.moebius.api.mapper.TradeStatsAggregationBucketMapper
 import com.moebius.api.mapper.TradeStatsAggregationDtoMapper
@@ -50,8 +50,8 @@ class TradeAggregationServiceTest extends Specification {
         result != null
         result.get().getAggregatedTradeHistories().size() > 1
         result.get().getAggregatedTradeHistories() == [
-                TradeStatsAggregationBucketDto.builder().startTime(getZonedTime(startTime, 0)).endTime(getZonedTime(startTime, 1)).build(),
-                TradeStatsAggregationBucketDto.builder().startTime(getZonedTime(startTime, 1)).endTime(getZonedTime(startTime, 2)).build()
+                TradeStatsAggregationDto.builder().startTime(getZonedTime(startTime, 0)).endTime(getZonedTime(startTime, 1)).build(),
+                TradeStatsAggregationDto.builder().startTime(getZonedTime(startTime, 1)).endTime(getZonedTime(startTime, 2)).build()
         ]
     }
 

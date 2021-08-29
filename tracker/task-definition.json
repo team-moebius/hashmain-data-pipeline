@@ -5,8 +5,8 @@
   "inferenceAccelerators": [],
   "containerDefinitions": [
     {
-      "name": "moebius-api",
-      "image": "435149896473.dkr.ecr.ap-northeast-2.amazonaws.com/moebius/api:latest",
+      "name": "moebius-tracker",
+      "image": "435149896473.dkr.ecr.ap-northeast-2.amazonaws.com/moebius/tracker:latest",
       "resourceRequirements": null,
       "essential": true,
       "portMappings": [
@@ -18,7 +18,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/moebius-api",
+          "awslogs-group": "/ecs/moebius-tracker",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
         }
@@ -35,18 +35,28 @@
         {
           "name": "spring.elasticsearch.rest.username",
           "value": "moebius"
+        },
+        {
+          "name": "management.endpoints.web.exposure.include",
+          "value": "metrics,health"
+        },
+        {
+          "name": "spring.security.user.name",
+          "value": "moebius"
+        },
+        {
+          "name": "spring.security.user.password",
+          "value": "MMcALlUyVQ"
         }
-      ],
-      "cpu": 1024,
-      "memoryReservation": 2048
+      ]
     }
   ],
   "volumes": [],
   "networkMode": "awsvpc",
-  "memory": "2048",
-  "cpu": "1024",
+  "memory": "1024",
+  "cpu": "512",
   "executionRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
-  "family": "moebius-api",
+  "family": "moebius-tracker",
   "taskRoleArn": "arn:aws:iam::435149896473:role/ecsTaskExecutionRole",
   "placementConstraints": []
 }
