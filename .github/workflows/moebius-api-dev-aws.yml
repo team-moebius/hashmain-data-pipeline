@@ -1,9 +1,11 @@
+name: Deploy - moebius dev api
+
 on:
   push:
     branches:
       - HMA/develop
 
-name: Deploy - moebius dev api
+  workflow_dispatch:
 
 jobs:
   deploy:
